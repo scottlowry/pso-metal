@@ -1,0 +1,15 @@
+#include "types.h"
+#undef LAYOUT_ASSERT
+#define LAYOUT_ASSERT(name, cond)
+#include "pso/player/PlayerActionPaletteState.h"
+#include "pso/render/MaterialColorFade.h"
+#include "pso/render/RenderFadeState.h"
+#include "pso/system/task/TObject.h"
+#include "pso/map/TSetEvtDestroy.h"
+#include "pso/boss/darkfalz/TBoss4DarkFalz.h"
+#include "pso/boss/darkfalz/TObjDFRecover.h"
+#include "pso/ui/charcreate/TObjCMMainMenu.h"
+#include "pso/ui/window/TWindowLockOn.h"
+#include "pso/ui/window/WindowCtrlCallback.h"
+#include "pso/player/TPlyItem.h"
+#include "pso/audio/AdxEncoder.h"
