@@ -1,6 +1,6 @@
 # pso-metal
 
-Native recompiler port of **Phantasy Star Online Episode I & II** (GameCube) for
+Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube) for
 Apple Silicon, rendering through **Metal**.
 
 Status: **Phase 0 — portability spike.** Nothing runs yet. The goal of this phase is to
