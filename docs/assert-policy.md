@@ -68,16 +68,17 @@ naming the type with `FORMAT-KEEP` → **L-P**; `RUNTIME-WAIVE` → **RW**; both
 → CONFLICT (manual review); neither/absent → **UNREVIEWED**. Non-failing
 types default to NOT-AT-FAULT.
 
-Snapshot as of this commit (net-disc present, saves still absent — re-run the
-tool after both land; verdicts are merged at run time, so no re-probe needed:
-`--no-probe`):
+Snapshot as of this commit (net-disc present and *still being written*; saves
+absent — re-run the tool after both land, no re-probe needed:
+`--no-probe`; verdicts are merged at run time):
 
 | bucket (failing types) | count |
 |---|---|
-| L-P (FORMAT-KEEP) | 6 — `TItemData`, `TSetEvtDestroy`, `NetworkInfoConfig`, `GslArchiveEntry`, `IPv4Header`, `TcpHdr` |
-| RW (RUNTIME-WAIVE) | 3 — `TcpTcb`, `PppFsm`, `TcpSackSeg` |
+| L-P (FORMAT-KEEP) | 9 — e.g. `GslArchiveEntry`, `CardSaveHeader`, `CharacterSaveRecord`, `NetworkInfoConfig`, `IPv4Header`, `TcpHdr`, `GuildCardEntry` |
+| RW (RUNTIME-WAIVE) | 34 — incl. `TcpTcb`, `PppFsm`, `TcpSackSeg`, `TObject`-family save overlays |
+| CONFLICT (needs manual review) | 3 — `TItemData`, `TPlyCharData`, one more |
 | N/A-CONSTANT (non-type asserts) | 8 |
-| **UNREVIEWED** | **1630** |
+| **UNREVIEWED** | **1593** |
 | (types with no failing assert) | 123 NOT-AT-FAULT |
 
 Note: net-disc §"Assert-crossing types: 0" was scoped to the 43 ILP32-failing
@@ -131,9 +132,10 @@ no `#pragma`, no parallel tree.
    live decomp, so LP64 layout regressions on L-P types remain compile-visible
    even while the port build waives RW ones.
 
-Unwaived-but-failing is the *default state*: with 1630 UNREVIEWED failing
+Unwaived-but-failing is the *default state*: with 1593 UNREVIEWED failing
 types, the port build stays asserted-red until the G/H lanes' verdicts cover
-them (waived asserts today: 3 names). The UNREVIEWED mass is itself the P1-J
+them (waived asserts in the generated list right now: 103 names over the 34
+RW types, 0 for L-P/UNREVIEWED). The UNREVIEWED mass is itself the P1-J
 worklist — LP64 pointer widening hits nearly every pointer-bearing type, so
 either the port adopts an ILP32-ish target for data (abi.md's measured 3213
 pass) or the review pipeline must disposition ~1.6k types; the mechanism above
