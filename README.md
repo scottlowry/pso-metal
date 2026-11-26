@@ -3,8 +3,9 @@
 Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube) for
 Apple Silicon, rendering through **Metal**.
 
-Status: **Phase 0 — portability spike.** Nothing runs yet. The goal of this phase is to
-measure and chip away at the GameCube-ABI → Apple-ABI gap, not to boot the game.
+Status: **Phase 0 complete — port viable, no blocker found** (`docs/phase0-verdict.md`).
+Phase 1 (build system, format-boundary audits, boot slice) in progress. Nothing playable
+yet; the compile-gap is now decomposed into named, owned work items.
 
 ## What this is / isn't
 
@@ -24,33 +25,51 @@ Modeled on what the community proved feasible for other GameCube titles (Super M
 Sunshine on Apple Silicon being the visible 2026 milestone): decompile → recompile
 natively → re-host platform services on Metal. PSO's specific twists:
 
-1. **ILP32 data model.** The GameCube is 32-bit PowerPC; Apple Silicon is LP64.
-   A probe (see `probes/`) shows a single compat header + `-fms-extensions` collapses
-   the vast majority of clang failures, and arm64's ILP32 mode resolves struct-size
-   asserts. Decision pending, documented in `docs/abi.md`.
-2. **Big-endian.** PSO reads its own `.bbs`/`.ndo`/model data as native BE. Every asset
-   loader and save path needs explicit byteswap — the deepest and most interesting
-   work, and the endianness audit doubles as a decomp quality signal.
-3. **Two renderers, one codebase.** PSO uses MetaCore's GX-on-NuSystem (`C_XBFONT`,
-   N-JPEG) plus raw GX in places. The Metal backend wraps the decompiled GX layer;
-   the decompiled game logic is untouched.
+1. **Data model.** The GameCube is 32-bit PowerPC; Apple Silicon runs LP64. Measured
+   position (`probes/`, `docs/abi.md`): ILP32 (`arm64_32`) makes ~40% of the tree parse and
+   resolves word/pointer size — but **cannot link on macOS** (no 32-bit arm libSystem), so
+   the runtime direction is LP64 + arena/handle translation for the game's absolute-address
+   and u32-as-pointer patterns (spike in progress, `docs/p1-datamodel.md`). The dominant
+   residual parse failures are the MWCC C++ object model (vptr placement, 12-byte
+   pointers-to-member) — gated by ~20 headers, decided per-type as FORMAT-KEEP vs
+   RUNTIME-WAIVE by the Phase 1 audits.
+2. **Big-endian.** PSO's saves, network packets, and disc data are big-endian byte images.
+   Measured, not vibes: `tools/be_scan.py` indexes 629 files carrying at least one
+   byte-order hazard; genuinely dangerous live sites are few (4) and named in
+   `docs/be-index-summary.md`. The audits underway split "layout that crosses a binary
+   format" (must stay byte-true, swap-on-load layer) from "layout that only lives in RAM"
+   (host-free). Endianness is bounded — the scary-sounding bitfield class turned out to be
+   one header.
+3. **Graphics.** Headless Metal is proven on this machine (`spike/metal_clear.m`: offscreen
+   640×480 clear + pixel readback, CI-able, green). The port re-hosts the game's actual GX +
+   MetaCore/NuSystem call surface — measured at **272 distinct SDK functions, 1,415 call
+   sites, only 121 files touching platform code at all** (`docs/host-surface.md`). The
+   decompiled game logic above it stays untouched.
+4. **Audio.** The ADX decoder is already portable C in the decomp; the MusyX mixer is a
+   6.6 KB DSP microcode blob with no CPU-side tap. Plan: keep the CRI CPU layer, shim the
+   ~35 boundary calls onto AVAudioEngine (`docs/audio-survey.md`); ucode reverse-engineering
+   stays optional for bit-exact fidelity later.
 
 ## Layout
 
 | dir | contents |
 |---|---|
-| `compat/` | force-include header + shim headers that make era code clang-parseable |
-| `probes/` | the tree-wide clang probes that drive Phase 0 decisions (reproducible) |
-| `docs/` | abi.md, be-audit.md, decisions.md |
-| `host/` | (later) SDL-free macOS host: Metal renderer, AVAudio, save/mmap layer |
-| `tools/` | (later) content locator — reads the user's own ISO, writes nothing |
+| `compat/` | force-include header + shims that make era code clang-parseable (`compat/RESULTS.md`) |
+| `probes/` | reproducible tree-wide clang probes that drive the numbers |
+| `docs/` | `phase0-verdict.md` + per-area surveys (abi, host-surface, boot-spine, audio, be-index, p1-*) |
+| `spike/` | runnable proofs: Metal offscreen clear+readback (green), data-model (in progress) |
+| `tools/` | `be_scan.py` endian hazard index; content locator (planned — reads your own ISO, writes nothing) |
+| `build/` | port build skeleton + fail-closed assert-waiver overlay + parse-regression gate |
+| `data/` | machine-readable indices (hazard CSV, assert verdicts) |
 
 ## Benchmarks
 
-Phase 0 exit: **≥ 90% of `src/` units compile natively on arm64 with zero edits to
-upstream decomp source** (all deltas confined to `compat/`), and a documented endianness
-work map. Phase 1 exit: a PSO-created character walking in CotL, rendered by Metal, at
-unlocked framerate.
+Phase 0 exit (met): honest measurement of every failure class + a strategy per class.
+Parse status today: **669/1680 game files parse with zero edits to decomp source**
+(`make parse` gate), with ~1,580 projected once the per-header assert policy lands —
+the remaining wall is 98.7% concentrated in ~20 headers. Endianness map: delivered.
+Phase 1 exit: PSO title screen rendered by Metal on Apple Silicon. Game benchmark: a
+created character walking in CotL at unlocked framerate.
 
 ## License
 
