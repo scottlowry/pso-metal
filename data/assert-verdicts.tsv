@@ -307,7 +307,7 @@ CardSaveHeader	2	2	L-P (FORMAT-KEEP)	docs/p1-format-saves.md
 ChallengeEventHeader	2	2	UNREVIEWED	include/pso/map/ChallengeEnemySet.h:59
 ChallengeModeState	2	2	UNREVIEWED	include/pso/quest/challenge/ChallengeModeState.h:60
 ChallengeRandomEvent	2	2	UNREVIEWED	include/pso/map/ChallengeEnemySet.h:60
-CharacterFile	2	2	RW (RUNTIME-WAIVE)	docs/p1-format-saves.md
+CharacterFile	2	2	L-P (FORMAT-KEEP) [integrator-deny]	docs/p1-format-saves.md
 CharacterFileSlot	2	2	UNREVIEWED	include/pso/system/save/CharacterFile.h:43
 CharacterTextureList	3	2	UNREVIEWED	include/pso/ui/charcreate/CharacterAppearanceTables.h:17
 CheckMemoryCardState	2	2	RW (RUNTIME-WAIVE)	docs/p1-format-saves.md
@@ -558,7 +558,7 @@ GinjaModel	1	1	UNREVIEWED	include/pso/render/GinjaModel.h:36
 GinjaTextureError	1	1	UNREVIEWED	include/pso/render/GinjaTexture.h:15
 GoGoBallSyncState	1	1	UNREVIEWED	include/pso/object/lobby/LobbyGoGoBall.h:31
 GuideButtonSpec	1	1	UNREVIEWED	include/pso/ui/frontend/TAdGuideButtonGC.h:41
-GuildCardSaveData	1	1	RW (RUNTIME-WAIVE)	docs/p1-format-saves.md
+GuildCardSaveData	1	1	L-P (FORMAT-KEEP) [integrator-deny]	docs/p1-format-saves.md
 HairEffectEntry	1	1	UNREVIEWED	include/pso/object/TObjWaitEntryHairMoveSim.h:22
 HelpItemRarityStarRow	1	1	UNREVIEWED	include/pso/ui/window/HelpItemRarityStarRow.h:23
 HelpItemStatCompareRow	1	1	UNREVIEWED	include/pso/ui/window/HelpItemStatCompareRow.h:37
@@ -739,7 +739,7 @@ StatusGaugeLayout	1	1	UNREVIEWED	include/pso/unk/WindowLayoutRecord.h:25
 StickEscapeDetector	1	1	UNREVIEWED	include/pso/player/TObjPlayer.h:112
 StripBufferPair	1	1	UNREVIEWED	include/pso/render/StripBufferPair.h:35
 SubtractiveRng	1	1	UNREVIEWED	include/pso/system/SubtractiveRng.h:37
-SystemSaveData	1	1	RW (RUNTIME-WAIVE)	docs/p1-format-saves.md
+SystemSaveData	1	1	L-P (FORMAT-KEEP) [integrator-deny]	docs/p1-format-saves.md
 TActorLight	1	1	UNREVIEWED	include/pso/object/TActorLight.h:32
 TActorLightTable	1	1	UNREVIEWED	include/pso/object/TActorLightTable.h:12
 TAdAgreementBaseGC	1	1	UNREVIEWED	include/pso/ui/frontend/TAdAgreementBaseGC.h:29
