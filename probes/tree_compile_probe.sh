@@ -26,4 +26,9 @@ run() {
   grep -h "error:" "$OUT"/*.err 2>/dev/null | sed 's/.*error: //' | cut -c1-64 | sort | uniq -c | sort -rn | head -8
 }
 FLAGS="-fms-extensions" run "lp64"
-FLAGS="-fms-extensions -target arm64_32-apple-watchos7.0" run "ilp32"
+# WHY -ffreestanding: decomp declares the GC entry point as 'void main(void)'; clang's
+#   hosted-mode "'main' must return 'int'" check is a host conformance rule, not a real
+#   parse error — freestanding mode is also the semantically honest mode for console code.
+# WHY -Wno-c++11-narrowing: 'case -1:' on a u32 switch-selector is valid MWCC wrap-around
+#   (matches 0xFFFFFFFF); clang emits it as a default-error warning, suppress is sound.
+FLAGS="-fms-extensions -target arm64_32-apple-watchos7.0 -ffreestanding -Wno-c++11-narrowing" run "ilp32"
