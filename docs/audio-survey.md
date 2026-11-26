@@ -19,15 +19,17 @@ All counts measured with `wc`/`grep` on the decomp tree; inferences are labeled 
 
 | Module | Path | Size | Status |
 |---|---|---|---|
-| CRI ADX/middleware (game layer) | `src/pso/audio/` | 42 .cpp, 9,215 LOC, ~360 KB | mostly matched C++; 509 funcs still asm |
-| MusyX runtime (CPU control half) | `src/musyx/runtime/` | 28 .c + 2 .h, 13,409 LOC, ~520 KB | core matched; 333 funcs still asm |
-| MusyX DSP microcode | `src/musyx/runtime/dsp_import.c` | 6,624 bytes of data | **binary blob, not decompilable-as-useful-C** |
-| Dolphin OS AI/AR/ARQ/DSP drivers | `build/GPOE8P/asm/{ai,ar,dsp}/` | ~44 `.fn` blocks of live PPC asm | NOT decompiled (SDK reference source at `libs/dolphin/src/`, MMIO-bound) |
+| CRI ADX/middleware (game layer) | `src/pso/audio/` | 42 .cpp, 9,215 LOC, ~360 KB | fully decompiled C/C++ (100% matched) |
+| MusyX runtime (CPU control half) | `src/musyx/runtime/` | 28 .c + 2 .h, 13,409 LOC, ~520 KB | fully decompiled C (100% matched) |
+| MusyX DSP microcode | `src/musyx/runtime/dsp_import.c` | 6,624 bytes of data | **binary blob — the hard kernel, not C at all** |
+| Dolphin OS AI/AR/ARQ/DSP drivers | `libs/dolphin/src/{ai,ar,arq,dsp}/` | ~44 funcs | decompiled C in the dolphin lib (build/GPOE8P/asm/ = objdiff target mirrors, NOT decomp state) |
 | Chorus / StdReverb FX | `src/musyx/runtime/{Chorus,StdReverb}/` | 3 .c | matched (CPU-side float delay-line models) |
 
-Totals measured: **991 matched C/C++ function definitions** in the audio stack; **842 functions
-remain as assembly** (509 CRI-layer + 333 MusyX) — i.e. the middleware is roughly 55% decompiled by
-function count, including the entire decoder/streaming core.
+Integrator correction (2026-11-26, post-review): earlier draft scored "842 functions remain as
+assembly" from the era-asm mirror paths; re-verified against `report.json` (0 asm-status functions,
+27,572/27,572 matched) and `find src -name '*.s'` (0). **Every CPU-side audio function in the tree
+is already portable C.** The sole non-C element is the DSP microcode blob above. This strengthens,
+not weakens, the Option-B recommendation — there is no decomp backlog gating the audio work.
 
 Layer map (verified from `#include`s and call sites):
 
@@ -94,13 +96,13 @@ CoreAudio/AudioQueue callbacks.
 
 - **Pros:** maximum behavioral fidelity once done (exact volume/pan tables, ADSR delta semantics,
   aux-studio routing, all the quirks of the GCRNA 0.97 bridge); every game-side call site compiles
-  unchanged; the hard decompilation of the 842 remaining asm functions (mixer-adjacent ones) still
-  needed.
+  unchanged; the CPU-side stack is already 100% portable C, so the only un-ported piece is the
+  ucode itself.
 - **Cons:** the ucode's semantics must be recovered from a 6.6 KB PPC-DSP binary + command format
   (no source, no published disassembly of this MusyX variant); ARAM addressing, cache-sync and
   mailbox-spin timing quirks become our bugs; heavy coupling to OS threading/interrupt semantics
   (`OSThread`, `OSDisableInterrupts`, VI retrace hooks in the boot path).
-- **Effort:** High — 4 decomp sub-projects (842 asm funcs incl. mixers), ucode RE, and a HAL.
+- **Effort:** High — the ucode RE itself + ARAM/ARQ/timing HAL; the C layer is already portable.
   Weeks-to-months before first sound. **[INFERENCE: effort scale from boundary analysis above.]**
 - **Faithfulness:** potentially bit-exact mix; the only route to *identical* sound.
 
