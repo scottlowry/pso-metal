@@ -44,6 +44,19 @@ DEFAULT_TSV = REPO / "data" / "assert-verdicts.tsv"
 
 VERDICT_WAIVE = "RUNTIME-WAIVE"   # the ONLY waivable verdict, exact match
 
+# FORMAT-ROOT DENY-LIST (integrator, 2026-11-26): byte-true record roots and format
+# structs that must NEVER be waived even if the verdict TSV labels them RW — the TSV is
+# machine-merged and can carry inverted labels (found: CharacterFile/GuildCardSaveData/
+# SystemSaveData mislabeled RUNTIME-WAIVE by lane I's string-match, committing waived=1
+# into the live build). Source of truth: FORMAT-KEEP tables in docs/p1-format-saves.md
+# (card images) and docs/p1-format-net-disc.md (wire/disc images). Names are exact types.
+DENY_FORMAT_ROOTS = {
+    "CardSaveHeader", "CharacterFile", "CharacterFileSlot", "CharacterSaveRecord",
+    "GuildCardSaveData", "SystemSaveData", "SymbolChatPreset", "TItemData",
+    "NetworkInfoConfig", "GslArchiveEntry", "GvmTextureHeader", "GvrTextureChunk",
+    "MfciFileEntry",
+}
+
 # LAYOUT_ASSERT(<name>, <cond>)  — direct call sites (not the #define itself)
 SITE_RE = re.compile(
     r"LAYOUT_ASSERT\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,(.*)$", re.S)
@@ -128,7 +141,7 @@ def read_verdicts(tsv: Path):
     """Return (waived_types, conflicts) or None when the TSV is absent."""
     if not tsv.is_file():
         return None
-    waived, keepers, conflicts = set(), set(), set()
+    waived, keepers, conflicts, rw_seen = set(), set(), set(), set()
     seen_types = {}
     with tsv.open(encoding="utf-8") as fh:
         header = fh.readline().rstrip("\n").split("\t")
@@ -152,6 +165,7 @@ def read_verdicts(tsv: Path):
                 keepers.add(typ)
                 continue
             if "RUNTIME-WAIVE" in verdict:
+                rw_seen.add(typ)
                 if typ in keepers or "FORMAT-KEEP" in seen_types.get(typ, verdict):
                     conflicts.add(typ)
                 seen_types.setdefault(typ, verdict)
@@ -159,7 +173,12 @@ def read_verdicts(tsv: Path):
                     conflicts.add(typ)
                 else:
                     waived.add(typ)
-    waived -= keepers | conflicts
+    waived -= keepers | conflicts | DENY_FORMAT_ROOTS
+    leaked = rw_seen & DENY_FORMAT_ROOTS
+    if leaked:
+        print("gen_waivers: WARNING — TSV carried RUNTIME-WAIVE labels on FORMAT "
+              f"roots {sorted(leaked)}; deny-list overrode. Fix the labels upstream.",
+              file=sys.stderr)
     return waived, conflicts
 
 
