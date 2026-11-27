@@ -97,3 +97,13 @@ row-count regression anywhere.
 from repo docs by python), `sweep.log` (broken run 1, kept), `sweep2.log` +
 `{H0,A6E,A7,A7N}/{pass,fail,err}/`. Waiver pin read-only; decomp untouched; repo
 writes = this doc only.
+
+
+---
+**ERRATUM (integrator, apply-9, 2026-11-27 — RC2 docs/p2-rc2-recensus.md §4):**
+the certified A7N column was zero-REBIND, not zero-njs (rc_probe.sh case gap:
+RB set only for A7|A6E). A7N=192 = H0 167 + 25 musyx rows. Wave-3 §2's FLIP
+predicate therefore proved the rebind regime load-bearing, NOT the -Icompat/njs
+flag in isolation. The 808/808 ADOPT-NOW conclusion itself STANDS — re-proven
+by RC2 against a corrected A8N shape. Ledger math from this doc onward keys
+the corrected H0=167/A8N definitions (fleet/receipts/apply7-rc/H0-CONTROL.md).
