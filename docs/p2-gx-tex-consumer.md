@@ -85,11 +85,11 @@ Caller shape: `load_sin_board_image` (`src/pso/object/TObjSinBoard.cpp:111-121`)
   GX sees it (AU: "must be stamped ... before GX sees it"); once the texlist
   binds, `NJS_TEXNAME.texattr` and table pointers travel as u32 handles only.
 
-## 2. BINDING map — format9 PAL8 → MTLTexture (PAL8 label DISPUTED for fmt-9 records — issue #8: is_palette_texture_format{8,9,10} ⇒ CI14 class; the 1 B/texel SIZE class below is era-table-proven and unaffected)
+## 2. BINDING map — format9 PAL8 → MTLTexture (fmt-9 label RESOLVED by era .s witness = GX_TF_C8/CI8, docs/p2-oracle-1.md; the defect was FLAT-vs-TI-8x4 texel addressing, not the palette label)
 
 1. **bpp truth**: `GXGetTexBufferSize` groups format `case 0x9` with `GX_TF_I8`
    in the 1-byte/texel class (decomp `libs/dolphin/src/gx/GXTexture.c:63-76`;
-   enum base `libs/dolphin/include/dolphin/gx/GXEnum.h:143-151`). ⇒ PAL8 (label DISPUTED — issue #8) =
+   enum base `libs/dolphin/include/dolphin/gx/GXEnum.h:143-151`). ⇒ PAL8/CI8 (label CONFIRMED by era GXGetTexBufferSize disassembly — addressing was the defect, issue #8) =
    1 B/texel, `size = w*h = 1024` — AN-4's "re-derive from real header fn" is
    now satisfied with evidence, no assumption left.
 2. **Rung-5 binding (CHOSEN): CPU CLUT-expand → RGBA8**, feeding the proven AQ

@@ -181,7 +181,7 @@ directory count; no skip-chunks present in any logo/sinbd/title archive —
 | GVRT[00] | f256_license | 0x50 | 0x8010 | fmt=0x0000000E | 256x256 | E57EA677B8F61B92 |
 
 
-### f256_hyouji.prs — 13 GVRT: 9 PAL8-labeled (fmt 0x00000A09; PAL8 label DISPUTED for fmt 9 — issue #8; byte-true supply unaffected) + 4 C4 (0x00000A08); GVRT[00] == landed sinbd.gvr byte-true
+### f256_hyouji.prs — 13 GVRT: 9 PAL8-labeled (fmt 0x00000A09; PAL8 label CONFIRMED for fmt 9 (era .s: GX_TF_C8, docs/p2-oracle-1.md); issue #8 defect = flat-vs-TI-8x4 addressing) + 4 C4 (0x00000A08); GVRT[00] == landed sinbd.gvr byte-true
 
 | record | name | in-archive offset | size | fmt word | dims | fnv1a64 (GVRT chunk) |
 |---|---|---|---|---|---|---|

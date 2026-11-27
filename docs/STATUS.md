@@ -33,7 +33,7 @@ fail-loud generators (`AGENTS.md` §2); host code supplies seams only.
 
 | rung | what runs natively | green receipt |
 |---|---|---|
-| 1–2 | crt0/arena init, PRS decode of a synthetic archive entry | `host/bringup/run.sh` (156/156, `docs/p2-ladder7-1.md:69`); `docs/p2-bringup-1.md`..`p2-bringup-3.md` |
+| 1–2 | crt0/arena init, PRS decode of a synthetic archive entry | `host/bringup/run.sh` (219/219, `docs/p2-ladder7-play3.md`); `docs/p2-bringup-1.md`..`p2-bringup-3.md` |
 | 3 | GSL archive table walk (era `find_gsl_entry` verbatim) | same run.sh; `docs/p2-tex-supply.md` |
 | 4 | GVRT/GVPL texture supply: synthetic 32×32 PAL8 GVR walked by the era chunk finder | same run.sh; `docs/p2-tex-supply.md`, commit-era note in `docs/p2-public-audit-1.md` §1c |
 | 5 | texture consumer chain (Ginja table → upload doorstep) | same run.sh; `docs/p2-gx-tex-consumer.md` |

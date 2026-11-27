@@ -24,7 +24,7 @@ side twin). Format established read-only, empirically:
   ("logo_e")` names), `sega_logo(_e).prs`, `st_logo.prs`, `f256_ad_pic(_2).prs`,
   `f256_backtext.prs` (I4), and the PAL8 family `f256_hyouji(.small).prs`
   (GVMH, 13 records, desc format word 0x0A09 → era u8 format 9, 256x256
-  PAL8 label — fmt-9 palette semantics DISPUTED, era predicate is_palette_texture_format{8,9,10} ⇒ CI14 class, issue #8) with SEPARATE palette records `f256_hyouji_a/b/c.gvp` (raw `GVPL`
+  PAL8 label — fmt-9 CONFIRMED GX_TF_C8 by era .s witness (docs/p2-oracle-1.md); issue #8 defect = flat-vs-TI-8x4 addressing) with SEPARATE palette records `f256_hyouji_a/b/c.gvp` (raw `GVPL`
   chunks, C16, 256 entries) — exactly the era regime TWindowBase.cpp:873-885
   shows (`TLanguage::load_palette_tlut(<.gvp>)` + `load_disc_prs_texture`).
 
@@ -35,7 +35,7 @@ decoded with the TLanguage `read_file_header` working-value rules) → slice
 record 0 byte-true (0x10010 B):
 
 - `host/bringup/local_assets/sinbd.gvr` — 65552 B, fnv1a64
-  `0x580CC3F5451A3EDC`, GVRT fmt 0x0A09 (u8 9, labeled PAL8 — label DISPUTED per issue #8: fmt 9 = CI14 class under is_palette_texture_format{8,9,10}; decode-oracle in flight), 256x256.
+  `0x580CC3F5451A3EDC`, GVRT fmt 0x0A09 (u8 9, labeled PAL8 — label CONFIRMED (era GXEnum/GXGetTexBufferSize disassembly; oracle in docs/p2-oracle-1.md; issue #8 root cause = flat-vs-tiled addressing), 256x256.
 - `host/bringup/local_assets/hyouji_a.gvp` — 528 B, fnv1a64
   `0x7818A36ACF96C1EB`, sha256[:8] `d22b6dc6`, magic `GVPL`, format 2 (C16
   TLUT), entry_count 256.
@@ -54,7 +54,7 @@ cell-exactly samplable through a 320x240 quad; the fixture keeps its
 original 320x240/32 grid byte-identically) declared in-file.
 
 Genuine run `GX_LOGO_GVR=…sinbd.gvr GX_LOGO_GVP=…hyouji_a.gvp
-build/gxdl/bin/gx_logo` — exit 0, 12/12 PASS (all gates below are self-consistency proofs; genuine-record DECODE semantics DISPUTED — issue #8):
+build/gxdl/bin/gx_logo` — exit 0, 12/12 PASS (all gates below are self-consistency proofs; genuine render defect root-caused to flat-vs-TI-8x4 addressing — issue #8, docs/p2-oracle-1.md):
 
 - L7-W1 era consumer bound the GENUINE surface `{id 0xFFFFFFFF, fmt 9,
   256x256, pixels heap}` through the era walk at genuine dims.
