@@ -1268,3 +1268,14 @@ compat/njs additions from this wave.)
 nc_tables.py (classification -> rows.json, set_rescue.txt/set_fp/set_njs),
 delta.json. Repo writes: compat/njs/pso/map/FloorPopulation.h + this doc only.
 
+Inertness receipt (corrected post-commit audit, same-turn disk read): no file
+outside `compat/njs/**` and `docs/**` referenced this shadow at write time;
+meantime the integrator landed their OWN untracked `build/njs_allowlist.txt`
+(stage-1 trio live, stage-2 BmlResource/TCMCharacter/TChCrLoadReq rows held
+commented pending exactly this lane's receipts) + the AV §4 PARSE_RECIPE edit
+in the uncommitted `build/Makefile` diff. `grep -rl pso/map/FloorPopulation
+compat/` outside compat/njs = 0. My §4 block dedupes against their commented
+stage-2 rows: BmlResource + TCMCharacter upgrade from commented -> live
+(probe-safe), TChCrLoadReq stays commented (8-error loud cluster, §3#6).
+
+
