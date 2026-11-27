@@ -116,3 +116,18 @@ cites issue #8 or a line that does.
 ## 6. Repro
 `cache/scratch/doct/{sweep.py,CONTROL.md,editable.tsv,sweep-pre.txt,sweep-post.txt,apply_edits.py}`.
 Runner: `python3 sweep.py CONTROL.md` (asserts control fires all 7 categories before corpus scan).
+
+## 7. POSTSCRIPT — sibling-event reconciliation (same wave, minutes after this sweep)
+
+`6ac9f40` (lane ORCL, 13:02:08 — two minutes before correction commit `7be93ab`) landed
+`docs/p2-oracle-1.md`: era witness `GXGetTexBufferSize` + caller leg pins **fmt 9 =
+`GX_TF_C8` (CI8, 1 B/px)** and states the CI14 mapping of issue #8 is **refuted by its own
+decisive witness — "the BB PAL8 label stands"**, with vision-read coherence on the C8-tiled
+decode. Human-oracle gate is STILL PENDING (labeled board), so every DISPUTED marker this
+commit applied remains correctly non-committal on decode truth — but the specific parenthetical
+"⇒ CI14 class" I carried (prescribed by the card + issue #8 wording) is now the *losing* side
+of the argument in `v-wave3:27`, `v-wave3:38`, `gx-tex-consumer:88`. Disposition: left as-is
+per lane law (they cite issue #8 honestly; ORCL owns the supersede once the human gate closes;
+DOCT does not edit another lane's verdict and issues were already told to integrator in §3).
+Also ORCL convicts the manifest "I4" label for sega_e frames (0xE = CMPR) — a second
+format-label item §3 flagged as ambiguous (`v-wave3:24`) is now live-lane-owned, untouched here.
