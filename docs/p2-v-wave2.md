@@ -55,7 +55,7 @@ all `c6b514035f39b633…`, zero regen, no `make parse`). R2 honored: no scalar
 ## S3 — V4 gate rerun under era supply (era regime = default)
 
 `sh host/gx/run_window.sh` exit 0, both phases + both regimes:
-- L7-P1 cell-center readback EXACT vs CLUT-expanded surface (32x32 at the
+- L7-P1 cell-center readback EXACT vs CLUT-expanded surface — self-consistency gate vs own expanded surface (32x32 at the
   era-header dims, ±0) — era regime AND av1 regime.
 - L7-P2 region-nonzero 76800/76800 of the 320x240 logo rect.
 - L7-P3 readback fnv1a64 `0x88A8EF94CB09FCD0` == runtime reference

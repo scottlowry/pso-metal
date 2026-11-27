@@ -57,7 +57,7 @@ File layer used by all of S10-S12: `load_disc_file` (src/pso/unk/TLobby_800F8AA8
 
 ## 4. Minimum viable boot cut (black window + logo, fastest)
 
-Smallest ladder that should show the SEGA logo animation:
+Smallest ladder that should show the SEGA logo animation [2026-11-27 ledger note: PLAN, not achieved capability — rung-6 runs the FIXTURE path; genuine-record SEGA/logo decode DISPUTED (issue #8; docs/STATUS.md §2 rung 6)]:
 
 1. Host crt0 → allocate one arena, zero bss, `main()` equivalent.
 2. Mini-OSInit: heap create, timers, (no exceptions/threads/SI).

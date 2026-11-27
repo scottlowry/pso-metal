@@ -9,8 +9,8 @@ tree — the tree is only read (plus its sources compiled).
 ```sh
 make -C build parse          # syntax-only pass over every unit; prints TOTAL/FAIL/PASS
 make -C build list-fail      # same, then writes build/parse_fail.txt
-python3 tools/parse_gate.py  # regression gate: FAILs if arm64_32 PASS < 1601 (apply-6 floor; history 669->1416->1578->1576->1601)
-make -C build parse-lp64     # TRUE LP64 leg (rebind+pin+net/repin+flags+musyx, docs/p2-stitch-apply5/6.md): 162 -> 261 -> 350 PASS; not floor-gated
+python3 tools/parse_gate.py  # regression gate: FAILs if arm64_32 PASS < 1605 (apply-7 floor; history 669->1416->1578->1576->1601->1605; disk gate tools/parse_gate.py:34)
+make -C build parse-lp64     # TRUE LP64 leg (rebind+pin+net/repin+flags+musyx, docs/p2-stitch-apply5/6/7/8.md): 162 -> 261 -> 350 -> 1,163 -> 1,167 PASS (apply-8 official, docs/p2-stitch-apply8.md:24); not floor-gated
 make -C build smoke-link     # proves the real LP64 link toolchain compiles+links+execs
 make -C build clean
 ```
@@ -31,7 +31,7 @@ make -C build parse DECOMP_ROOT=/path/to/pso-decomp
 | `Makefile` | parse driver; variables `DECOMP_ROOT`, `PARSE_TARGET`, `LINK_TARGET`, `JOBS` |
 | `units.txt` | generated unit list (`find src -name '*.cpp' -o -name '*.c'`, sorted, relative to `DECOMP_ROOT`) |
 | `gen_waivers.py` | fail-closed waiver generator (reads `../data/assert-verdicts.tsv`) |
-| `waivers/pso_assert_waivers.h` | generated force-include header; ACTIVE today — 103 RUNTIME-WAIVE asserts neutralized, all other verdicts keep their asserts |
+| `waivers/pso_assert_waivers.h` | generated force-include header; ACTIVE today — 2,946 of 3,333 LAYOUT_ASSERTs neutralized over 1,549 RUNTIME-WAIVE types (disk `build/waivers/waiver-status.txt`; era `docs/p2-stitch-apply7.md:51`; pin d4382fcd0659357f), all other verdicts keep their asserts |
 | `parse/` | per-run artifacts: `fail.txt`, `summary.txt`, `err/<unit>.err` (gitignored) |
 | `parse_fail.txt` | `list-fail` output (gitignored) |
 | `smoke/host_smoke.c` | link-target proof program |

@@ -134,7 +134,7 @@ Landed (`host/gx/dl/gx_logo_clut.h` + `GX_DL_TEXN` fragment variant in
   `run_dl.sh` re-run post-edit GREEN frames=30 vtxdesc=30 dl_calls=15
   tris=60 samples_ok=210 verify_failures=0 (the pre-state gate verbatim).
 
-## V4 — LOGO VISIBLE (rung-4 frame attempt: LANDED)
+## V4 — LOGO VISIBLE (rung-4 frame attempt: LANDED — fixture-path chain executing + supply byte-verified; every readback gate below is a SELF-CONSISTENCY proof, not decode ground truth — issue #8)
 
 Landed: `host/gx/dl/{gen_ladder6_logo.py, ladder6_logo_prelude.h,
 ladder6_gx_prelude.h, gx_logo_driver.cpp}` + `gx_dl.mk logo` target +
@@ -160,7 +160,7 @@ replay.
 
 Acceptance (all via `sh host/gx/run_window.sh`, exit 0):
 - L7-P1: 32x32 texel cell centers read back == CLUT-expanded surface
-  texels, EXACT (±0).
+  texels, EXACT (±0) — vs the pipeline's own CLUT-expanded surface (self-consistency gate; issue #8).
 - L7-P2 region-nonzero: 76800/76800 pixels of the 320x240 logo rect
   non-black.
 - L7-P3 hash: logo texel region (32x32 RGBA words, drawable readback)

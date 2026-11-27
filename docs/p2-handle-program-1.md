@@ -441,7 +441,7 @@ Meaning demands: proves the seam before ANY of the 260 rows is adopted.
 1. Builder lane lands the registry + HG-1 (host/bringup owns; compat/njs/handle
    is the pasted shape).
 2. Same or next lane swaps the AR shadow's helper body to `pso_njs_handle_g2h`
-   (macro name stable); re-runs run.sh suites (bringup 128/128 + run_window +
+   (macro name stable); re-runs run.sh suites (bringup GREEN — 200/200 today per docs/STATUS.md §1, + run_window +
    run_dl + run_vi regimes stay green — V-wave acceptance baselines).
 3. Loaders land binds per §3.1 table; then RUNTIME-GATED rows become
    adoptable per window as their loader stamps + site adapter lands

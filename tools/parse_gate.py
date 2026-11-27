@@ -14,7 +14,7 @@ mechanism clears the ILP32 waiver-dup walls on 2 TUs). The floor
 decomposes as 1,578 + 25 + 2: pure legacy shape + musyx flip + WT tail.
 The collision pin + rebind + net/repin/facade/pshim + NJS shadow regime are
 LP64-only: parse-lp64 measures the adopted shape (162 -> 261 -> 350 ->
-1,163, ledger in docs/p2-stitch-apply5/6/7.md); it is not gated here.
+1,163 -> 1,167 apply-8, ledger in docs/p2-stitch-apply5/6/7/8.md); not gated here.
 
     python3 tools/parse_gate.py            # gate at 1605
     PSO_PARSE_BASELINE=700 python3 tools/parse_gate.py
