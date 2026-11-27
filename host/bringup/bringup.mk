@@ -269,6 +269,73 @@ $(BIN)/ladder4_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
 
 all: $(BIN)/ladder4_test
 
+# --- P2-AU boot ladder rung 5: texture UPLOAD composition ------------------
+# Two generated VERBATIM slice TUs (docs/p2-tex-upload.md):
+#   ladder5_tex_glue.cpp : GinjaTextureHeader.cpp:62-105 — init_ginja_texture_header
+#     (0x803DB0AC) + get_texture_buffer_size (0x803DB15C) + alloc_buffer_from_heap
+#     (0x803DB1B4), C++ (era def unit is .cpp), prelude carries the struct map +
+#     extern "C" bindings (dolphin include trees stay OFF executing TUs, D4).
+#   ladder5_gxtexture_glue.c : GXTexture.c:53-96/:98-139 — __GXGetTexTileShift +
+#     GXGetTexBufferSize (0x8038BE90, the bpp switch; jumptable_804F50A8),
+#     compiled as C11 (era unit is C; C++ would reject the u32→enum call).
+# The wrapper seam (0x803DA12C composition, deviation AU-1) is ladder5_seam.cpp.
+# WHOLE-FILE PROBES (both decomp units refused): GinjaTextureHeader.cpp pulls
+# <dolphin/gx/GXTexture.h>/<dolphin/os/OSAlloc.h> + NinjaTypes.h (stitch-pending
+# NJS pair); GXTexture.c pulls <dolphin/gx.h> (PPC reg types, CHECK_GXBEGIN HW).
+GINTH_SRC := $(DECOMP_ROOT)/src/pso/render/GinjaTextureHeader.cpp
+GXTXT_SRC := $(DECOMP_ROOT)/libs/dolphin/src/gx/GXTexture.c
+
+$(GEN)/ladder5_tex_glue.cpp: $(GINTH_SRC) $(BRINGUP)/include/ladder5_tex_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder5_tex_prelude.h"\n'; \
+	   awk '/^s32 init_ginja_texture_header\(GinjaTextureHeader/{f=1} f{print} f&&/^}$$/{if(++n==3) exit}' $(GINTH_SRC); \
+	 } > $@.body
+	@grep -qF 'header->format = (u8)format;' $@.body && \
+	 grep -qF 'if ((format & 0x100) && width != height) {' $@.body && \
+	 grep -qF 'header->size = get_texture_buffer_size(header);' $@.body && \
+	 grep -qF 'return GXGetTexBufferSize(header->width, header->height, header->format, mipmap, 100);' $@.body && \
+	 grep -qF 'void *pixels = OSAllocFromHeap(locked_cache_heap_handle, header->size);' $@.body && \
+	 grep -qF 'header->pixels = (u32 *)pixels;' $@.body || \
+	 { echo "GUARD: ladder5 tex slice body drifted — stop"; rm -f $@.body; exit 1; }
+	@grep -qF 'OSFreeToHeap' $@.body && \
+	 { echo "GUARD: ladder5 tex slice leaked free_texture_pixels — stop"; rm -f $@.body; exit 1; } || true
+	@mv $@.body $@; echo "gen: ladder5_tex_glue.cpp (GinjaTextureHeader.cpp :62-105 three fns — verbatim)"
+
+$(GEN)/ladder5_gxtexture_glue.c: $(GXTXT_SRC) $(BRINGUP)/include/ladder5_gx_defs.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder5_gx_defs.h"\n'; \
+	   awk '/^static inline void __GXGetTexTileShift\(GXTexFmt/{f=1} f{print} f&&/^}$$/{exit}' $(GXTXT_SRC); \
+	   awk '/^u32 GXGetTexBufferSize\(u16/{f=1} f{print} f&&/^}$$/{exit}' $(GXTXT_SRC); \
+	 } > $@.body
+	@grep -qF '*rowTileS = 3;' $@.body && grep -qF '*colTileS = 2;' $@.body && \
+	 grep -qF 'case 0x9:' $@.body && \
+	 grep -qF 'if (format == GX_TF_RGBA8 || format == GX_TF_Z24X8) {' $@.body && \
+	 grep -qF 'bufferSize = nx * ny * tileBytes;' $@.body && \
+	 grep -qF 'ASSERTMSGLINEV(0x1AB, width <= 1024' $@.body || \
+	 { echo "GUARD: ladder5 gxtexture slice body drifted — stop"; rm -f $@.body; exit 1; }
+	@grep -qF 'void GXInitTexObj' $@.body && \
+	 { echo "GUARD: ladder5 gxtexture slice leaked past GXGetTexBufferSize — stop"; rm -f $@.body; exit 1; } || true
+	@mv $@.body $@; echo "gen: ladder5_gxtexture_glue.c (GXTexture.c :53-96/:98-139 — verbatim)"
+
+$(GEN)/ladder5_tex_glue.o: $(GEN)/ladder5_tex_glue.cpp | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(GEN)/ladder5_gxtexture_glue.o: $(GEN)/ladder5_gxtexture_glue.c | $(OUT)
+	clang $(CFLAGS) -I$(DECOMP_ROOT)/include -c -o $@ $<
+
+$(OUT)/ladder5_seam.o: $(BRINGUP)/ladder5_seam.cpp $(BRINGUP)/include/ladder5_tex_prelude.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/ladder5_test.o: $(BRINGUP)/ladder5_test.cpp | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/ladder5_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                     $(GEN)/move_data_glue.o $(GEN)/ladder3_gsl_glue.o $(GEN)/ladder4_gvr_glue.o \
+                     $(OUT)/ladder4_supply.o \
+                     $(GEN)/ladder5_gxtexture_glue.o $(GEN)/ladder5_tex_glue.o $(OUT)/ladder5_seam.o \
+                     $(OUT)/ladder5_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/ladder5_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"

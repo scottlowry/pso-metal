@@ -33,4 +33,8 @@ echo "== P2-AN boot ladder 4: texture supply chain — era find_gvrt_texture_chu
 "$R/build/bringup/bin/ladder4_test"
 echo "ladder4_test: EXIT=0"
 echo
+echo "== P2-AU boot ladder 5: texture UPLOAD — AN pack through era init_texture_header_and_alloc∘init_ginja_texture_header∘get_texture_buffer_size(GXGetTexBufferSize bpp)∘alloc_buffer_from_heap, heap read-back hash == fixture texels =="
+"$R/build/bringup/bin/ladder5_test"
+echo "ladder5_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"
