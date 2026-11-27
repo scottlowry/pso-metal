@@ -336,6 +336,37 @@ $(BIN)/ladder5_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
 
 all: $(BIN)/ladder5_test
 
+# --- P2-BA boot ladder rung 6: TEXTURE CONSUMER (V1 adapters + V2 walk) -----
+# Generated TU = the contract §1.3 consumer chain sliced VERBATIM off the
+# read-only decomp tree + the enumerated NJS_HANDLE adapter table (generator
+# fail-louds on anchor drift and prints the edit receipt). PER-TU NJS
+# ALLOW-LIST (docs/p2-njs-repin-1.md §6): exactly the two TUs below compile
+# with -Icompat/njs FIRST (shadow NJS_TEXNAME/NJS_TEXLIST u32 slots); no .c TU
+# ever receives this flag set (AR §5). The build/Makefile parse-side request
+# (docs/p2-gx-tex-consumer.md §4) is integrator-owned and NOT applied here.
+NJS6_CXXFLAGS := -I$(REPO)/compat/njs -I$(DECOMP_ROOT)/libs/dolphin/include $(CXXFLAGS)
+L6_DEPS := $(DECOMP_ROOT)/src/pso/unk/text_803DD5E0.cpp \
+           $(DECOMP_ROOT)/src/pso/unk/text_803DA798.cpp \
+           $(DECOMP_ROOT)/src/pso/unk/text_803D96A8.cpp \
+           $(DECOMP_ROOT)/src/pso/render/GinjaTextureTable.cpp \
+           $(DECOMP_ROOT)/src/pso/render/psoLoadTexture.cpp \
+           $(DECOMP_ROOT)/src/pso/render/GinjaModelQueue.cpp \
+           $(DECOMP_ROOT)/src/pso/ui/frontend/TAdSinglePlyChrSelectGC_803DA038.cpp \
+           $(DECOMP_ROOT)/src/pso/player/TObjPlayer_8023E480.cpp \
+           $(DECOMP_ROOT)/src/pso/object/TObjSinBoard.cpp \
+           $(DECOMP_ROOT)/src/pso/render/GinjaTextureHeader.cpp
+
+$(GEN)/ladder6_tex_consumer.cpp: $(BRINGUP)/gen_ladder6_slices.py \
+        $(L6_DEPS) $(BRINGUP)/include/ladder6_tex_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@python3 $(BRINGUP)/gen_ladder6_slices.py $(DECOMP_ROOT) $@
+	@echo "gen: ladder6_tex_consumer.cpp (consumer chain — verbatim + BA-V1 adapter table; receipt above)"
+
+$(GEN)/ladder6_tex_consumer.o: $(GEN)/ladder6_tex_consumer.cpp | $(OUT)
+	clang++ $(NJS6_CXXFLAGS) -c -o $@ $<
+
+# (V2 lands the ladder6_test binary rule below this marker + run.sh line.)
+all: $(GEN)/ladder6_tex_consumer.o
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"
