@@ -41,4 +41,8 @@ echo "== P2-BA boot ladder 6: texture CONSUMER — the sinbd texlist walk resolv
 "$R/build/bringup/bin/ladder6_test"
 echo "ladder6_test: EXIT=0"
 echo
+echo "== P2-L7 boot ladder 7 (rung-5 PLAY-1): the five promoted run_frame legs EXECUTE era bodies verbatim (begin_frame TMainTask::TObject.cpp:640, poll_reset_request ControllerInput.cpp:258, process_async_file_reads AsyncFileRead.cpp:198 parse-PASS@apply-7, update_sound_request_slots SoundRequests.cpp:340 guard, is_ready TLobby_800F8AA8.cpp:1371 via LB-2 pump seam); invariants by REAL reads + flip probes, L7-R3 order unchanged =="
+"$R/build/bringup/bin/ladder7_test"
+echo "ladder7_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"

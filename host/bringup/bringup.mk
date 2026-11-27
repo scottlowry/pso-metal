@@ -376,6 +376,43 @@ $(BIN)/ladder6_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
 
 all: $(BIN)/ladder6_test
 
+# --- P2-L7 boot ladder rung 5 PLAY-1: logo main-phase legs -------------------
+# Five promoted legs slice VERBATIM off the read-only decomp (fail-loud
+# anchors, gen_ladder7_slices receipt printed by the generator): TMainTask::
+# begin_frame (TObject.cpp:640 era-empty), poll_reset_request (ControllerInput
+# .cpp:258), process_async_file_reads (AsyncFileRead.cpp:198 — home TU
+# parse-PASS @apply-7), update_sound_request_slots (SoundRequests.cpp:340
+# guard leg), TQuestVmDownLoadServer::is_ready (TLobby_800F8AA8.cpp:1371 via
+# the LB-2 pump seam) — plus the TLogo::run_frame + request_main_phase carrier
+# anchors gen_ladder6_logo.py pins gx-side. NO NJS shadow flags on these TUs
+# (no adapter edits; the era headers' assert names carry applied waivers).
+L7RF_SRC := $(TLOGO_SRC) $(SBI_SRC) $(DECOMP_ROOT)/src/pso/system/task/TObject.cpp \
+            $(DECOMP_ROOT)/src/pso/system/ControllerInput.cpp \
+            $(DECOMP_ROOT)/src/pso/system/AsyncFileRead.cpp \
+            $(DECOMP_ROOT)/src/pso/audio/SoundRequests.cpp \
+            $(DECOMP_ROOT)/src/pso/unk/TLobby_800F8AA8.cpp $(TGS_SRC)
+
+$(GEN)/ladder7_runframe_glue.cpp: $(BRINGUP)/gen_ladder7_runframe.py \
+        $(L7RF_SRC) $(BRINGUP)/include/ladder7_run_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@python3 $(BRINGUP)/gen_ladder7_runframe.py $(DECOMP_ROOT) $@
+	@echo "gen: ladder7_runframe_glue.cpp (five promoted legs + run_frame/request_main_phase — verbatim, zero edits; receipt above)"
+
+$(GEN)/ladder7_runframe_glue.o: $(GEN)/ladder7_runframe_glue.cpp | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/ladder7_seam.o: $(BRINGUP)/ladder7_seam.cpp $(BRINGUP)/include/ladder7_run_prelude.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/ladder7_test.o: $(BRINGUP)/ladder7_test.cpp $(BRINGUP)/include/ladder7_run_prelude.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/ladder7_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                     $(GEN)/move_data_glue.o \
+                     $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o $(OUT)/ladder7_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/ladder7_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"
