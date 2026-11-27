@@ -287,6 +287,7 @@ extern int g_ready_pump_calls;          /* LB-2 wait_ready_loop pump count */
  * definitions in ladder7_seam.cpp; the P5-P9 probes + I2a..e invariants REAL-read
  * these — the same objects the verbatim slices drive). ---- */
 extern int g_walk_calls;                /* TObject::run_tasks extern count */
+extern int g_walk_cnt[3];               /* per-root counts (PLAY-3 I3c: MAIN/KBD/EOR once per frame) */
 extern int g_walk_root;                 /* WALK_MAIN / WALK_KBD / WALK_EOR */
 extern u32 g_walk_flags;                /* main_task.task_flags LIVE at run_tasks() */
 extern int g_geom, g_eff, g_ptex, g_obj, g_ui, g_clip, g_info;  /* 8 counted sub-pass externs */

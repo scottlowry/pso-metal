@@ -85,6 +85,7 @@ TObject keyboard_task_object;    /* TObject.cpp:37 — same */
 
 /* ---- PLAY-2 seam state (probes P5-P9 + invariants I2a..e REAL-read these) ---- */
 int g_walk_calls;
+int g_walk_cnt[3];
 int g_walk_root;
 u32 g_walk_flags;
 int g_geom, g_eff, g_ptex, g_obj, g_ui, g_clip, g_info;
@@ -132,6 +133,7 @@ void TObject::run_tasks() {
     g_walk_root = (this == (TObject *)&main_task)  ? WALK_MAIN
               : (this == &keyboard_task_object)    ? WALK_KBD : WALK_EOR;
     g_walk_flags = main_task.task_flags;            /* capture the caller's LIVE flags */
+    g_walk_cnt[g_walk_root]++;                      /* PLAY-3 I3c per-root tally */
     l7_note(LC7_WALK_MAIN + (g_walk_root - WALK_MAIN));
     if (g_walk_root == WALK_EOR) l7_note(LC7_RT13); /* leg 13 first-inner extern (spec §2.3 note rule) */
 }
