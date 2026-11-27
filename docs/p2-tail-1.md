@@ -130,7 +130,10 @@ Ranked by (TUs × triviality): (1) routing bundle [14 TUs, flag/1-header level];
 dolphin/dvd.h` guard fix (§4). Certified expectation: 14 TUs shed their tail
 first-errors (10 D4-family, 2 hw_regs, 2 wall-behind); expect a fresh
 first-error split to §4.2 wall on gjSystem/ChunkModelDraw (hand to NC ledger).
-Zero era-TU edits; both supplies already committed and inert.
+Zero era-TU edits. Supply status: `compat/dialect/pshim/**` is committed and
+inert; `compat/facade/**` was still UNTRACKED at TL commit time (D4 seat
+mid-window) — Play 1 requires D4's ask landed (or the integrator landing it per
+D4's `-I` ask block) or the facade half of the bundle has no supply to route.
 
 **Play 2 (one build, 7 TUs):** the four network `.c` decl-conflicts as one-line
 static-def/prototypes alignment (NP listed them; `clang -fsyntax-only`
