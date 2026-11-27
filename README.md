@@ -60,7 +60,7 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 | meter | value |
 |---|---|
 | arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
-| true-LP64 parse, official adopted shape | **1,163 / 1,680 (69.2%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
+| true-LP64 parse, official adopted shape | **1,167 / 1,680 (69.5%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
 | logo | era CLUT supply chain **executing**; genuine 256×256 sinbd PAL8 + GVPL palette extracted from disc read-only (hash-only, gitignored local assets), readback-EXACT through the era chain; synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |

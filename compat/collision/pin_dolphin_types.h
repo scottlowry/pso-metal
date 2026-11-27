@@ -78,4 +78,26 @@ typedef int BOOL;
 #endif
 #endif
 
+/* va_list supply (P2-TL docs/p2-tail-2.md §2 ask, apply-8, integrator-
+ * adjudicated): era os.h:40 OSVReport needs va_list but the suppressed libc
+ * legs above removed its supplier. VERBATIM struct carry was tried and
+ * CONVICTED (this battery): two occurrences of `typedef struct {..}
+ * __va_list[1]` are DISTINCT types in C++ (anonymous-struct uniqueness) and
+ * collide with the era stdarg re-include at libc/stdarg.h:13-14 (18 TUs
+ * regressed). Supplied instead as the HOST-ABI type: clang's stdarg defines
+ * va_list identically (chained typedef, same underlying type - legal), and
+ * NO corpus TU can survive the era macros anyway (__builtin_va_info is not
+ * a clang builtin: any user was already a fail; zero corpus refs to
+ * __va_list/__va_arg/_var_arg_typeof - python-grepped). _STDARG_H_ is
+ * OCCUPIED so the era file self-skips; va_* map to clang builtins (parse
+ * passes; runtime executes host ABI, per port doctrine). */
+#ifndef _STDARG_H_
+#define _STDARG_H_
+typedef __builtin_va_list va_list;
+#define va_start(ap, fmt) __builtin_va_start(ap, fmt)
+#define va_arg(ap, t) __builtin_va_arg(ap, t)
+#define va_end(ap) __builtin_va_end(ap)
+#define va_copy(d, s) __builtin_va_copy(d, s)
+#endif
+
 #endif
