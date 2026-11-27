@@ -1,0 +1,28 @@
+symbol	kind	musyx_def_file:line	extern_C_at_def	pso_referrer_file:line	extern_C_at_ref	mangle_risk	note
+sndAuxCallbackChorus	func	src/musyx/runtime/Chorus/chorus_fx.c:123	bare	src/pso/audio/SoundControlState.cpp:979	yes	dup	ref-sees-decl decl include/musyx/musyx.h:166 EC
+sndAuxCallbackPrepareChorus	func	src/musyx/runtime/Chorus/chorus_fx.c:205	bare	src/pso/audio/SoundControlState.cpp:978	yes	dup	ref-sees-decl decl include/musyx/musyx.h:167 EC
+sndAuxCallbackPrepareReverbHI	func	src/musyx/runtime/StdReverb/reverb_fx.c:19	bare	src/pso/audio/SoundControlState.cpp:941	yes	dup	ref-sees-decl local decl SoundControlState.cpp:941 inside extern-C block@940; SIGDRIFT def void(SoundReverb*) vs ref void(void*) — dialect SoundReverb typedef (P2-T)
+sndAuxCallbackReverbHI	func	src/musyx/runtime/StdReverb/reverb_fx.c:7	bare	src/pso/audio/SoundControlState.cpp:979	yes	dup	ref-sees-decl decl include/musyx/musyx.h:165 EC
+sndFXCheck	func	src/musyx/runtime/snd_synthapi.c:55	bare	src/pso/audio/SoundRequestVoice.cpp:196	yes	dup	ref-sees-decl decl include/musyx/musyx.h:169 EC via include/pso/audio/SoundControlState.h:9
+sndFXCtrl	func	src/musyx/runtime/snd_synthapi.c:6	bare	src/pso/audio/SoundRequestVoice.cpp:97	yes	dup	ref-sees-decl local decl SoundRequestVoice.cpp:97 inside extern-C block@96; SIGDRIFT def(u32,u8,u8) vs ref s32(int,int,int) — link-safe under C linkage, arg-width UB
+sndFXCtrl14	func	src/musyx/runtime/snd_synthapi.c:14	bare	src/pso/audio/SoundRequestVoice.cpp:48	yes	dup	ref-sees-decl standalone extern-C decl SoundRequestVoice.cpp:48
+sndFXKeyOff	func	src/musyx/runtime/snd_synthapi.c:22	bare	src/pso/audio/SoundRequestVoice.cpp:98	yes	dup	ref-sees-decl local decl SoundRequestVoice.cpp:98 inside extern-C block@96
+sndFXStartParaInfo	func	src/musyx/runtime/snd_synthapi.c:30	bare	src/pso/audio/SoundRequestVoice.cpp:153	yes	dup	ref-sees-decl decl include/musyx/musyx.h:168 EC via include/pso/audio/SoundControlState.h:9
+sndInit	func	src/musyx/runtime/snd_init.c:24	bare	src/pso/audio/MusicControl.cpp:288	yes	dup	ref-sees-decl local decl MusicControl.cpp:288 inside extern-C block@286
+sndOutputMode	func	src/musyx/runtime/snd_synthapi.c:66	bare	src/pso/audio/SoundControlState.cpp:553	yes	dup	ref-sees-decl local decl inside extern-C block@552
+sndPopGroup	func	src/musyx/runtime/s_data.c:256	bare	src/pso/audio/SoundControlState.cpp:902	yes	dup	ref-sees-decl local decl inside extern-C block@901; SIGDRIFT def u32(void) vs ref s32() — empty-paren means (void) in C++
+sndPushGroup	func	src/musyx/runtime/s_data.c:212	bare	src/pso/audio/SoundControlState.cpp:741	yes	dup	ref-sees-decl local decl inside extern-C block@738
+sndSetAuxProcessingCallbacks	func	src/musyx/runtime/snd_synthapi.c:95	bare	src/pso/audio/SoundControlState.cpp:979	yes	dup	ref-sees-decl decl include/musyx/musyx.h:163 EC (direct include)
+sndSetHooks	func	src/musyx/runtime/hardware.c:430	bare	src/pso/audio/MusicControl.cpp:589	yes	dup	ref-sees-decl decl include/musyx/musyx.h:162 EC (direct include)
+sndStreamARAMUpdate	func	src/musyx/runtime/stream.c:285	bare	src/pso/audio/GcrnaStreamControl.cpp:124	yes	dup	ref-sees-decl local decl inside extern-C block@123
+sndStreamActivate	func	src/musyx/runtime/stream.c:630	bare	src/pso/audio/GcrnaStream.cpp:67	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:10 EC
+sndStreamAllocEx	func	src/musyx/runtime/stream.c:397	bare	src/pso/audio/GcrnaStream.cpp:362	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:14 EC
+sndStreamDeactivate	func	src/musyx/runtime/stream.c:677	bare	src/pso/audio/GcrnaStream.cpp:86	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:11 EC
+sndStreamFree	func	src/musyx/runtime/stream.c:611	bare	src/pso/audio/GcrnaStream.cpp:168	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:12 EC
+sndStreamFrq	func	src/musyx/runtime/stream.c:574	bare	src/pso/audio/GcrnaStream.cpp:207	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:13 EC; also GcrnaStreamControl.cpp:108
+sndStreamMixParameter	func	src/musyx/runtime/stream.c:499	bare	src/pso/audio/SoundControlState.cpp:516	yes	dup	ref-sees-decl local decl inside extern-C block@515
+sndStreamMixParameterEx	func	src/musyx/runtime/stream.c:535	bare	src/pso/audio/GcrnaStream.cpp:60	yes	dup	ref-sees-decl decl include/pso/audio/GcrnaMusyxStream.h:9 EC; also GcrnaStreamControl.cpp:71
+sndVolume	func	src/musyx/runtime/snd_synthapi.c:60	bare	src/pso/audio/SoundControlState.cpp:1073	yes	dup	ref-sees-decl local decl inside extern-C block@1072; SIGDRIFT def void(u8,u16,u8) vs ref s32(s32,s32,s32) — link-safe, return-type lie
+dspAttenuationTab	data	src/musyx/runtime/synth_dbtab.c:5	no	NONE(pso)	n/a	none	musyx-internal only; ref src/musyx/runtime/synth_adsr.c:90 (via musyx_internal.h:517 EC); Itanium leaves file-scope data UNMANGLED so C++-mode def still emits _dspAttenuationTab (probe P2) — safe by ABI property, not by guarding; u16[194]
+dspDLSVolTab	data	src/musyx/runtime/synth_dbtab.c:96	no	NONE(pso)	n/a	none	musyx-internal only; ref src/musyx/runtime/synthmacros.c:333 (via musyx_internal.h:419 EC); Itanium leaves file-scope data UNMANGLED so C++-mode def still emits _dspDLSVolTab (probe P2) — safe by ABI property, not by guarding; f32[129]
+dspScale2IndexTab	data	src/musyx/runtime/synth_dbtab.c:27	no	NONE(pso)	n/a	none	musyx-internal only; ref src/musyx/runtime/synth_adsr.c:127 (via musyx_internal.h:418 EC); Itanium leaves file-scope data UNMANGLED so C++-mode def still emits _dspScale2IndexTab (probe P2) — safe by ABI property, not by guarding; u8[1024]
