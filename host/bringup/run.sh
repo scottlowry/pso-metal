@@ -25,4 +25,8 @@ echo "== P2-Y boot ladder: era PRS wrappers (TScreenFadeController) + era heap (
 "$R/build/bringup/bin/ladder_test"
 echo "ladder_test: EXIT=0"
 echo
+echo "== P2-AE boot ladder 3: resource_decompress_buffer era-caller chain + GSL config table off fake_disc + TLogo state machine to 7 =="
+"$R/build/bringup/bin/ladder3_test"
+echo "ladder3_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"

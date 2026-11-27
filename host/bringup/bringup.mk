@@ -163,6 +163,71 @@ $(BIN)/ladder_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(
                     $(OUT)/memory.o $(OUT)/ladder_test.o | $(BIN)
 	clang++ -target $(LINK_TARGET) -o $@ $^
 
+# --- P2-AE boot ladder rung 3 ---------------------------------------------
+# Three generated VERBATIM slice TUs (same guard style as the P2-Y glues):
+#   logo : TLogo.cpp predicates (:57-63) + ctor/dtor/run_task/render
+#          (:126-199) + SystemBootInit.cpp request_main_phase/
+#          reset_main_phase_state
+#   quest: QuestOpcodeHandlers.cpp qst_op_call_image_data (:2278-2286)
+#   gsl  : TGStream.cpp find_gsl_entry (:207-219)
+# Prelude headers in include/ carry every external the slices reference,
+# each with its era .s citation (docs/p2-bringup-3.md owns the deviation
+# roster DA-1..DA-5).
+TLOGO_SRC := $(DECOMP_ROOT)/src/pso/ui/TLogo.cpp
+SBI_SRC   := $(DECOMP_ROOT)/src/pso/ui/keyboard/SystemBootInit.cpp
+QUEST_SRC := $(DECOMP_ROOT)/src/pso/quest/QuestOpcodeHandlers.cpp
+TGS_SRC   := $(DECOMP_ROOT)/src/pso/system/TGStream.cpp
+
+# awk block: from the exact sig line through the first column-0 '}'.
+# guard() = block non-empty AND the two/three era body lines we hand-traced
+# from the .s are present AND nothing beyond the anchor leaked in.
+$(GEN)/ladder3_logo_glue.cpp: $(TLOGO_SRC) $(SBI_SRC) $(BRINGUP)/include/ladder3_logo_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder3_logo_prelude.h"\n'; \
+	   awk '/^int is_logo_clear_flag_set\(void\)/{f=1} /^void TLogo::init_logo_scene/{f=0} f' $(TLOGO_SRC); \
+	   awk '/^TLogo::TLogo\(TObject \*parent\)/{f=1} /^s32 CursorAction::get/{f=0} f' $(TLOGO_SRC); \
+	   awk '/^void request_main_phase\(s32 phase\) \{/{f=1} f{print} f&&/^\}$$/{exit}' $(SBI_SRC); \
+	   awk '/^void reset_main_phase_state\(void\) \{/{f=1} f{print} f&&/^\}$$/{exit}' $(SBI_SRC); \
+	 } > $@.body
+	@for s in 'is_vi_config_answered' 'is_sega_logo_done' 'is_logo_exit_requested' 'is_adx_logo_done' \
+	          'switch (state)' 'request_main_phase(0xA)' 'void TLogo::render() {}' \
+	          'main_phase_state.next = phase'; do \
+	   grep -qF "$$s" $@.body || { echo "GUARD: ladder3 logo slice missing '$$s' — stop"; rm -f $@.body; exit 1; }; \
+	 done; \
+	 grep -qF 'init_logo_scene' $@.body && { echo "GUARD: ladder3 logo slice leaked past anchor — stop"; rm -f $@.body; exit 1; } || true
+	@mv $@.body $@; echo "gen: ladder3_logo_glue.cpp (TLogo predicates+machine, request/reset_main_phase — verbatim)"
+
+$(GEN)/ladder3_quest_glue.cpp: $(QUEST_SRC) $(BRINGUP)/include/ladder3_quest_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder3_quest_prelude.h"\n'; \
+	   awk '/^void qst_op_call_image_data\(\) \{/{f=1} f{print} f&&/^\}$$/{exit}' $(QUEST_SRC); \
+	 } > $@.body
+	@grep -qF 'prs_decompress_buffer(source_data, resource_decompress_buffer);' $@.body && \
+	 grep -qF 'load_sin_board_image(resource_decompress_buffer, size);' $@.body || \
+	 { echo "GUARD: ladder3 quest slice body drifted — stop"; rm -f $@.body; exit 1; }
+	@mv $@.body $@; echo "gen: ladder3_quest_glue.cpp (qst_op_call_image_data — verbatim)"
+
+$(GEN)/ladder3_gsl_glue.cpp: $(TGS_SRC) $(BRINGUP)/include/ladder3_gsl_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder3_gsl_prelude.h"\n'; \
+	   awk '/^GslArchiveEntry \*find_gsl_entry\(const char \*name, s32 unused\) \{/{f=1} f{print} f&&/^\}$$/{exit}' $(TGS_SRC); \
+	 } > $@.body
+	@grep -qF 'strcmp(e->name, name)' $@.body && grep -qF 'gsl_adxf_handle == 0' $@.body || \
+	 { echo "GUARD: ladder3 gsl slice body drifted — stop"; rm -f $@.body; exit 1; }
+	@mv $@.body $@; echo "gen: ladder3_gsl_glue.cpp (find_gsl_entry — verbatim)"
+
+$(GEN)/ladder3_logo_glue.o $(GEN)/ladder3_quest_glue.o $(GEN)/ladder3_gsl_glue.o: $(GEN)/%.o: $(GEN)/%.cpp $(BRINGUP)/include/ladder3_harness.h $(BRINGUP)/include/ladder3_logo_prelude.h $(BRINGUP)/include/ladder3_quest_prelude.h $(BRINGUP)/include/ladder3_gsl_prelude.h | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/ladder3_test.o: $(BRINGUP)/ladder3_test.cpp $(BRINGUP)/include/ladder3_harness.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/ladder3_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                     $(GEN)/prs_glue.o $(OUT)/prs_support.o $(GEN)/prs_fade_glue.o $(GEN)/move_data_glue.o \
+                     $(OUT)/memory.o \
+                     $(GEN)/ladder3_logo_glue.o $(GEN)/ladder3_quest_glue.o $(GEN)/ladder3_gsl_glue.o \
+                     $(OUT)/ladder3_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/ladder3_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"
