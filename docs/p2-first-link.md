@@ -6,9 +6,12 @@ Dep-tree inputs: `docs/p2-link-deps.md` + `data/link-deps.tsv` (P2-U),
 boot recipes `host/bringup/bringup.mk` (P2-Q/Y), decomp @ `6b38b5383` READ-ONLY.
 Everything this lane wrote lives under `host/link/**` (+ this doc). No file under
 `host/bringup/`, `host/gx/`, `build/`, or `tools/` was touched; objects were
-rebuilt into `host/link/obj/` scratch, never `build/bringup/`. `tools/link_hygiene.sh`
-does not exist yet (AF lane never landed) — the nm checks were inlined into
-`host/link/link.mk` as the `gate`/`run` targets instead.
+rebuilt into `host/link/obj/` scratch, never `build/bringup/`. AF's
+`tools/link_hygiene.sh` had not landed when this lane's inventory ran (the
+17:24 transcript confirms); it committed at `3354fb0` during this lane's
+execution but is musyx-golden-scoped, so the nm link-closure checks here stay
+inlined in `host/link/link.mk` as the `gate`/`run` targets (reconciling the two
+gates is AF's call).
 
 ## Verdict
 
