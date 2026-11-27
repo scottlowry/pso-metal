@@ -64,7 +64,7 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
 | logo | era CLUT supply chain **executing**; genuine 256×256 sinbd PAL8 + GVPL palette extracted from disc read-only (hash-only, gitignored local assets), readback-EXACT through the era chain; synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
-| suites | bring-up **156/156** (ladders 1–7: prior 128 + frame-loop 28) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 — measured `docs/p2-ladder7-1.md`, `docs/p2-stitch-apply7.md` |
+| suites | bring-up **185/185** (ladders 1–7 + HG-1 handle golden 29) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 — measured `docs/p2-hg1-1.md`, `docs/p2-stitch-apply7.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
 | residual classes (measured, owned) | apply-8 LP64 FAIL=513, first-error partition: NJS wall 485 · FloorPop 9 · musyx 2 named · named tail 17 (`docs/p2-stitch-apply8.md` §Battery, `docs/p2-tail-2.md` §1); inert supply authored: adapter-queue 169 rows/673 sites batch-1 top-30 (`docs/p2-adapter-queue-1.md` §0-1), runtime-gated handle rows 258 (`docs/p2-apply7-recensus.md` §3) · packets/PppFrame/MWCC-asm/musyx-main all landed |
 
