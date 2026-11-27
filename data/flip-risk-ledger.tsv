@@ -1,0 +1,72 @@
+type|ask|evidence file:line|verdict-sustain
+CharacterFileSlot|AK-yes-promotion|docs/p1-format-saves.md:64;include/pso/system/save/CharacterFile.h:43|LOCKED
+Pso3CharacterFileSlot|AK-yes-promotion|docs/p1-format-saves.md:64;include/pso/ui/frontend/TAdSinglePlyChrSelectGC_80202A68.h:47;:80-82|LOCKED
+Pso3CharacterFile|AK-yes-promotion|docs/p1-format-saves.md:64;include/pso/ui/frontend/TAdSinglePlyChrSelectGC_80202A68.h:65-66;:72;:77;:82|LOCKED
+gsl_archive_entries|AK-yes-promotion|docs/p1-format-net-disc.md:112;src/pso/system/TGStream.cpp:244;src/pso/system/TGStream.cpp:98|LOCKED
+TPlyJoinData|AK-yes-promotion|docs/p1-format-net-disc.md:42;include/pso/network/protocol/packet_classes.h:536;:541;:542;:543;:550|LOCKED
+G_SendGuildCard_6x06|AK-yes-promotion|docs/p1-format-net-disc.md:14;:31-32;include/pso/network/protocol/SendGuildCardPacket.h:11;:12;:16;:19|LOCKED
+OnlineQuestMenu|AK-yes-promotion|docs/p1-format-net-disc.md:42;include/pso/ui/TMenuList.h:36;include/pso/quest/OnlineQuestMenuRecords.h:8-10|LOCKED
+DhcpMessage|leave|NO-PROMOTION: NetDhcp.h absent from H §1.2/§1.3 rows; pin=embeds law docs/p1-format-net-disc.md:76;include/pso/network/NetDhcp.h:36 (BootpPacket keeper data/verdict-resolutions-4.tsv)|LOCKED
+EndingWallTextureSet|leave|NO-PROMOTION: not in G/H; docs/p1-format-net-disc.md:123 assigns Ninja runtime WAIVE;include/pso/system/scene/TEndingABTypes.h:7-8 embeds NJS_TEXNAME/TEXLIST (verdict-resolutions-3.tsv OVERLAY-CAST src/pso/system/BmlResource.cpp:427)|LOCKED
+FloorEventSet|leave|NEEDS: docs/p1-format-net-disc.md:166 (overlay-not-pinned) vs include/pso/map/TSetEvtDestroy.h:25 embeds SetDestroyEventRecord; missing=floor_event_sets fill site src/pso/map/AreaEventSet.cpp load path (bulk .evt DMA vs typed build)|needs-decision
+NetBufferPoolEntry|wire-membership|include/pso/network/NetIpv6Route.h:39 absent §1.2 set;§1.3 WAIVE docs/p1-format-net-disc.md:77 (NetRuntime tables)|flip-to-RW
+Ipv6NdNeighbor|wire-membership|include/pso/network/NetIpv6Route.h:70 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdPending|wire-membership|include/pso/network/NetIpv6Route.h:59 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdRouter|wire-membership|include/pso/network/NetIpv6Route.h:87 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdState|wire-membership|include/pso/network/NetIpv6Route.h:100 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+LoopbackState|wire-membership|include/pso/network/NetIpv6Route.h:22 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+NetFragPacket|wire-membership|include/pso/network/NetIpv6Route.h:138 absent §1.2 set;docs/p1-format-net-disc.md:77 (reassembly ledger; IPv4Header itself already yes)|flip-to-RW
+NetFragPool|wire-membership|include/pso/network/NetIpv6Route.h:155 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+NetFragment|wire-membership|include/pso/network/NetIpv6Route.h:127 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+ParsedTcpHeader|wire-membership|include/pso/network/PppVj.h:31 absent §1.2 set;docs/p1-format-net-disc.md:104-105 PppVj byte-serial; parsed cache|flip-to-RW
+PppPapAuthenticationState|wire-membership|include/pso/network/Ppp.h:17 absent §1.2 set;docs/p1-format-net-disc.md:105 byte-serial PAP|flip-to-RW
+PppVjCompressionState|wire-membership|include/pso/network/PppVj.h:63 absent §1.2 set;docs/p1-format-net-disc.md:104-105|flip-to-RW
+PppVjConnectionState|wire-membership|include/pso/network/PppVj.h:53 absent §1.2 set;docs/p1-format-net-disc.md:104-105|flip-to-RW
+ModemConfig|wire-membership|include/pso/network/ModemSession.h:63 absent §1.2 set;docs/p1-format-net-disc.md:78 (ModemRuntime/ModemSession WAIVE)|flip-to-RW
+ModemRequest|wire-membership|include/pso/network/ModemSession.h:51 absent §1.2 set;docs/p1-format-net-disc.md:78|flip-to-RW
+NetProtocolHandlerEntry|wire-membership|include/pso/network/NetworkDispatch.h:12 absent §1.2 set;docs/p1-format-net-disc.md:77 (dispatch runtime)|flip-to-RW
+NetProtocolMessage|wire-membership|include/pso/network/NetworkDispatch.h:55 absent §1.2 set;docs/p1-format-net-disc.md:77; absent §1.2 file set|flip-to-RW
+NetTimerRecord|wire-membership|include/pso/network/NetworkDispatch.h:18 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+NetworkDispatchState|wire-membership|include/pso/network/NetworkDispatch.h:27 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+TcpSeqRange|wire-membership|include/pso/network/NetTcpState.h:25 absent §1.2 set;docs/p1-format-net-disc.md:77 named-WAIVE|flip-to-RW
+TcpState|wire-membership|include/pso/network/NetTcpState.h:163 absent §1.2 set;docs/p1-format-net-disc.md:79 pure in-process state machine|flip-to-RW
+TcpWait|wire-membership|include/pso/network/NetTcpState.h:44 absent §1.2 set;docs/p1-format-net-disc.md:77 named-WAIVE|flip-to-RW
+LcpConfig|wire-membership|include/pso/network/PppLcp.h:48 absent §1.2 set;docs/p1-format-net-disc.md:78 named (PppLcp state)|flip-to-RW
+LcpOpts|wire-membership|include/pso/network/PppLcp.h:39 absent §1.2 set;docs/p1-format-net-disc.md:78|flip-to-RW
+LcpSide|wire-membership|include/pso/network/PppLcp.h:28 absent §1.2 set;docs/p1-format-net-disc.md:78|flip-to-RW
+LcpState|wire-membership|include/pso/network/PppLcp.h:65 absent §1.2 set;docs/p1-format-net-disc.md:78|flip-to-RW
+LcpVals|wire-membership|include/pso/network/PppLcp.h:13 absent §1.2 set;docs/p1-format-net-disc.md:78|flip-to-RW
+IpcpConfig|wire-membership|include/pso/network/PppIpcp.h:32 absent §1.2 set;docs/p1-format-net-disc.md:78 PPP family + :105 byte-serial|flip-to-RW
+IpcpOptions|wire-membership|include/pso/network/PppIpcp.h:8 absent §1.2 set;docs/p1-format-net-disc.md:78;:105|flip-to-RW
+IpcpSide|wire-membership|include/pso/network/PppIpcp.h:23 absent §1.2 set;docs/p1-format-net-disc.md:78;:105|flip-to-RW
+IpcpState|wire-membership|include/pso/network/PppIpcp.h:39 absent §1.2 set;docs/p1-format-net-disc.md:78;:105|flip-to-RW
+Ipv6NdAddrEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:29 absent §1.2 set;docs/p1-format-net-disc.md:77 event record|flip-to-RW
+Ipv6NdEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:43 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdHopLimitEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:36 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdMtuEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:81 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdMtuOption|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:63;docs/p1-format-net-disc.md:15;:71-74 regime-B family;src/pso/network/NetIPv6NeighborDiscovery.c:954-957 netbuf_copy_by_ref 8 wire bytes into struct then mtu_opt.mtu host load|LOCKED
+Ipv6NdPrefixEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:72 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+Ipv6NdPrefixInfoOption|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:50;docs/p1-format-net-disc.md:15;:71-74 regime-B family;src/pso/network/NetIPv6NeighborDiscovery.c:939-945 0x20 wire bytes copied in then lifetime fields read|LOCKED
+Ipv6NdRedirectEvent|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:89 absent §1.2 set;docs/p1-format-net-disc.md:77|flip-to-RW
+NetIcmpv6Redirect|wire-membership|include/pso/network/NetIPv6NeighborDiscovery.h:20;absent from §1.2/§1.3 rows; wire-copy sites un-read: src/pso/network/NetIPv6NeighborDiscovery.c:412-414 msg local + NetIPv6ParseRedirectOptions :464 body; missing=copy-vs-field-assign evidence|needs-decision
+TPlyOnCreated|wire-membership|include/pso/network/TPlyOnCreated.h:6 absent §1.2 set;vptr class -> cannot overlay wire; absent §1.2 files|flip-to-RW
+G_ModifyTradeProposal_6xA6|wire-membership|include/pso/network/protocol/subcmd_6x.h:703;docs/p1-format-net-disc.md:39;:14;include/pso/network/protocol/subcmd_6x.h:703;:704;:711;:714|LOCKED
+G_SyncItemState_6x6D_Decompressed|wire-membership|include/pso/network/protocol/subcmd_6x.h:1201;in §1.2 file include/pso/network/protocol/subcmd_6x.h:1201 but no header/bswap; decompressed working view, wire image=compressed blob :1195-1199; missing=6x6D send-side PRS compress input site (TProtocol.cpp/TLobby.cpp)|needs-decision
+ChangeShipOrBlockPacket|wire-membership|include/pso/network/TProtocol.h:176;docs/p1-format-net-disc.md:44;include/pso/network/TProtocol.h:176;:179;:183 (+packet_header gate);include/pso/network/TProtocol.h:180 TPlyGuildCardTag|LOCKED
+CharacterSaveInfoPacket|wire-membership|include/pso/network/TProtocol.h:167;docs/p1-format-net-disc.md:44;include/pso/network/TProtocol.h:167;:168;:172 (+packet_header gate)|LOCKED
+trade_proposal_state_handlers|wire-membership|include/pso/network/TradeSession.h:22 absent §1.2 set;docs/p1-format-net-disc.md:162 compiled fn-ptr tables WAIVE|flip-to-RW
+Ipv6PseudoHeader|wire-membership|src/pso/network/NetIpv6.c:714 absent §1.2 set;NetIpv6.c:717 local-built; never sent (§13 pseudo-header) — regime-B checksum hazard handled by §5.2 BE accessors, not struct lock|flip-to-RW
+packet_header|AK-yes-promotion|include/pso/network/protocol/protocol.h:14-19;src/pso/network/TProtocol.cpp:23-25;:27-34 send((u8*)&header,sizeof(header));:1891-1893 bswap_16(&size);docs/p1-format-net-disc.md:14;:25-28;:179|LOCKED
+ChangeShipOrBlockPacket|wire-membership|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/TProtocol.h:179|LOCKED
+CharacterSaveInfoPacket|wire-membership|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/TProtocol.h:168|LOCKED
+TPlyJoinData|wire-membership|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/packet_classes.h:541|LOCKED
+ChoiceSearchPacket|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/choice_search.h:12|LOCKED
+ChoiceSearchResultList|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/choice_search.h:64|LOCKED
+TPlyJoinLobby|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/packet_classes.h:240|LOCKED
+TRegister|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/packet_classes.h:287|LOCKED
+TSendAction|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/packet_classes.h:415|LOCKED
+TSendLogin|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/TProtocol.h:95|LOCKED
+TSendPsoRegist|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/protocol/packet_classes.h:304|LOCKED
+TSendQuestStatistic|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/TProtocol.h:221|LOCKED
+TSendVerifyLicense|leave|gate=packet_header LOCKED docs/p1-format-net-disc.md:179;include/pso/network/TProtocol.h:75|LOCKED
+SUMMARY|leave|unique-types=67 (10 promos + 47 HELD-RW + packet_header gate + 12 named embedders; 3 cross-ref dupes);new-keeper-sites=17 (12 newly-LOCKED types' census assert rows; packet_header itself asserts-pass)|promote-to-yes: 13; lock-now: 11; rw-confirmed: 40; needs-decision: 3
