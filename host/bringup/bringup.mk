@@ -365,7 +365,16 @@ $(GEN)/ladder6_tex_consumer.o: $(GEN)/ladder6_tex_consumer.cpp | $(OUT)
 	clang++ $(NJS6_CXXFLAGS) -c -o $@ $<
 
 # (V2 lands the ladder6_test binary rule below this marker + run.sh line.)
-all: $(GEN)/ladder6_tex_consumer.o
+$(OUT)/ladder6_test.o: $(BRINGUP)/ladder6_test.cpp | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(NJS6_CXXFLAGS) -c -o $@ $<
+
+$(BIN)/ladder6_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                     $(GEN)/move_data_glue.o $(GEN)/ladder4_gvr_glue.o $(OUT)/ladder4_supply.o \
+                     $(GEN)/ladder5_gxtexture_glue.o $(GEN)/ladder5_tex_glue.o $(OUT)/ladder5_seam.o \
+                     $(GEN)/ladder6_tex_consumer.o $(OUT)/ladder6_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/ladder6_test
 
 clean:
 	@rm -rf $(OUT)

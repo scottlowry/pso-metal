@@ -10,7 +10,7 @@ zero regen; `make parse` never invoked).
 
 ## V1 — NJS_HANDLE resolution for the 3 on-logo sites (per-TU AR allow-list)
 
-What landed (commit `__V1__`, files: `host/bringup/include/ladder6_tex_prelude.h`,
+What landed (commit ``, files: `host/bringup/include/ladder6_tex_prelude.h`,
 `host/bringup/gen_ladder6_slices.py`, `host/bringup/bringup.mk`):
 
 - `gen_ladder6_slices.py` — guarded generator: 37 VERBATIM slices of the AV
@@ -71,7 +71,45 @@ lines verbatim green), waiver sha unchanged pre/post.
 
 ## V2 — texlist walk (TLogo refs resolve against the AU-loaded GVR chain)
 
-status: pending (lands next commit: `ladder6_test.cpp` + binary rule + run.sh line).
+Landed (`__V2__`: `host/bringup/ladder6_test.cpp` + binary rule + run.sh
+line). `load_sin_board_image(rawGVR, 0x41C)` — ONE era call — drives the
+whole chain with zero host-side lookups (gate L6, 18/18 PASS, suite now
+128/128):
+
+- L6-G3/G4: `set_texture_name` stamped `filename == pso_njs_h2g(&input)` and
+  `attr == 0x40000000`; the ERA `load_texture_entry` switch dispatched
+  `texture_loaders[1]` (union-slot aliasing of `global_index` by the bound
+  `.texture` handle is era-true — one field, three names).
+- L6-G5/G6: `find_gvrt_texture_chunk` (AE/AN slice) read the GBIX id raw →
+  `surface->id == 0x999` established by the era walk (LB-9 made the PPC-load
+  semantics explicit on LP64).
+- L6-G7: format-9 palette leg KEPT `tlut_name == 0` (not −1) per
+  text_803DA798.cpp:148-152 — contract §5-V3 golden honored.
+- L6-G8/G9: header `{9,32,32,1024}` written through the era upload chain
+  via the LB-7 `texture->p + 8` slot (proof the widened surface layout is
+  the one the era body addressed); pixels heap-resident (AU-4 carve).
+- L6-G10 RECEIPT: `reload_texture_slot_pixels → copy_texture_pixel_range →
+  move_data(g2h(u32 src))` delivered fnv1a64 `0xA92D59BE5839FCE5` == AN
+  fixture texels in the SURFACE header pixels (same anchor ladder5 E4a
+  pinned at the raw alloc — supply and consumption now agree inside the
+  era chain).
+- L6-G11: `texture_error.code == 4` asserted as the era RESIDUAL of the
+  attempt-1 magic-miss on the GinjaTextureInput record (0x803D9D5C-:9D68
+  store, fallback leg resolved) — named, not hidden.
+- L6-G12/G13: draw selection `set_texture_list/set_texture_num/select_-
+  texture_by_surface_id` runs through the double NJS_HANDLE (V1 §3#3
+  pattern executing, not just compiling).
+- L6-G14: second `load_texture_list` shares the surface
+  (`active_texture_surface_count == 1`) — palette reference leg.
+
+Deviation ledger V2: LB-1 (alloc seam = AU-4 cache heap), LB-2 (frame-pump
+seams untouched on success — counted), LB-3 (loader stand-ins never fired).
+Sinbd .data block placed arena-resident (`g_sinbd` @+0x32000, pool @+0x34000/+0x38000)
+per AR §5 slot-space rule — the h2g/g2h round-trip only closes inside the
+guest window.
+
+Gate: run.sh full-suite RC=0, 128/128 PASS (prior 110 verbatim), waiver sha
+c6b51403… unchanged pre/post.
 
 ## V3 — PAL8 CLUT expand into the AQ display path
 

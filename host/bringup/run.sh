@@ -37,4 +37,8 @@ echo "== P2-AU boot ladder 5: texture UPLOAD — AN pack through era init_textur
 "$R/build/bringup/bin/ladder5_test"
 echo "ladder5_test: EXIT=0"
 echo
+echo "== P2-BA boot ladder 6: texture CONSUMER — the sinbd texlist walk resolves through the era consumer chain (load_texture_entry dispatch -> loaders[1] -> find_gvrt_texture_chunk -> create_texture_state -> reload_texture_slot_pixels) under the AR per-TU NJS shadow; NJS_HANDLE adapter receipt per docs/p2-gx-tex-consumer.md §3 =="
+"$R/build/bringup/bin/ladder6_test"
+echo "ladder6_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"
