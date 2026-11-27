@@ -1,0 +1,8 @@
+type	new-verdict	evidence-type	file:line	confidence
+NJS_OBJECT	LOCKED-FORMAT	OVERLAY-CAST	src/pso/system/BmlResource.cpp:441	HIGH
+NJS_MKEY_F	LOCKED-FORMAT	OVERLAY-CAST	src/pso/boss/dragon/TBoss1Dragon.cpp:574	HIGH
+NJS_POINT3COL	RUNTIME-WAIVE	FIELDWISE-CONSTRUCTION	src/pso/unk/TLobby_801E2F94.cpp:292	HIGH
+NJS_TEXNAME	LOCKED-FORMAT	OVERLAY-CAST	src/pso/system/BmlResource.cpp:427	HIGH
+NJS_TEXLIST	LOCKED-FORMAT	OVERLAY-CAST	src/pso/system/BmlResource.cpp:427	HIGH
+EnemySetRecord	LOCKED-FORMAT	OVERLAY-CAST	src/pso/unk/TLobby_80207DA8.cpp:172	HIGH
+FloorObjectSetRow	LOCKED-FORMAT	OVERLAY-CAST	src/pso/unk/TLobby_80209524.cpp:714	HIGH
