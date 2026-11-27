@@ -58,10 +58,11 @@ $(OUT) $(GEN) $(BIN):
 # from this lane. The committed build/waivers/pso_assert_waivers.h (99
 # ILP32-targeted LAYOUT_ASSERT waivers + keep-flags) is force-included
 # AS-IS via COMMON -include; this stamp now only VERIFIED-gates it
-# (fail-closed if the committed header or its 99-waive state is missing).
+# (fail-closed if the committed header changed from the integrator-approved sha).
 $(OUT)/waiver.stamp: $(REPO)/build/waivers/pso_assert_waivers.h | $(OUT)
-	@grep -q 'STATE: 99 waived' $(BUILD_DIR)/waivers/pso_assert_waivers.h || \
-	 { echo "GUARD: committed waiver header missing/changed (expected 99 waived) — stop"; exit 1; }
+	@test "$$(shasum -a 256 $(BUILD_DIR)/waivers/pso_assert_waivers.h | cut -d' ' -f1)" = \
+	  "$$(cat $(BRINGUP)/waiver-header.sha256)" || \
+	 { echo "GUARD: waiver header sha != approved (host/bringup/waiver-header.sha256) — stop"; exit 1; }
 	@touch $@
 
 # --- deviation D3 (docs/p2-bringup-1.md): macOS refuses fixed mappings at
