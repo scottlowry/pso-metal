@@ -123,7 +123,51 @@ census above proves 555); (ii) docs/p2-logo-e-supply-1.md "I4" labels for
 fmt 0x0E/0x80E should read CMPR — integrator/owner call whether I4P's doc
 gets an errata line (NOT my path, not staged).
 
+## 5 — FIX LANDED (relay 2026-11-27, owner-confirmed oracle)
+
+Owner verdict: board top-left = genuine sinbd art incl. the "SONIC TEAM SEGA
+2000 2002" line; bottom-left pair = SEGA logo fragments. Both ranked picks
+CONFIRMED. Implemented in `host/gx/dl/**` (seat scope):
+
+1. **TI 8×4 expand** — `gx_logo_clut.h` new `gxh_pal8_clut_expand_ti8x4`
+   (era addressing law §3; replaces the flat call at the era-supply leg,
+   `gx_logo_driver.cpp` expand site). Flat kept ONLY as the L7-P4 canary.
+   AV-1 leg untouched (verified below).
+2. **RGB5A3 decode fix** — `gxh_tlut_rgba8` fmt==2: opaque leg 444→**555**
+   (bits 14..0) and alpha leg RGBA322→**RGBA444** (both were lossy), with
+   the green-nettle endpoint proof cited in-source. Second-order catch: the
+   16-bit carrier was being read NATIVE-LE on arm64 — era working value is
+   BE (PPC `lwz`); the BB-3 comment claimed BE but the code didn't. Fixed to
+   explicit BE read (fmt==3 RGBA8 leg untouched).
+3. **L7-P4 coherence gate** (era regime only, `#ifndef GX_LOGO_AV1`):
+   adjacent-vs-row-shuffled metric on the GPU READBACK `got[]` + planted
+   FLAT-decode CANARY (old behavior) computed at runtime; PASS requires
+   readback < 0.500 AND canary ≥ 0.500, both printed every run.
+   Fixture regime: leg counts, prints SKIPPED.
+
+**Gate results post-fix (all rc=0; waiver `d4382fcd0659357f` PRE==POST on
+every one of 2 make events, never regen):**
+
+| run | result | receipts |
+|---|---|---|
+| era GENUINE (sinbd.gvr+hyouji_a.gvp) | **13/13 PASS** | coherence TI **0.2763** / CANARY **0.7164** (python-board values 0.2764/0.7164 — agree); region fnv OLD `0x76D59FC1622CEE65` → NEW `0xC7088D6B25AA194A` (moved honestly: TI addressing + palette fix); era CLUT palette fnv OLD `0x1CC5C22B9BC80AA5` (recomputed from the pre-fix decode path) → NEW `0x5430FC251C0E5F40`; intermediate single-fix build measured `0x6B8D53E17B2937C0` (TI without BE fix) — proves both legs were required |
+| era FIXTURE | 13/13 PASS | L7-P4 counts as SKIPPED leg |
+| AV-1 stand-in | **10/10 PASS** | region fnv `0x88A8EF94CB09FCD0` — UNCHANGED (untouched-path proof) |
+
+**End-to-end owner proof:** `GX_DL_DEBUG=1` genuine run → 640×480 backbuffer
+dump → 256×256 quad crop at (192,112) → `/tmp/cla/sinbd_fixed.png`
+(outside repo; artifact bytes not committed). **Byte-exact vs the
+owner-verified python board render: 0 differing bytes / 196608.**
+md5 `df99b87c2f79376ef87332a66af9048b`.
+
+**Build-seat note (repo-wide, integrator):** decomp live tree moved to
+`620fdbed88` (upstream 11:19–14:40 restructure dropped `src/pso/unk/` +
+`include/pso/unk` into new homes) — this seat rebuilt against a READ-ONLY
+`git archive 6b38b53837` export in scratch (`DECOMP_ROOT` override, zero
+writes to decomp). Other lanes' next builds will hit the same wall; the
+pin story needs an integrator decision.
+
 ## Deviations introduced
-None beyond lane scope: zero builds, zero commits to host/**, no new
-gitignored slices (all fixtures already landed), disc path never touched or
-printed; scratch + board confined to /tmp/orcl/.
+Steps 1–3: none (see below). Step 4: no new gitignored slices; disc
+untouched; suite beyond host/gx/dl NOT run (integrator reruns run_window);
+AV-1 + fixture regimes byte-identical in behavior where claimed.

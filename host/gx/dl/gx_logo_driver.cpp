@@ -376,8 +376,13 @@ int main(void) {
     printf("  AV-1 stand-in palette fnv1a64    = 0x%016llX\n", (unsigned long long)h_av1);
     CHECK(clut_genuine || (h_era == h_av1 && memcmp(pal_era, pal_av1, sizeof pal_av1) == 0),
           "L7-C1E GOLDEN FIDELITY: era path fed the SYNTHETIC CLUT reproduces the AV-1 palette EXACTLY (256/256 byte-for-byte, hash equality printed) — port fidelity proof");
-    gxh_pal8_clut_expand_lut(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
-                             (const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, g_tex_w, g_tex_h);
+    /* P2-ORCL fix (human-verified oracle, relay 2026-11-27): the fmt-9
+     * (GX_TF_C8) container is TI 8x4 TILED, not flat row-major — flat here
+     * WAS the owner-visible "random lines of color" defect. Era witness:
+     * GXTexture.s jumptable_804F50A8 idx 9 -> .L_8038BEC4 (8x4, 32 B) +
+     * docs/p2-oracle-1.md §1/§3. */
+    gxh_pal8_clut_expand_ti8x4(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
+                               (const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, g_tex_w, g_tex_h);
     const unsigned char *e00 = g_tex_rgba, *e10 = g_tex_rgba + 4, *e20 = g_tex_rgba + 8, *e30 = g_tex_rgba + 12;
     CHECK(clut_genuine || (!memcmp(e00, pal_av1 + 0 * 4, 4) && !memcmp(e10, pal_av1 + 7 * 4, 4)
           && !memcmp(e20, pal_av1 + 14 * 4, 4) && !memcmp(e30, pal_av1 + 5 * 4, 4)),
@@ -462,6 +467,77 @@ int main(void) {
     printf("  logo texel region (%ux%u cell centers, RGBA words) fnv1a64 readback = 0x%016llX\n", g_tex_w, g_tex_h, (unsigned long long)h_got);
     printf("  reference fnv1a64 = 0x%016llX  (computed AT RUNTIME from the era-chain surface pixels via the loaded-CLUT expand — self-consistency anchor; no hardcoded expected hash)\n", (unsigned long long)h_want);
     CHECK(h_got == h_want, "L7-P3 hash equality readback==runtime-reference");
+#ifndef GX_LOGO_AV1
+    /* ---------- P2-ORCL L7-P4: container-layout coherence gate ----------
+     * Mean adjacent-pixel color distance (H+V) over the readback logo rect
+     * vs its row-shuffled baseline: correct TI 8x4 decode of real art lands
+     * ~0.3, the planted WRONG-decode CANARY (same pixels expanded FLAT —
+     * the pre-fix behavior, the owner's "random lines") must land >=0.5.
+     * Gate can fail both ways: PASS requires tiled-metric < 0.5 AND
+     * canary-metric >= 0.5. Both printed. Fixture regime (no genuine blob)
+     * SKIPS the metric but keeps the count (era regime = 13 legs). */
+    if (gvr_env) {
+        static unsigned canary_flat[1024 * 1024];
+        {
+            static unsigned char canary_rgba[1024 * 1024 * 4];
+            gxh_pal8_clut_expand_lut(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
+                                     (const unsigned char *)g_logo_hdr->pixels,
+                                     canary_rgba, g_tex_w, g_tex_h);
+            for (int k = 0; k < NT; k++) {
+                const unsigned char *tx = canary_rgba + (size_t)k * 4;
+                canary_flat[k] = ((unsigned)tx[0] << 24) | ((unsigned)tx[1] << 16) |
+                                 ((unsigned)tx[2] << 8) | tx[3];
+            }
+        }
+        auto rgb = [](unsigned w, int c) { return (int)((w >> (24 - 8 * c)) & 0xFF); };
+        auto coh = [&](const unsigned *img, int cw, int ch) -> double {
+            unsigned long long adj = 0, n = 0;
+            for (int y = 0; y < ch; y++) for (int x = 0; x + 1 < cw; x++) {
+                unsigned a = img[y*cw+x], b = img[y*cw+x+1];
+                adj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2)));
+                n++;
+            }
+            for (int y = 0; y + 1 < ch; y++) for (int x = 0; x < cw; x++) {
+                unsigned a = img[y*cw+x], b = img[(y+1)*cw+x];
+                adj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2)));
+                n++;
+            }
+            double d_adj = (double)adj / (double)n;
+            /* row-shuffled baseline: deterministic xorshift shuffle per row */
+            static unsigned shuf[1024 * 1024];
+            unsigned long long st = 0x9E3779B97F4A7C15ull;
+            for (int y = 0; y < ch; y++) {
+                for (int i = 0; i < cw; i++) shuf[y*cw+i] = img[y*cw+i];
+                for (int i = cw - 1; i > 0; i--) {
+                    st ^= st << 13; st ^= st >> 7; st ^= st << 17;
+                    unsigned j = (unsigned)(st % (unsigned long long)(i + 1));
+                    unsigned t = shuf[y*cw+i]; shuf[y*cw+i] = shuf[y*cw+j]; shuf[y*cw+j] = t;
+                }
+            }
+            unsigned long long sadj = 0, sn = 0;
+            for (int y = 0; y < ch; y++) for (int x = 0; x + 1 < cw; x++) {
+                unsigned a = shuf[y*cw+x], b = shuf[y*cw+x+1];
+                sadj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2)));
+                sn++;
+            }
+            for (int y = 0; y + 1 < ch; y++) for (int x = 0; x < cw; x++) {
+                unsigned a = shuf[y*cw+x], b = shuf[(y+1)*cw+x];
+                sadj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2)));
+                sn++;
+            }
+            return d_adj / ((double)sadj / (double)sn);
+        };
+        double c_ti = coh(got, (int)g_tex_w, (int)g_tex_h);
+        double c_flat = coh(canary_flat, (int)g_tex_w, (int)g_tex_h);
+        printf("  P2-ORCL coherence: TI 8x4 readback = %.4f | FLAT-decode CANARY = %.4f (threshold 0.500; noise ~1.0)\n",
+               c_ti, c_flat);
+        CHECK(c_ti < 0.5 && c_flat >= 0.5,
+              "L7-P4 coherence gate (P2-ORCL): genuine readback TI %s (<0.5) AND planted flat-decode CANARY %s (>=0.5) — the wrong layout FAILS the gate, the era TI layout passes (board: /tmp/orcl/grid.png, owner-verified)",
+              c_ti < 0.5 ? "PASSES" : "FAILS", c_flat >= 0.5 ? "FAILS-as-wrong-decode OK" : "PASSES-UNEXPECTEDLY");
+    } else {
+        CHECK(1, "L7-P4 coherence gate SKIPPED (fixture regime — metric defined for genuine supply only)");
+    }
+#endif
     if (failures == 0 && getenv("GX_DL_DEBUG")) {
         gxh_dl_dump("/tmp/logo_dump.ppm");
         printf("  debug: backbuffer dumped to /tmp/logo_dump.ppm\n");
