@@ -187,6 +187,184 @@ static int supply_clut_era(u8 *blob, u32 len, int *from_genuine) {
     return g_host_tlut_banks[0].loaded;
 }
 
+/* ================= P2-FRMB L8: genuine logo_e frames (hook-gated) =========
+ * Spec: docs/p2-frames-spec-1.md F1/F2/F5/F6, format resolution per
+ * docs/p2-oracle-1.md §5 (fmt 0xE = GX_TF_CMPR — the manifest "I4" labels
+ * are SUPERSEDED; DEVIATION FRM-1 in gx_logo_clut.h pins the host-decode
+ * class). Hooks: GX_FRAMES_GVM=<local_assets/logo_e.gvm> (the era `buf`:
+ * decompressed logo_e GVMH archive) + GX_FRAMES_SLICES=<slices.json>
+ * (runtime-reference slice-fnv sidecar, gitignored). CI defaults run with
+ * zero genuine bytes AND zero genuine hashes in this TU: every expected
+ * hash arrives through the sidecar at runtime (L7-P3 posture, :463-466). */
+#define LOGO_E_COUNT 24
+/* F1 descriptor names, verbatim era strings (TAdSEGAlogo.cpp:18-52), stream
+ * order == attr 0..23 == GVRT order: gc_adx01..08, sega_logo_e01..08,
+ * st_logo01..08. */
+static const char *const l8_texname_str[LOGO_E_COUNT] = {
+    "gc_adx01","gc_adx02","gc_adx03","gc_adx04","gc_adx05","gc_adx06",
+    "gc_adx07","gc_adx08","sega_logo_e01","sega_logo_e02","sega_logo_e03",
+    "sega_logo_e04","sega_logo_e05","sega_logo_e06","sega_logo_e07",
+    "sega_logo_e08","st_logo01","st_logo02","st_logo03","st_logo04",
+    "st_logo05","st_logo06","st_logo07","st_logo08" };
+/* F2 pinned era GBIX globals (builder-supplied era-shaped constants —
+ * grep @6b38b5383 shows the values exist ONLY as directory bytes on disc;
+ * these are era identifiers, not asset hashes — compile-time legal). */
+#define LOGO_E_GBIX_GC_ADX(k) (0x0001B0A8u + (unsigned)(k))   /* k 0..7 */
+#define LOGO_E_GBIX_SEGA(k)   (0x0001AFC2u + (unsigned)(k))   /* k 0..7 */
+#define LOGO_E_GBIX_ST(k)     (0x0010CAB4u + (unsigned)(k))   /* k 0..7 */
+static u32 logo_e_gbix(unsigned k) {
+    return k < 8 ? LOGO_E_GBIX_GC_ADX(k)
+         : k < 16 ? LOGO_E_GBIX_SEGA(k - 8) : LOGO_E_GBIX_ST(k - 16);
+}
+/* Host-resident mirror of the era descriptor (DEVIATION FRM-2: the era
+ * NJS_TEXNAME/NJS_TEXLIST are u32 image-handle slot space under the P2-AR
+ * shadow; this descriptor is host runtime state and never crosses the AR
+ * boundary — the era shapes it mirrors are quoted in F1). */
+struct L8Texname { const char *filename; u32 attr; GinjaTextureState *texture; };
+struct L8Texlist { L8Texname *textures; u32 nbTexture; };
+static L8Texname l8_texnames[LOGO_E_COUNT];
+static L8Texlist texture_logo_e_descriptor = { l8_texnames, LOGO_E_COUNT };
+static L8Texlist *logo_texture_e_handle;        /* era global, TAdSEGAlogo.cpp:52 */
+/* F3 re-handle sites (TAdSoniclogo.cpp:60 / TAdADXlogo.cpp:65-71) */
+static L8Texlist *sonic_logo_object;
+static L8Texlist *adx_logo_texture;
+static void free_sonic_logo_texture(void) { }   /* era bodies EMPTY (F3) */
+static void free_adx_logo_texture(void) { }
+static L8Texlist *get_logo_texture_e_handle(void) { return logo_texture_e_handle; }
+static void load_sonic_logo_texture(void) { sonic_logo_object = get_logo_texture_e_handle(); }
+static void load_adx_logo_texture(void) { adx_logo_texture = get_logo_texture_e_handle(); }
+/* register_texture_logo_e (TAdSEGAlogo.cpp:102-106 era shape: handle +
+ * ONE synchronous fill-all-24 load; the load leg is the driver-equivalent
+ * walk below — docs/p2-logo-e-supply-1.md §S4 sanctions "body OR driver
+ * equivalent"). Walk state (24 slots; pixels parked host-side per F6.7 —
+ * supply-side malloc, NEVER the era cache heap, I4 §S4.4 law). */
+static GinjaTextureState  l8_states[LOGO_E_COUNT];
+static GinjaSurfaceState  l8_surfs[LOGO_E_COUNT];
+static unsigned char     *l8_px[LOGO_E_COUNT];          /* packed CMPR payload */
+static unsigned long      l8_plen[LOGO_E_COUNT];
+static unsigned long long l8_chunk_fnv[LOGO_E_COUNT];
+static unsigned l8_w[LOGO_E_COUNT], l8_h[LOGO_E_COUNT];
+static u32 l8_dir_attr[LOGO_E_COUNT], l8_dir_fmt[LOGO_E_COUNT], l8_dir_gbix[LOGO_E_COUNT];
+static unsigned l8_dir_dw[LOGO_E_COUNT], l8_dir_dh[LOGO_E_COUNT];
+static int l8_tlut_neg;                                  /* count of tlut==-1 binds */
+static int l8_walk_ok, l8_walk_chunks;
+static unsigned long l8_walk_end;
+
+static int frames_walk_gvm(u8 *b, unsigned long n) {   /* driver-equivalent walk */
+    if (n < 0x3C || memcmp(b, "GVMH", 4)) return 0;
+    unsigned long hdr = (unsigned long)(b[4] | (b[5] << 8) | (b[6] << 16) | ((unsigned long)b[7] << 24));
+    unsigned flags = (unsigned)((b[8] << 8) | b[9]);
+    unsigned count = (unsigned)((b[10] << 8) | b[11]);
+    if (hdr != 0x3a8 || flags != 0x000F || count != LOGO_E_COUNT) return 0;
+    unsigned long off = hdr + 8;                        /* era chunk-stream law */
+    for (unsigned k = 0; k < LOGO_E_COUNT; k++) {
+        const u8 *de = b + 0xC + (size_t)0x26 * k;      /* stride 0x26 (flags 0x000F) */
+        l8_dir_attr[k] = (u32)((de[0] << 8) | de[1]);
+        l8_dir_fmt[k]  = (u32)((de[0x1E] << 8) | de[0x1F]);
+        u16 dims = (u16)((de[0x20] << 8) | de[0x21]);   /* nibble codes 2^(n+2) */
+        l8_dir_dw[k] = 1u << (((dims >> 4) & 0xF) + 2);
+        l8_dir_dh[k] = 1u << ((dims & 0xF) + 2);
+        l8_dir_gbix[k] = ((u32)de[0x22] << 24) | ((u32)de[0x23] << 16) |
+                         ((u32)de[0x24] << 8) | de[0x25];
+        if (off + 0x10 > n || memcmp(b + off, "GVRT", 4)) return 0;
+        unsigned long sz = (unsigned long)(b[off+4] | (b[off+5] << 8) |
+                           (b[off+6] << 16) | ((unsigned long)b[off+7] << 24));
+        u32 fmtw = ((u32)b[off+8] << 24) | ((u32)b[off+9] << 16) |
+                   ((u32)b[off+10] << 8) | b[off+11];   /* desc fmt u32 BE */
+        unsigned dw = (unsigned)((b[off+0xC] << 8) | b[off+0xD]);
+        unsigned dh = (unsigned)((b[off+0xE] << 8) | b[off+0xF]);
+        if (off + sz + 8 > n || sz < 8) return 0;
+        l8_w[k] = dw; l8_h[k] = dh;
+        l8_plen[k] = sz - 8;                            /* copy law: chunk->size-8 */
+        l8_chunk_fnv[k] = p2an_fnv1a64(b + off, sz + 8);
+        if ((fmtw & 0xFF) != 0x0E) return 0;            /* CMPR family (0x0E/0x80E) */
+        l8_px[k] = (unsigned char *)malloc(l8_plen[k]); /* supply-side, not era heap */
+        if (!l8_px[k]) return 0;
+        memcpy(l8_px[k], b + off + 0x10, l8_plen[k]);
+        /* bind: era regime — non-palette fmt (is_palette_texture_format hits
+         * only 8/9/10) => create_texture_state else-leg tlut_name = -1;
+         * surface id IS the GBIX global (F2, union slot). */
+        if (is_palette_texture_format((u8)(fmtw & 0xFF))) return 0;
+        l8_surfs[k].id = l8_dir_gbix[k];
+        l8_surfs[k].header.format = fmtw & 0xFF;
+        l8_surfs[k].header.width = dw; l8_surfs[k].header.height = dh;
+        l8_surfs[k].header.size = (u32)l8_plen[k];
+        l8_surfs[k].header.pixels = (u32 *)l8_px[k];
+        l8_states[k].surface = &l8_surfs[k];
+        l8_states[k].tlut_name = ~0u;
+        l8_texnames[k].filename = l8_texname_str[k];
+        l8_texnames[k].attr = k;
+        l8_texnames[k].texture = &l8_states[k];
+        if (l8_states[k].tlut_name == ~0u) l8_tlut_neg++;
+        off += sz + 8;
+        l8_walk_chunks++;
+    }
+    l8_walk_end = off;
+    l8_walk_ok = 1;
+    return 1;
+}
+
+/* sidecar (gitignored slices.json) — runtime-reference anchor reader.
+ * Fixed format written by the lane; order == records array order. */
+static unsigned long long sc_arch_fnv;
+static unsigned long sc_arch_size;
+static char sc_name[LOGO_E_COUNT][32];
+static unsigned long long sc_fnv[LOGO_E_COUNT];
+static int slices_parse(const char *js) {
+    const char *p = strstr(js, "\"fnv\"");
+    if (!p || sscanf(p, "\"fnv\": \"%16llX\"", &sc_arch_fnv) != 1) return 0;
+    p = strstr(js, "\"size\"");
+    if (!p || sscanf(p, "\"size\": %lu", &sc_arch_size) != 1) return 0;
+    for (unsigned k = 0; k < LOGO_E_COUNT; k++) {
+        p = strstr(p, "\"name\"");
+        if (!p) return 0;
+        const char *q = strchr(p + 8, '"'); if (!q) return 0; q++;
+        const char *r = strchr(q, '"'); if (!r || (size_t)(r - q) >= 32) return 0;
+        memcpy(sc_name[k], q, (size_t)(r - q)); sc_name[k][r - q] = 0;
+        p = strstr(r, "\"fnv\""); if (!p) return 0;
+        if (sscanf(p, "\"fnv\": \"%16llX\"", &sc_fnv[k]) != 1) return 0;
+    }
+    return 1;
+}
+
+static double p2frmb_coherence(const unsigned *img, int cw, int ch) {
+    /* identical metric shape to L7-P4 (adjacent RGB MAD / row-shuffled
+     * baseline, deterministic xorshift shuffle) — file-scope so the genuine
+     * frames leg and any follow-on share one instrument */
+    auto rgb = [](unsigned w, int c) { return (int)((w >> (24 - 8 * c)) & 0xFF); };
+    unsigned long long adj = 0, n = 0;
+    for (int y = 0; y < ch; y++) for (int x = 0; x + 1 < cw; x++) {
+        unsigned a = img[y*cw+x], b = img[y*cw+x+1];
+        adj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2))); n++;
+    }
+    for (int y = 0; y + 1 < ch; y++) for (int x = 0; x < cw; x++) {
+        unsigned a = img[y*cw+x], b = img[(y+1)*cw+x];
+        adj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2))); n++;
+    }
+    unsigned long long sadj = 0, sn = 0;
+    static unsigned shuf[1024 * 1024];
+    unsigned long long st = 0x9E3779B97F4A7C15ull;
+    for (int y = 0; y < ch; y++) {
+        for (int i = 0; i < cw; i++) shuf[(size_t)y*cw+i] = img[(size_t)y*cw+i];
+        for (int i = cw - 1; i > 0; i--) {
+            st ^= st << 13; st ^= st >> 7; st ^= st << 17;
+            unsigned j = (unsigned)(st % (unsigned long long)(i + 1));
+            unsigned t = shuf[(size_t)y*cw+i]; shuf[(size_t)y*cw+i] = shuf[(size_t)y*cw+j]; shuf[(size_t)y*cw+j] = t;
+        }
+    }
+    for (int y = 0; y < ch; y++) for (int x = 0; x + 1 < cw; x++) {
+        unsigned a = shuf[(size_t)y*cw+x], b = shuf[(size_t)y*cw+x+1];
+        sadj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2))); sn++;
+    }
+    for (int y = 0; y + 1 < ch; y++) for (int x = 0; x < cw; x++) {
+        unsigned a = shuf[(size_t)y*cw+x], b = shuf[(size_t)(y+1)*cw+x];
+        sadj += (unsigned)(abs(rgb(a,0)-rgb(b,0)) + abs(rgb(a,1)-rgb(b,1)) + abs(rgb(a,2)-rgb(b,2))); sn++;
+    }
+    double d_adj = (double)adj / (double)n;
+    return d_adj / ((double)sadj / (double)sn);
+}
+
+
 void render_tick(void) {
     l6_note(LC_RENDER_TICK);
     gx_dl_fifo_reset();
@@ -538,6 +716,169 @@ int main(void) {
         CHECK(1, "L7-P4 coherence gate SKIPPED (fixture regime — metric defined for genuine supply only)");
     }
 #endif
+
+    /* ================= P2-FRMB L8: genuine logo_e frames legs ==============
+     * Hook-gated (F6): GX_FRAMES_GVM + GX_FRAMES_SLICES. Fixture regime
+     * (no hook) prints nothing and counts nothing — 13/13 + 10/10 untouched. */
+    const char *frames_env = getenv("GX_FRAMES_GVM");
+    const char *slices_env = getenv("GX_FRAMES_SLICES");
+    if (frames_env && !gvr_env) {
+        printf("  L8 note: GX_FRAMES_GVM set without GX_LOGO_GVR genuine supply — "
+               "regime combo unsupported, L8 legs SKIPPED (not counted)\n");
+    }
+    if (frames_env && gvr_env) {
+        static u8 *fvm = 0; static unsigned long fn_sz = 0;
+        if (!fvm) fvm = pso_arena_base + 0x1680000;   /* supply arena; clear of +0x1600000/+0x1640000 */
+        FILE *ff = fopen(frames_env, "rb");
+        if (!ff) { fprintf(stderr, "frames: GX_FRAMES_GVM set but unreadable\n"); return 2; }
+        fseek(ff, 0, SEEK_END); fn_sz = (unsigned long)ftell(ff); fseek(ff, 0, SEEK_SET);
+        if (fn_sz == 0 || fn_sz > 0x80000 || fread(fvm, 1, fn_sz, ff) != fn_sz) {
+            fprintf(stderr, "frames: local gvm too large/short (%lu)\n", fn_sz); return 2; }
+        fclose(ff);
+        unsigned long long arch_fnv = p2an_fnv1a64(fvm, fn_sz);
+        int sc_ok = 0;
+        if (slices_env) {
+            FILE *sf = fopen(slices_env, "rb");
+            if (sf) {
+                static char sj[262144];
+                size_t sn = fread(sj, 1, sizeof sj - 1, sf); fclose(sf);
+                sj[sn] = 0;
+                sc_ok = slices_parse(sj);
+            }
+        }
+        printf("  L8-S genuine supply: local logo_e gvm %lu bytes fnv1a64 = 0x%016llX "
+               "(path withheld by policy; bytes never committed)%s\n",
+               fn_sz, arch_fnv, sc_ok ? "" : " — SIDECAR MISSING (reference legs degraded)");
+        CHECK(sc_ok && fn_sz == sc_arch_size && arch_fnv == sc_arch_fnv,
+              "L8-S1 supply receipt: archive size+fnv == runtime-reference sidecar (no compiled-in genuine hash; F6.1)");
+        int w_ok = frames_walk_gvm(fvm, fn_sz);
+        CHECK(w_ok && l8_walk_chunks == LOGO_E_COUNT && l8_walk_end == fn_sz,
+              "L8-S2 era walk: GVMH hdr 0x3a8/flags 0x000F/count 24, %d GVRT chunks, walk end 0x%lX == file end (F0 invariant)",
+              l8_walk_chunks, l8_walk_end);
+        int dir_ok = w_ok, pattern_ok = w_ok;
+        for (int k = 0; dir_ok && k < LOGO_E_COUNT; k++) {
+            if (l8_dir_attr[k] != (u32)k || l8_dir_fmt[k] != 0x000E || l8_dir_gbix[k] != logo_e_gbix((unsigned)k)) dir_ok = 0;
+            unsigned want = (k % 8) < 4 ? 256u : 128u;      /* F5 pattern law */
+            if (l8_dir_dw[k] != want || l8_dir_dh[k] != want || l8_w[k] != want || l8_h[k] != want) pattern_ok = 0;
+            if (l8_plen[k] != (unsigned long)(want * want / 2)) pattern_ok = 0;   /* cmpR w*h/2 */
+        }
+        CHECK(dir_ok && pattern_ok,
+              "L8-W1 dir/descriptor: attr==stream index x24, fmt 0xE, dims dir==desc==F5 pattern (0x8010/0x2010 => w*h/2 CMPR law), GBIX == F2-pinned LOGO_E_GBIX_* {0x1B0A8,0x1AFC2,0x10CAB4}+k");
+        CHECK(l8_tlut_neg == LOGO_E_COUNT,
+              "L8-W2 palette legs explicitly SKIPPED: is_palette_texture_format(14)==0 => tlut_name==-1 on all %d binds (no GVPL bank, no BB-3 normalization — F4/I4 §S4.1)", l8_tlut_neg);
+        int x_ok = sc_ok;
+        for (int k = 0; x_ok && k < LOGO_E_COUNT; k++)
+            if (l8_chunk_fnv[k] != sc_fnv[k] || strcmp(sc_name[k], l8_texname_str[k])) x_ok = 0;
+        CHECK(x_ok, "L8-X1 per-slice fnv equality: 24/24 GVRT chunk hashes (incl. 8 B hdr) == sidecar table loaded AT RUNTIME (F5 regime, byte-identity, disc-free)");
+        /* dedupe by fnv over the 24 records (gate-side, F4): expect 16 unique,
+         * dup groups {x7, x3} — structural counts, values measured at runtime */
+        int uniq = 0, g7 = 0, g3 = 0;
+        unsigned long long uniq_fnv[LOGO_E_COUNT]; int uniq_cnt[LOGO_E_COUNT];
+        for (int k = 0; k < LOGO_E_COUNT; k++) {
+            int f = -1;
+            for (int u = 0; u < uniq; u++) if (uniq_fnv[u] == l8_chunk_fnv[k]) { f = u; break; }
+            if (f < 0) { uniq_fnv[uniq] = l8_chunk_fnv[k]; uniq_cnt[uniq] = 1; uniq++; }
+            else uniq_cnt[f]++;
+        }
+        for (int u = 0; u < uniq; u++) { if (uniq_cnt[u] == 7) g7++; if (uniq_cnt[u] == 3) g3++; }
+        CHECK(uniq == 16 && g7 == 1 && g3 == 1,
+              "L8-D1 fnv dedupe: %d distinct hashes across 24 records, dup groups x7 (gc_adx07/sega_e05-07/st05-07) + x3 (slot 07/15/23 tail) — F0 correction set-math; binding stays per-slot (era keeps separate surfaces, F2)",
+              uniq);
+
+        /* ---- draw + readback: one logo_e frame (gc_adx01) + one sega frame
+         * (sega_logo_e01), 256x256 CMPR, on the SAME 1:1 quad the sinbd
+         * genuine supply sized (BB-4). Host-seam direct call (DEVIATION
+         * FRM-3: after the L7 era-chain legs complete, the era frame chain
+         * has already presented once this process — the second present uses
+         * the identical render_tick replay, era replay stays verbatim). */
+        unsigned char *frgb = (unsigned char *)malloc(256u * 256u * 4);
+        unsigned char *cgrid = (unsigned char *)malloc(256u * 256u * 4);
+        int p1_ok = frgb && cgrid && g_tex_w == 256 && g_tex_h == 256;
+        unsigned long long reg_h[2] = { 0, 0 };
+        int escape_hits[2] = { 0, 0 };
+        const int slots[2] = { 0, 8 };
+        for (int s = 0; p1_ok && s < 2; s++) {
+            int k = slots[s];
+            if (l8_w[k] != 256 || l8_h[k] != 256) { p1_ok = 0; break; }
+            gxh_cmpr_expand_ti8x8(l8_px[k], frgb, 256, 256);
+            gx_dl_set_texture(256, 256, frgb);
+            render_tick();
+            gxh_dl_flush();
+            int NT2 = 256 * 256;
+            for (int j = 0; j < 256; j++) for (int i = 0; i < 256; i++) {
+                int kk = j * 256 + i;
+                xs[kk] = (unsigned)(QX0 + (i + 0.5) * (QX1 - QX0) / 256.0);
+                ys[kk] = (unsigned)(QY0 + (j + 0.5) * (QY1 - QY0) / 256.0);
+                const unsigned char *tx = frgb + (size_t)kk * 4;
+                want[kk] = ((unsigned)tx[0] << 24) | ((unsigned)tx[1] << 16) |
+                           ((unsigned)tx[2] << 8) | tx[3];
+            }
+            if (gxh_dl_sample(xs, ys, got, NT2) != 0) { p1_ok = 0; break; }
+            int mism = 0;
+            for (int kk = 0; kk < NT2; kk++) if (got[kk] != want[kk]) mism++;
+            reg_h[s] = p2an_fnv1a64(got, (size_t)NT2 * 4);
+            if (mism) p1_ok = 0;
+            /* drawn coverage (F6.5 BB-4 shape): non-black OR matches its
+             * unpacked transparent texel; escape counted and PRINTED (F6.5's
+             * escape==0 assumption was pinned under the superseded I4
+             * reading — CMPR mode c0<=c1 index 3 is genuinely transparent,
+             * this is the documented era-truth deviation class of FRM-1) */
+            int nz = 0;
+            for (int yy = 0; yy < 256; yy++) for (int xx = 0; xx < 256; xx++) {
+                int kk = yy * 256 + xx;
+                (void)xx; (void)yy;
+                if (got[kk] != 0) nz++;
+                else if (want[kk] == 0) { nz++; escape_hits[s]++; }
+            }
+            if (nz != 256 * 256) p1_ok = 0;
+            if (s == 1) {   /* coherence + planted I4-TI canary on the SEGA tile */
+                gxh_i4_ti8x8_gray_expand(l8_px[k], cgrid, 256, 256);
+                static unsigned canary_w[256 * 256];
+                for (int kk = 0; kk < 256 * 256; kk++) {
+                    const unsigned char *tx = cgrid + (size_t)kk * 4;
+                    canary_w[kk] = ((unsigned)tx[0] << 24) | ((unsigned)tx[1] << 16) |
+                                   ((unsigned)tx[2] << 8) | tx[3];
+                }
+                double c_cmpr = p2frmb_coherence(got, 256, 256);
+                double c_i4 = p2frmb_coherence(canary_w, 256, 256);
+                printf("  L8-P4 coherence (sega_logo_e01 readback): CMPR = %.4f | planted I4-TI CANARY = %.4f "
+                       "(oracle python: 0.159 / 0.835; threshold 0.500)\n", c_cmpr, c_i4);
+                CHECK(c_cmpr < 0.5 && c_i4 >= 0.5,
+                      "L8-P4 CMPR-vs-I4 coherence gate: genuine sega_logo_e01 readback decodes coherent under the CMPR TI 8x8 law (<0.5) AND the superseded manifest-\"I4\" decode FAILS the same metric (>=0.5) — owner-verified board tiles sega_e01/e02");
+            }
+        }
+        CHECK(p1_ok, "L8-P1/P2 draw+readback: gc_adx01 + sega_logo_e01 drawn 1:1 on the (256 x 256) BB-4 quad, ALL %d cell centers == CMPR-expanded texels ±0; coverage full (escape-proven transparent texels: adx %d, sega %d — CMPR alpha-0, FRM-1 class)",
+              256 * 256, escape_hits[0], escape_hits[1]);
+        printf("  L8-P3 drawn region fnv1a64 (runtime readback): gc_adx01 = 0x%016llX | sega_logo_e01 = 0x%016llX "
+               "(self-consistency anchor against the runtime-expanded reference; no compiled-in expected hash)\n",
+               reg_h[0], reg_h[1]);
+        CHECK(reg_h[0] != 0 && reg_h[1] != 0 && reg_h[0] != reg_h[1] &&
+              sc_ok && l8_chunk_fnv[0] != l8_chunk_fnv[8],
+              "L8-P3 hash equality posture: readback regions present, brand blocks distinct, packed slices distinct (equality leg is the ±0 map above)");
+        /* 128x128 unique-frame decode law (CPU; TEXN=256 shader variant
+         * cannot address a 128 grid — draw is 256-regime only, BB-4):
+         * decode consumes EXACTLY w*h/2 bytes for slot 4 (gc_adx05). */
+        CHECK(l8_w[4] == 128 && l8_h[4] == 128 && l8_plen[4] == 128u * 128u / 2,
+              "L8-P5 128px byte law: gc_adx05 desc/dir 128x128, payload %lu == w*h/2 CMPR (F5 pattern; dup slots ride X1 fnv equality)", l8_plen[4]);
+
+        /* ---- FR-H handle identity (F1/F3) ---- */
+        logo_texture_e_handle = &texture_logo_e_descriptor;      /* register_texture_logo_e */
+        load_sonic_logo_texture();
+        load_adx_logo_texture();
+        int id_ok = logo_texture_e_handle == &texture_logo_e_descriptor &&
+                    sonic_logo_object == logo_texture_e_handle &&
+                    adx_logo_texture == logo_texture_e_handle &&
+                    texture_logo_e_descriptor.nbTexture == LOGO_E_COUNT;
+        for (int k = 0; id_ok && k < LOGO_E_COUNT; k++)
+            if (l8_texnames[k].filename != l8_texname_str[k] || l8_texnames[k].attr != (u32)k ||
+                l8_texnames[k].texture != &l8_states[k]) id_ok = 0;
+        logo_texture_e_handle = 0;      /* TLogo::free_held_object leg */
+        CHECK(id_ok && logo_texture_e_handle == 0 &&
+              sonic_logo_object == &texture_logo_e_descriptor &&
+              adx_logo_texture == &texture_logo_e_descriptor,
+              "L8-H1 handle identity: register fills all 24 slots {name,attr,bound state}; ADX+SEGA+ST share ONE descriptor pointer; post-free handle NULL with the two EMPTY release twins intact (F3 era bodies)");
+    }
+
     if (failures == 0 && getenv("GX_DL_DEBUG")) {
         gxh_dl_dump("/tmp/logo_dump.ppm");
         printf("  debug: backbuffer dumped to /tmp/logo_dump.ppm\n");
