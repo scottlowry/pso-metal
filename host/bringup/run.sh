@@ -19,5 +19,10 @@ echo
 echo "== PRS golden vectors (oracle: hand-traced from era prs.s) =="
 "$R/build/bringup/bin/prs_golden_test"
 echo "prs_golden_test: EXIT=0"
+
+echo
+echo "== P2-Y boot ladder: era PRS wrappers (TScreenFadeController) + era heap (memory.cpp over OSAlloc port) =="
+"$R/build/bringup/bin/ladder_test"
+echo "ladder_test: EXIT=0"
 echo
 echo "BRINGUP GREEN"

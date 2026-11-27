@@ -30,14 +30,15 @@ void OSInit(void) {
     arena_lo = pso_arena_base + 0x3100;
     arena_hi = pso_arena_base + PSO_MAIN_RAM_SIZE;
 
-    /* Heap arena: OSInitAlloc between the (not yet carved) fifo region and
-     * arena_hi. We place the game-heap control block + free lists at
-     * arena+0x400000 and let the 0x518000 game heap start at 0x518000-relative
-     * offset per init_game_systems: cfg.heap = OSInitAlloc(...) return,
-     * sys heap starts at cfg.heap + 0x518000. 0x80518000-ish. */
+    /* Heap arena: era SystemBootInit.cpp:271-275 shape — cfg.heap =
+     * OSInitAlloc(fifo_end, hi, 2); the game heap region is cfg.heap +
+     * 0x518000. HeapArray (2 era HeapDescs) lands at arena+0x400000.
+     * P2-Y: the allocator entry points are now the era OSAlloc port
+     * (osalloc_era.c), replacing this file's P2-Q bump/free-list shim
+     * internals; names, handles and Q's OSCheckHeap live-count contract
+     * are unchanged (docs/p2-bringup-2.md). */
     void *heapbase = OSInitAlloc(pso_arena_base + 0x400000, arena_hi, 2);
-    (void)heapbase;
-    int h = OSCreateHeap(pso_arena_base + 0x400000, pso_arena_base + 0x400000 + 0x518000);
+    int h = OSCreateHeap(heapbase, (u8 *)heapbase + 0x518000);
     OSSetCurrentHeap(h);
 }
 
@@ -60,104 +61,10 @@ void OSReport(const char *fmt, ...) {
     va_end(ap);
 }
 
-/* ---- OSCreateHeap-shaped heap shim (OSAlloc.h contract) ----
- * Block header: magic + size + heap tag; free list per heap, sorted singly
- * list with coalescing. Deliberately simple — the real decomp heap machinery
- * (init_system_heap_and_global_allocator, memory.cpp) lands at ledger step 7
- * and re-grows on top of these entry points. */
-#define HEAP_MAGIC 0x4B534F50u /* "POSK" */
-#define MAXHEAPS 2
-typedef struct HeapCtl {
-    void *start, *end;
-    long allocs;
-} HeapCtl;
-typedef struct BlkHdr {
-    u32 magic;
-    u32 freed;
-    u32 size;      /* payload bytes */
-    u32 heap;
-    struct BlkHdr *next_free;
-} BlkHdr;
+/* ---- heap ----
+ * OSCreateHeap-era entry points (OSInitAlloc/OSCreateHeap/OSAllocFromHeap/
+ * OSFreeToHeap/OSSetCurrentHeap/__OSCurrHeap/OSCheckHeap) now live in
+ * osalloc_era.c — the era Dolphin OSAlloc port (P2-Y, ledger step 7). The
+ * P2-Q bump/free-list shim that used to sit here was explicitly temporary
+ * ("the real decomp heap machinery ... lands at ledger step 7"). */
 
-static HeapCtl heaps[MAXHEAPS];
-static int nheaps;
-static BlkHdr *free_lists[MAXHEAPS];
-volatile OSHeapHandle __OSCurrHeap = -1;
-
-void *OSInitAlloc(void *arenaStart, void *arenaEnd, int maxHeaps) {
-    (void)maxHeaps; /* fixed MAXHEAPS=2 matches init_game_systems's request */
-    /* control block lives at arenaStart; usable payload above it —
-     * era OSCInitHeap returned the same arena start (heap handles follow). */
-    volatile u8 *p = (volatile u8 *)arenaStart;
-    for (size_t i = 0; i < sizeof(HeapCtl) * MAXHEAPS + 64; i += 8) p[i] = 0;
-    return arenaStart;
-}
-
-int OSCreateHeap(void *start, void *end) {
-    if (nheaps >= MAXHEAPS) return -1;
-    /* skip the control-block zone (first 0x1000) */
-    u8 *s = (u8 *)start + 0x1000;
-    if (s >= (u8 *)end) return -1;
-    heaps[nheaps].start = s;
-    heaps[nheaps].end = end;
-    heaps[nheaps].allocs = 0;
-    free_lists[nheaps] = 0;
-    return nheaps++;
-}
-
-int OSSetCurrentHeap(int heap) {
-    int prev = __OSCurrHeap;
-    __OSCurrHeap = heap;
-    return prev;
-}
-
-void *OSAllocFromHeap(int heap, u32 size) {
-    if (heap < 0 || heap >= nheaps || size == 0) return 0;
-    size = (size + 7u) & ~7u; /* era OSAlloc aligned 8 */
-    /* first-fit free list */
-    BlkHdr **pp = &free_lists[heap];
-    while (*pp) {
-        BlkHdr *b = *pp;
-        if (b->size >= size) {
-            *pp = b->next_free;
-            b->size = b->size; /* keep total; alloc-size tracked separately */
-            b->freed = 0;
-            heaps[heap].allocs++;
-            if (b->size - size >= sizeof(BlkHdr) + 8) { /* split */
-                BlkHdr *tail = (BlkHdr *)((u8 *)(b + 1) + size);
-                tail->magic = HEAP_MAGIC; tail->freed = 1;
-                tail->size = b->size - size - sizeof(BlkHdr);
-                tail->heap = (u32)heap; tail->next_free = free_lists[heap];
-                free_lists[heap] = tail;
-                b->size = size;
-            }
-            return (u8 *)(b + 1);
-        }
-        pp = &b->next_free;
-    }
-    /* bump from untouched region */
-    static u8 *bump[MAXHEAPS];
-    if (!bump[heap]) bump[heap] = (u8 *)heaps[heap].start;
-    u8 *p = bump[heap];
-    if (p + sizeof(BlkHdr) + size > (u8 *)heaps[heap].end) return 0;
-    BlkHdr *b = (BlkHdr *)p;
-    b->magic = HEAP_MAGIC; b->freed = 0; b->size = size; b->heap = (u32)heap;
-    b->next_free = 0;
-    bump[heap] = p + sizeof(BlkHdr) + size;
-    heaps[heap].allocs++;
-    return p + sizeof(BlkHdr);
-}
-
-void OSFreeToHeap(int heap, void *ptr) {
-    if (!ptr || heap < 0 || heap >= nheaps) return;
-    BlkHdr *b = (BlkHdr *)((u8 *)ptr - sizeof(BlkHdr));
-    if (b->magic != HEAP_MAGIC) return; /* era: OSReport + panic; keep soft */
-    b->freed = 1;
-    b->next_free = free_lists[heap];
-    free_lists[heap] = b;
-    heaps[heap].allocs--;
-}
-
-long OSCheckHeap(int heap) {
-    return (heap >= 0 && heap < nheaps) ? heaps[heap].allocs : -1;
-}
