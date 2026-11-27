@@ -1,0 +1,4 @@
+# This lane never commits proof frames — and in case an owner aims OUTDIR
+# here anyway, PNG/PPM residue in the lane dir stays untracked:
+*.png
+*.ppm
