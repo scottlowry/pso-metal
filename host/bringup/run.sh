@@ -45,4 +45,8 @@ echo "== P2-L7 boot ladder 7 (rung-5 PLAY-1): the five promoted run_frame legs E
 "$R/build/bringup/bin/ladder7_test"
 echo "ladder7_test: EXIT=0"
 echo
+echo "== P2-HG1 handle-program golden: window registry bound on the crt0 era-window anchors (IMAGE g_sinbd +0x32000 / POOL THeap +0x34000 / ARAM offset-space @pso_aram_base); NJS_HANDLE(T,slot) BYTE-exact round-trip, slot==0<->NULL, ARAM leg + L-FLOOR unbind fail-loud, stamp-at-genesis WRITE-ONCE, and the NEGATIVE CANARY — a planted W-INT stack-derived site MUST loud-reject (gate-can-fail proof, docs/p2-handle-program-1.md §5) =="
+"$R/build/bringup/bin/hg1_test"
+echo "hg1_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"

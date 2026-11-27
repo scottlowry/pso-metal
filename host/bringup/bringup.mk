@@ -413,6 +413,25 @@ $(BIN)/ladder7_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
 
 all: $(BIN)/ladder7_test
 
+# --- P2-HG1 handle-program GOLDEN: window registry + HG-1 runtime contract ----
+# The contract test docs/p2-handle-program-1.md §5 demands BEFORE any of the
+# 260 RUNTIME-GATED rows is adopted. host/bringup owns the registry
+# (hg1_windows.cpp — runtime form of the INERT compat/njs/handle sketch, which
+# stays unreferenced: no -I to it, ever). crt0.c owns the two base registers
+# AND the era-window anchor table the binds derive from (HG-1.0). No NJS
+# shadow flags, no era bodies: this leg crosses the seam directly. Links only
+# crt0_nomain.o (install + anchors) — no disc/heap/PRS deps.
+$(OUT)/hg1_windows.o: $(BRINGUP)/hg1_windows.cpp $(BRINGUP)/include/hg1_windows.h $(BRINGUP)/pso_bringup.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/hg1_test.o: $(BRINGUP)/hg1_test.cpp $(BRINGUP)/include/hg1_windows.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/hg1_test: $(OUT)/crt0_nomain.o $(OUT)/hg1_windows.o $(OUT)/hg1_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/hg1_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"
