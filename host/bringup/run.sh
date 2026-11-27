@@ -42,6 +42,7 @@ echo "== P2-BA boot ladder 6: texture CONSUMER — the sinbd texlist walk resolv
 echo "ladder6_test: EXIT=0"
 echo
 echo "== P2-L7 boot ladder 7 (rung-5 PLAY-1): the five promoted run_frame legs EXECUTE era bodies verbatim (begin_frame TMainTask::TObject.cpp:640, poll_reset_request ControllerInput.cpp:258, process_async_file_reads AsyncFileRead.cpp:198 parse-PASS@apply-7, update_sound_request_slots SoundRequests.cpp:340 guard, is_ready TLobby_800F8AA8.cpp:1371 via LB-2 pump seam); invariants by REAL reads + flip probes, L7-R3 order unchanged =="
+echo "== P2-L7 boot ladder 7 (rung-5 PLAY-2): the main_task flag spine EXECUTE era bodies verbatim — L2 run_task TObject.cpp:283-290, R3 render :509-525 (incl. the :510 ALLOW_OR_DISALLOW_CHILD re-pin), R4 render_screen_overlay :644-652, + the three era-empty REAL bodies (render_after_scene :505, debug_render_overlay :533, TObject::debug_render :174 promoted); the 8 sub-passes stay counted externs, render_pass era-INIT 1 @:25 (spec §3 D7); probes L7-P5..P9 + invariants L7-I2a..e by REAL reads =="
 "$R/build/bringup/bin/ladder7_test"
 echo "ladder7_test: EXIT=0"
 echo
