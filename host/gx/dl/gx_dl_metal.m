@@ -29,7 +29,7 @@ static id<MTLSamplerState>     g_smp;
 static unsigned                g_width, g_height;
 
 /* 8 floats: ndc.xy, rgba, uv — matches the GP dispatch output layout. */
-static const char *g_src =
+static const char *g_vs =
 "using namespace metal;\n"
 /* VS *input* struct: raw fetch, fields matched positionally to the
  * MTLVertexDescriptor attributes (a [[position]] field is invalid as VS
@@ -43,16 +43,56 @@ static const char *g_src =
 "vertex VIn vmain(VRaw in[[stage_in]]) {\n"
 "    VIn o; o.position = float4(in.pos, 0.0, 1.0);\n"
 "    o.col = in.col; o.uv = in.uv; return o;\n"
-"}\n"
+"}\n";
 /* TEV stage-0 GX_MODULATE (ScreenPrimitiveDraw.cpp:124): color0 x texture.
  * Exact-texel read() fetch: the gate demands deterministic texel hits,
- * and read() removes sampler state from the failure surface. */
+ * and read() removes sampler state from the failure surface.
+ * P2-AQ FIX (root cause of Z's 'cy>0 reads zeros', docs §2): the SCALAR
+ * read(cx, cy) overload of texture2d<float> is MISCOMPILED by this M3 Ultra
+ * runtime MSL compiler — literal read(2u,2u) on a texel-verified-correct 4x4
+ * returns (0,0,0,0); dynamic coords return the diagonal at cy=0 and zeros
+ * below. The vector-coordinate overload read(uint2(cx, cy)) lowers correctly
+ * (16/16 texels exact; sample() is likewise exact). Keep the uint2 form;
+ * do not "simplify" back to scalar coords.
+ * P2-AQ debug: GX_DL_FSHOP swaps the fragment body:
+ *  1 = emit uv, 2 = emit col, 3 = sample(sampler), 4 = scalar read no-col,
+ *  5 = literal scalar read(2,2), 6 = uint2 read (shipped semantics). */
+static const char *g_fs[] = {
 "fragment float4 fmain(VIn in[[stage_in]],\n"
 "    texture2d<float> tex[[texture(0)]]) {\n"
 "    uint cx = min(uint(in.uv.x * 4.0), 3u);\n"
 "    uint cy = min(uint(in.uv.y * 4.0), 3u);\n"
-"    return tex.read(cx, cy) * in.col;\n"
-"}\n";
+"    return tex.read(uint2(cx, cy)) * in.col;\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    return float4(fract(in.uv * 4.0), floor(in.uv.y * 4.0) / 4.0, 1.0);\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    return in.col;\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]],\n"
+"    sampler smp[[sampler(0)]]) {\n"
+"    return tex.sample(smp, in.uv) * in.col;\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    uint cx = min(uint(in.uv.x * 4.0), 3u);\n"
+"    uint cy = min(uint(in.uv.y * 4.0), 3u);\n"
+"    return tex.read(cx, cy);\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    return tex.read(2u, 2u) * in.col;\n"
+"}\n",
+"fragment float4 fmain(VIn in[[stage_in]],\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    uint cx = min(uint(in.uv.x * 4.0), 3u);\n"
+"    uint cy = min(uint(in.uv.y * 4.0), 3u);\n"
+"    return tex.read(uint2(cx, cy)) * in.col;\n"
+"}\n"};
 
 int gxh_dl_open(unsigned width, unsigned height) {
     @autoreleasepool {
@@ -83,7 +123,10 @@ int gxh_dl_open(unsigned width, unsigned height) {
         [g_window makeKeyAndOrderFront:nil];
 
         NSError *err = nil;
-        id<MTLLibrary> lib = [g_device newLibraryWithSource:@(g_src)
+        int fshop = getenv("GX_DL_FSHOP") ? atoi(getenv("GX_DL_FSHOP")) : 0;
+        if (fshop < 0 || fshop > 6) fshop = 0;
+        NSString *src = [NSString stringWithFormat:@"%s%s", g_vs, g_fs[fshop]];
+        id<MTLLibrary> lib = [g_device newLibraryWithSource:src
                                                     options:nil error:&err];
         if (!lib) { fprintf(stderr, "gxh_dl: shader compile: %s\n",
                             err.localizedDescription.UTF8String); return 3; }
@@ -197,6 +240,52 @@ int gxh_dl_verify(const unsigned *xs, const unsigned *ys,
         }
         free(px);
         return bad;
+    }
+}
+
+/* read back the last presented drawable at N points -> RGBA8 packed u32.
+ * Returns 0 ok, 6 no-frame. (P2-AQ: raw sampler for the texel diagnostic.) */
+int gxh_dl_sample(const unsigned *xs, const unsigned *ys, unsigned *out_rgba, int n) {
+    @autoreleasepool {
+        if (!g_last_cb || !g_last_drawable) return 6;
+        [g_last_cb waitUntilCompleted];
+        id<MTLTexture> tex = g_last_drawable.texture;
+        NSUInteger bpr = tex.width * 4;
+        unsigned char *px = (unsigned char *)malloc(bpr * tex.height);
+        [tex getBytes:px bytesPerRow:bpr
+           fromRegion:MTLRegionMake2D(0, 0, tex.width, tex.height) mipmapLevel:0];
+        for (int i = 0; i < n; i++) {
+            const unsigned char *p = px + (size_t)ys[i] * bpr + (size_t)xs[i] * 4;
+            out_rgba[i] = ((unsigned)p[2] << 24) | ((unsigned)p[1] << 16) |
+                          ((unsigned)p[0] << 8)  |  p[3];      /* BGRA -> RGBA */
+        }
+        free(px);
+        return 0;
+    }
+}
+
+/* P2-AQ diagnostic: CPU-side getBytes roundtrip of the CURRENT gpu texture,
+ * printed as a 4-value-per-row table so it can be diffed against the
+ * GPU-sampled texel map without env-gating. */
+void gxh_dl_tex_roundtrip(unsigned w, unsigned h) {
+    @autoreleasepool {
+        if (!g_tex) { printf("tex_rt: no texture\n"); return; }
+        unsigned char *rb = (unsigned char *)malloc((size_t)w * h * 4);
+        [g_tex getBytes:rb bytesPerRow:w * 4
+             fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+        printf("tex_rt GPU-texture-memory %ux%u (row-major):\n", w, h);
+        for (unsigned y = 0; y < h; y++) {
+            printf("  row%u:", y);
+            for (unsigned x = 0; x < w; x++)
+                printf(" [%u,%u]=(%u,%u,%u,%u)", x, y,
+                       rb[(y*w+x)*4], rb[(y*w+x)*4+1], rb[(y*w+x)*4+2], rb[(y*w+x)*4+3]);
+            printf("\n");
+        }
+        printf("  tex dims: %lu x %lu fmt=%lu levels=%lu usage=%lu\n",
+               (unsigned long)g_tex.width, (unsigned long)g_tex.height,
+               (unsigned long)g_tex.pixelFormat, (unsigned long)g_tex.mipmapLevelCount,
+               (unsigned long)g_tex.usage);
+        free(rb);
     }
 }
 

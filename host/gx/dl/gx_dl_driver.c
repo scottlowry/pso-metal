@@ -82,8 +82,12 @@ int main(void) {
 
     unsigned char texbytes[4][4][4];
     const char *solid = getenv("GX_DL_SOLID");   /* debug: solid green texels */
+    const char *tex16 = getenv("GX_DL_TEX16");   /* P2-AQ diagnostic: 16-distinct */
     for (int y = 0; y < 4; y++) for (int x = 0; x < 4; x++) {
-        if (solid) { unsigned char *d = texbytes[y][x]; d[0]=255; d[1]=0; d[2]=255; d[3]=255; }
+        if (tex16) { unsigned char *d = texbytes[y][x];
+            d[0]=(unsigned char)(16*(x+1)); d[1]=(unsigned char)(16*(y+1));
+            d[2]=128; d[3]=255; }
+        else if (solid) { unsigned char *d = texbytes[y][x]; d[0]=255; d[1]=0; d[2]=255; d[3]=255; }
         else memcpy(texbytes[y][x], TEX[y][x], 4);
     }
     gx_dl_set_texture(4, 4, &texbytes[0][0][0]);
@@ -93,21 +97,67 @@ int main(void) {
            "(vtxdesc 0x%08x fmt4 POS3F32+CLR1U32+TEX2F32 x4 + terminator/pad)\n",
            g_frame_dl_words, g_frame_dl_words * 4, g_dl[0]);
 
-    /* sample points — HONEST SUBSET (see docs/p2-gx-dl1.md §5): the TL texel
-     * hit (proves GP decode + textured draw) and 2 outside-clear points.
-     * TR/BL/BR/center assertions are RED on this machine: GPU-side texture
-     * reads return row-0/col-0 data for any cy>0 (proven by byte roundtrip);
-     * they stay listed below in comment until that is fixed.
-     * TL->texel(0,0)=red, outside=clear black. */
-    const unsigned xs[3] = {162, 100, 540};
-    const unsigned ys[3] = {122, 100, 400};
-    unsigned want[3] = {
-        WANT(255, 0, 0),   /* TL -> texel(0,0) red */
+    /* sample points — FULL ORIGINAL 7-POINT GATE (P2-AQ): the four quad
+     * corners (2 px inside) + center matched to the texture texels they
+     * address, plus 2 outside points vs the clear. TL->texel(0,0)=red,
+     * TR->(3,0)=green, BL->(0,3)=blue, BR->(3,3)=white, center->(2,2)=yellow. */
+    const unsigned xs[7] = {162, 478, 162, 478, 320, 100, 540};
+    const unsigned ys[7] = {122, 122, 358, 358, 240, 100, 400};
+    unsigned want[7] = {
+        WANT(255, 0, 0),     /* TL -> texel(0,0) red      */
+        WANT(0, 255, 0),     /* TR -> texel(3,0) green    */
+        WANT(0, 0, 255),     /* BL -> texel(0,3) blue     */
+        WANT(255, 255, 255), /* BR -> texel(3,3) white    */
+        WANT(255, 255, 0),   /* CT -> texel(2,2) yellow   */
         WANT(0, 0, 0), WANT(0, 0, 0), /* outside = clear */
     };
-    const int NPTS = 3;
+    const int NPTS = 7;
     GXColor clear = {0, 0, 0, 0};
+    if (tex16) clear.r = 3, clear.g = 7, clear.b = 11;  /* distinctive: tells
+        "fragment read zero-texel" apart from "never covered" */
     gx_dl_clear_color(clear);
+
+    if (tex16) {   /* ---- P2-AQ 16-texel diagnostic: one frame, full map ---- */
+        gx_dl_fifo_reset();
+        emit_quad_capture();
+        gx_dl_flush();
+        if (gx_dl_present() != 0) { fprintf(stderr, "tex16: draw failed\n"); return 5; }
+        gxh_dl_flush();
+        printf("== TEX16 diagnostic: CPU-side upload buffer (what we wrote) ==\n");
+        for (int y = 0; y < 4; y++) {
+            printf("  cpu[%d,%d]:", y, 0);
+            for (int x = 0; x < 4; x++)
+                printf(" (%u,%u,%u,%u)", texbytes[y][x][0], texbytes[y][x][1],
+                       texbytes[y][x][2], texbytes[y][x][3]);
+            printf("\n");
+        }
+        gxh_dl_tex_roundtrip(4, 4);
+        printf("== TEX16 diagnostic: GPU-sampled drawable, 16 cell centers ==\n");
+        unsigned xs[16], ys[16], out[16];
+        int k = 0;
+        for (int cy = 0; cy < 4; cy++) for (int cx = 0; cx < 4; cx++) {
+            xs[k] = (unsigned)(QX0 + cx * 80 + 40);
+            ys[k] = (unsigned)(QY0 + cy * 60 + 30);
+            k++;
+        }
+        if (gxh_dl_sample(xs, ys, out, 16) != 0) return 6;
+        for (k = 0; k < 16; k++) {
+            int r = out[k] >> 24 & 0xFF, g = out[k] >> 16 & 0xFF, b = out[k] >> 8 & 0xFF;
+            int tx = (r - 16) / 16, ty = (g - 16) / 16;
+            const char *cls; char buf[48];
+            if (r == 3 && g == 7 && b == 11)      cls = "CLEAR(uncovered)";
+            else if (!r && !g && !b)              cls = "BLACK(zero-texel read)";
+            else if (r % 16 == 0 && g % 16 == 0 && b == 128 &&
+                     tx >= 0 && tx < 4 && ty >= 0 && ty < 4) {
+                snprintf(buf, sizeof buf, "texel(%d,%d)", tx, ty); cls = buf;
+            } else cls = "?";
+            printf("  cell(cx=%d,cy=%d) px(%u,%u) = rgba(%d,%d,%d) -> %s\n",
+                   k % 4, k / 4, xs[k], ys[k], r, g, b, cls);
+        }
+        printf("tex16: diagnostic frame done\n");
+        gxh_dl_close();
+        return 0;
+    }
 
     int failures = 0;
     for (int f = 0; f < FRAMES; f++) {
