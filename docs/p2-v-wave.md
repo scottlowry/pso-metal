@@ -10,7 +10,7 @@ zero regen; `make parse` never invoked).
 
 ## V1 — NJS_HANDLE resolution for the 3 on-logo sites (per-TU AR allow-list)
 
-What landed (commit ``, files: `host/bringup/include/ladder6_tex_prelude.h`,
+What landed (commit `08c7db1`, files: `host/bringup/include/ladder6_tex_prelude.h`,
 `host/bringup/gen_ladder6_slices.py`, `host/bringup/bringup.mk`):
 
 - `gen_ladder6_slices.py` — guarded generator: 37 VERBATIM slices of the AV
@@ -71,7 +71,7 @@ lines verbatim green), waiver sha unchanged pre/post.
 
 ## V2 — texlist walk (TLogo refs resolve against the AU-loaded GVR chain)
 
-Landed (`__V2__`: `host/bringup/ladder6_test.cpp` + binary rule + run.sh
+Landed (commit `3d8fea0`: `host/bringup/ladder6_test.cpp` + binary rule + run.sh
 line). `load_sin_board_image(rawGVR, 0x41C)` — ONE era call — drives the
 whole chain with zero host-side lookups (gate L6, 18/18 PASS, suite now
 128/128):
@@ -113,8 +113,111 @@ c6b51403… unchanged pre/post.
 
 ## V3 — PAL8 CLUT expand into the AQ display path
 
-status: pending.
+Landed (`host/gx/dl/gx_logo_clut.h` + `GX_DL_TEXN` fragment variant in
+`host/gx/dl/gx_dl_metal.m`):
 
-## V4 — LOGO VISIBLE
+- CPU CLUT-expand -> RGBA8 feeding the PROVEN AQ entry
+  `gxh_dl_set_texture(w,h,rgba8)` exactly per AV §2.2 bullet list
+  (RGBA8Unorm/ShaderRead/bpr=w*4/default-Shared — the getBytes roundtrip
+  regime untouched).
+- DEVIATION AV-1 honored: tlut=0, no CLUT chunk this rung
+  (`init_and_load_tlut` unported) => PINNED stand-in palette: indices 0..15
+  reproduce AQ's 16-distinct diagnostic colors cell-for-cell
+  (gx_dl_driver.c:79-82 lineage), 16..255 gray ramp; golden-checked 256/256
+  (L7-C1) and verified against the AN FIXTURE index stream: row0 texels
+  {0,7,14,5} (gen_gvr_fixture formula / ladder5 E4b bytes) expand to
+  pal[i] — the "vs AN fixture palette" clause resolved as expand-vs-fixture-
+  indices through the pinned table.
+- R2/§2.5 (uint2): the new 32-texel fetch is a runtime-formatted
+  `tex.read(uint2(cx,cy))` body; scalar-coordinate read NEVER introduced.
+  Shipped path unchanged: TEXN unset == today's byte-identical pipeline;
+  `run_dl.sh` re-run post-edit GREEN frames=30 vtxdesc=30 dl_calls=15
+  tris=60 samples_ok=210 verify_failures=0 (the pre-state gate verbatim).
 
-status: pending.
+## V4 — LOGO VISIBLE (rung-4 frame attempt: LANDED)
+
+Landed: `host/gx/dl/{gen_ladder6_logo.py, ladder6_logo_prelude.h,
+ladder6_gx_prelude.h, gx_logo_driver.cpp}` + `gx_dl.mk logo` target +
+`run_window.sh` phase-2 + `gx_window.mk` link fix (pre-existing break:
+`bin/gx_window` died `Undefined symbols: _OSCreateHeap/_OSInitAlloc/
+_OSSetCurrentHeap` since Q's osinit split — W's mk predated it, the dl lane
+carries the same `osalloc_era.o` patch; found because run_window.sh is the
+V4 acceptance runner, fixed in-lane per that precedent, ZERO lane-code
+otherwise touched).
+
+Chain actually EXECUTING (not injected) in `build/gxdl/bin/gx_logo`:
+supply (fixture->arena) -> `load_sin_board_image` era chain (V2, re-runs
+in-process, L7-W1) -> `request_main_phase(0xA)` (SystemBootInit verbatim
+slice, L7-R1 next==10/result==1) -> `TLogo::run_frame` (TLogo.cpp:94
+verbatim slice) -> **`begin_gx_frame` (gjSystem.c:41 verbatim, C11) — the
+0x8013F5F4 wall crossed for the first time**, taking its non-interlaced
+leg and setting the host viewport (0,0,640,480,0,1) (LOGO-1; L7-R2), with
+GXInvalidateTexAll counted -> 14-leg era call order asserted ==
+TLogo.cpp:95-114 (LOGO-2 seams counted; poll==0/is_ready==0 invariants
+held — L7-R3) -> `render_tick` seam (LOGO-3) presents the CLUT-expanded
+sinbd surface as the era textured-quad recipe through the AQ FIFO-lite
+replay.
+
+Acceptance (all via `sh host/gx/run_window.sh`, exit 0):
+- L7-P1: 32x32 texel cell centers read back == CLUT-expanded surface
+  texels, EXACT (±0).
+- L7-P2 region-nonzero: 76800/76800 pixels of the 320x240 logo rect
+  non-black.
+- L7-P3 hash: logo texel region (32x32 RGBA words, drawable readback)
+  **fnv1a64 = 0x88A8EF94CB09FCD0**; reference = 0x88A8EF94CB09FCD0
+  computed AT RUNTIME from the era-chain surface pixels through
+  `gxh_pal8_clut_expand` (self-consistency anchor — stated, per brief;
+  the only literal pins are the supply-side AU/AN fixture hashes,
+  0x93B9BE4E18606D07 image / 0xA92D59BE5839FCE5 texels, which are
+  fixture content, not waived counts). Deterministic across two runs +
+  the run_window.sh phase.
+
+## Battery state after the wave
+
+- `make -C host/bringup check` -> no `check` RULE ever existed in bringup.mk
+  (.PHONY name without recipe); the suite runner is `host/bringup/run.sh` —
+  run verbatim: BRINGUP GREEN, 128/128 PASS (prior 110 + ladder6 18), twice
+  (intake + post-V4).
+- `run_window.sh` GREEN both phases (W clear gate + LOGO VISIBLE).
+- `run_dl.sh` GREEN 210/210 samples (post-shader-patch, default path).
+- `run_vi.sh` GREEN (VI-BRANCH both legs).
+- Waiver header sha `c6b514035f39b633…` recorded pre-wave, re-hashed after
+  EVERY make/run above: unchanged. No `make parse`, no gen_waivers
+  invocation (dry-run proved zero regen triggers before first gx make).
+- Decomp tree read-only @6b38b5383 (verified `git rev-parse` at intake;
+  zero writes; generator anchors fail-loud on drift).
+
+## Where V5-V7 stand (AV §5 numbering vs this brief's V1-V4)
+
+- V5 (contract: on-logo §3#1-#3 adapters + submit §4 request): MOSTLY landed
+  as this brief's V1 — the three files' logo-relevant legs resolved AND
+  executing; what remains V5-shaped: slice `LoadPvmFileTls`
+  (psoLoadTexture.cpp:97-101/142-153) + `GinjaMaterial.cpp:367/388/421`
+  literal bodies (patterns proven at set_texture_num; deps: ginja_*
+  draw-state globals), and the integrator applying `build/njs_allowlist.txt`
+  + PARSE_RECIPE edit (AV §4 paste-ready block = the submission).
+- V6 (deferred adapters §3#4-#6 BmlResource/TCMCharacter/TChCrLoadReq):
+  untouched, unchanged plan, NOT on any critical path (logo visible without
+  them — proven).
+- V7 (3rd shadow FloorPopulation.h): untouched — compat/njs owned by the
+  loader lane; AR §4.3 row stays the named gap.
+
+## Honest blockers / open items
+
+1. Era CLUT supply: `init_and_load_tlut` (GinjaTextureHeader.cpp:56-60)
+   unported + no tlut chunk in the fixture -> V3 rides AV-1 stand-in
+   palette; era-faithful R8+in-shader-LUT route (§2.2 bullet 4) waits for a
+   CLUT-carrying GVR and the tlut leg.
+2. run_frame rows 3-9 + render_tick bodies stay counted seams (LOGO-2/3):
+   TMainTask::render overlaying, async/sound/controller legs are class
+   (c)/(d) homes; the actor-driven real sinbd QUAD (TObjSinBoard::render
+   GP list + camera) needs rung-4 proper (AP §4 target TU parse).
+3. psoLoadTexture.cpp:142-153 + GinjaMaterial.cpp literal sites: adapters
+   enumerated, files not yet sliced (deps above); build/Makefile NJS
+   allow-list awaits integrator.
+4. gx_dl capture path never clears between the W-literal regime and the
+   logo frame alpha: quad color0 white passthrough keeps readback exact,
+   but a real TEV alpha chain (GX_MODULATE with vertex alpha) is untested
+   with the 32-texel variant (single-frame gate used here).
+5. `make -C host/bringup check` as named in the brief has no rule
+   (pre-existing .PHONY-only); run.sh is the gate (documented above).

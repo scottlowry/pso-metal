@@ -22,4 +22,15 @@ rc=$?
 set -e
 echo "-- gx_window exit: $rc"
 if [ "$rc" = 0 ]; then echo "GX WINDOW GREEN: first real pixels proven by readback"; fi
-exit "$rc"
+
+echo
+echo "== P2-BA V4 phase: LOGO VISIBLE — era request_main_phase -> TLogo::run_frame -> begin_gx_frame executes; render_tick presents the CLUT-expanded sinbd surface through the AQ replay; region readback gates =="
+make -C "$B/dl" -f gx_dl.mk logo
+set +e
+GX_DL_TEXN= "$R/build/gxdl/bin/gx_logo"   # driver self-pins TEXN=32 before open
+lrc=$?
+set -e
+echo "-- gx_logo exit: $lrc"
+if [ "$lrc" = 0 ]; then echo "LOGO VISIBLE: sinbd texels proven in the backbuffer by readback"; fi
+[ "$rc" = 0 ] || exit "$rc"
+exit "$lrc"

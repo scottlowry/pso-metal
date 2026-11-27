@@ -53,6 +53,12 @@ $(OUT)/crt0_nomain.o: $(BRINGUP)/crt0.c $(BRINGUP)/pso_bringup.h | $(OUT) $(WAIV
 $(OUT)/osinit.o: $(BRINGUP)/osinit.c $(BRINGUP)/pso_bringup.h | $(OUT) $(WAIVER_HDR)
 	clang $(CFLAGS) -c -o $@ $<
 
+# Q's OSAlloc-era entry points (OSInit calls OSInitAlloc/OSCreateHeap/
+# OSSetCurrentHeap — same patch the dl lane applied to gx_dl.mk; without this
+# object the window link dies Undefined symbols since the osinit split).
+$(OUT)/osalloc_era.o: $(BRINGUP)/osalloc_era.c $(BRINGUP)/pso_bringup.h | $(OUT) $(WAIVER_HDR)
+	clang $(CFLAGS) -c -o $@ $<
+
 # ---- host/gx port tree ----
 $(OUT)/gx_metal.o: $(GXDIR)/gx_metal.m $(GXDIR)/gx_metal.h | $(OUT)
 	clang $(OBJCFLAGS) -c -o $@ $<
@@ -62,7 +68,7 @@ $(OUT)/gx_shims.o $(OUT)/gx_window_driver.o: $(OUT)/%.o: $(GXDIR)/%.c \
 	clang $(HOSTCFLAGS) -c -o $@ $<
 
 $(BIN)/gx_window: $(OUT)/gx_window_driver.o $(OUT)/gx_shims.o $(OUT)/gx_metal.o \
-                  $(OUT)/crt0_nomain.o $(OUT)/osinit.o | $(BIN)
+                  $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o | $(BIN)
 	clang -target $(LINK_TARGET) -o $@ $^ $(FRAMEWORKS)
 
 clean:
