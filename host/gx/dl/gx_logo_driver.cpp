@@ -205,7 +205,10 @@ static int failures, total;
     else { printf("PASS "); printf(__VA_ARGS__); printf("\n"); } } while (0)
 
 #define CACHEHEAP_START_OFF 0x01400000u
-#define CACHEHEAP_SIZE      0x00010000u
+/* V5b: GENUINE PAL8 256x256 supply needs 0x10010-byte sin_board allocs;
+ * era heap leg (TQuestVmDownLoadServer::alloc -> OSAllocFromHeap) sized up.
+ * Synthetic fixture regime unaffected (0x41C alloc rides any bigger heap). */
+#define CACHEHEAP_SIZE      0x00040000u
 #define L6_SINBD_OFF  0x00032000u
 #define L6_POOL_OFF   0x00034000u
 #define L6_SURF_OFF   0x00038000u
@@ -221,7 +224,13 @@ int main(void) {
     int lh = OSCreateHeap(ch_lo, ch_lo + CACHEHEAP_SIZE);
     locked_cache_heap_handle = (u32)lh;
 
-    u8 *raw = pso_arena_base + 0x30000;
+    /* V5b: genuine GVRT records are 0x10010 bytes; the old 0x30000 site sat
+     * 0x2000 before the sinbd/pool/surf tables and would be clobbered by a
+     * genuine-scale fread. Park the supply + palette sidecars above the
+     * cache heap end (0x1400000+CACHEHEAP_SIZE) — still inside the arena,
+     * clear of every era-mapped structure. */
+    u8 *raw = pso_arena_base + 0x1600000;
+    u8 *gvp = pso_arena_base + 0x1640000;
     DVDFileInfo fi; memset(&fi, 0, sizeof fi);
     const char *gvr_env = getenv("GX_LOGO_GVR");   /* P2-BB V5-S2: genuine supply hook */
     unsigned long gvr_sz = 0;
@@ -247,6 +256,35 @@ int main(void) {
     } else {
     CHECK(gvr_sz >= 0x1C && p2an_fnv1a64(raw, gvr_sz) != 0x93b9be4e18606d07ull,
           "L7-S1G supply: genuine local sinbd blob in (dims/fnv receipt above; fixture content NOT reused)");
+    }
+    /* V5b: genuine GVPL sidecar (era regime: texture and palette are SEPARATE
+     * disc index records — f256_hyouji_a.gvp is the real TLanguage::
+     * load_palette_tlut supply; docs p2-v-wave3). Same local_assets regime:
+     * gitignored, fnv receipt printed, path never echoed. */
+    const char *gvp_env = getenv("GX_LOGO_GVP");
+    unsigned long gvp_sz = 0;
+    if (gvp_env) {
+        FILE *f = fopen(gvp_env, "rb");
+        if (!f) { fprintf(stderr, "logo: GX_LOGO_GVP set but unreadable\n"); return 2; }
+        fseek(f, 0, SEEK_END); gvp_sz = (unsigned long)ftell(f); fseek(f, 0, SEEK_SET);
+        if (gvp_sz > 0x10000 || fread(gvp, 1, gvp_sz, f) != gvp_sz) { fprintf(stderr, "logo: local gvp too large/short\n"); return 2; }
+        fclose(f);
+        printf("  V5b genuine supply: local GVPL sidecar %lu bytes fnv1a64 = 0x%016llX\n",
+               gvp_sz, (unsigned long long)p2an_fnv1a64(gvp, gvp_sz));
+        /* DEVIATION BB-3 (host-endianness loader leg, this seam only — no era
+         * body touched): the era consumers lwz 4-byte words on PPC; the host
+         * LE-loads the same u32 values. The synthetic carrier stores PPC word
+         * VALUES natively (magic u32 = 0x4756504C). Normalize the genuine
+         * chunk's HEADER fields (u32 magic/size + u16 format/pads/count) to
+         * that same working regime; the 512-byte C16 palette payload stays
+         * byte-true (the BB-1 decoder leg reads entries BE, 'u16 working
+         * values BE-carrier', gx_logo_clut.h:47). */
+        if (gvp_sz >= 0x10) {
+            u32 *wl = (u32 *)gvp;
+            swap_u32_bytes(&wl[0]); swap_u32_bytes(&wl[1]);
+            u16 *ws = (u16 *)(gvp + 8);
+            for (int q = 0; q < 4; q++) { u16 v = ws[q]; ws[q] = (u16)((v >> 8) | (v << 8)); }
+        }
     }
 
     g_sinbd = (SinBoardBlock *)(pso_arena_base + L6_SINBD_OFF);
@@ -290,10 +328,12 @@ int main(void) {
      * reproduction (known-bytes proof of port fidelity). */
     int clut_genuine = 0;
     const char *gvr_for_clut = getenv("GX_LOGO_GVR");
-    CHECK(supply_clut_era(gvr_for_clut ? raw : 0, gvr_for_clut ? (u32)gvr_sz : 0, &clut_genuine)
+    u8 *clut_blob = gvp_sz ? gvp : (gvr_for_clut ? raw : 0);
+    u32 clut_len = gvp_sz ? (u32)gvp_sz : (gvr_for_clut ? (u32)gvr_sz : 0);
+    CHECK(supply_clut_era(clut_blob, clut_len, &clut_genuine)
           && g_gxinit_tlut_calls == 1 && g_gxload_tlut_calls == 1,
           "L7-T1 era CLUT supply leg executed: GVPL chunk (%s) -> load_gvpl_palette -> init_and_load_tlut (era bodies), bank0 loaded",
-          clut_genuine ? "GENUINE local blob" : "synthetic fixture");
+          clut_genuine ? (gvp_sz ? "GENUINE GVPL sidecar" : "GENUINE local blob") : "synthetic fixture");
     static unsigned char pal_era[256 * 4], pal_av1[256 * 4];
     for (int i = 0; i < 256; i++) {
         unsigned char ib = (unsigned char)i;
