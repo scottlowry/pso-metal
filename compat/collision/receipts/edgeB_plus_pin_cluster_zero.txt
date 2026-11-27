@@ -1,0 +1,5 @@
+# P2-AZ -H receipt: edge B + compat/collision/pin_dolphin_types.h: era file opened, guard already occupied, body skipped; cluster count = 0
+. libs/dolphin/include/dolphin/mtx.h
+.. libs/dolphin/include/dolphin/types.h
+.. libs/dolphin/include/dolphin/mtx/GeoTypes.h
+(types.h line shows under -H merely as attempted-open; no era typedefs processed; 'typedef redefinition' count: 0)

@@ -1,0 +1,8 @@
+# P2-AZ -H receipt: edge B (quoted sibling) binds INCLUDING-FILE DIR, not -I order
+# cmd: clang++ -H <battery H2FN flags: -Icompat/repin -Icompat/njs -Ihost/bringup/include FIRST, then -Iinclude ...> az_edgeB.cpp
+. libs/dolphin/include/dolphin/mtx.h
+.. libs/dolphin/include/dolphin/types.h
+In file included from /Users/scott/.hermes/profiles/pso-decomp/cache/scratch/az_edgeB.cpp:4:
+In file included from libs/dolphin/include/dolphin/mtx.h:4:
+In file included from /Users/scott/.hermes/profiles/pso-decomp/cache/scratch/az_edgeB.cpp:4:
+libs/dolphin/include/dolphin/types.h:8:32: error: typedef redefinition with different types (long vs int32_t)  [x5 cluster]

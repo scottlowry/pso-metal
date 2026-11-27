@@ -1,0 +1,5 @@
+# P2-AZ -H receipt: TProtocol.cpp @H1 -- era dolphin/types.h at chain depth 6 (network->protocol->dolphin chain), 5-error cluster, 'previous definition' = host/bringup/include/types.h
+.... include/pso/network/protocol/protocol_types.h
+..... libs/dolphin/include/dolphin/mtx.h
+...... libs/dolphin/include/dolphin/types.h
+In file included from src/pso/network/TProtocol.cpp:5:

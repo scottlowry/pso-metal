@@ -1,0 +1,7 @@
+# P2-AZ -H receipt: edge A (angle) binds -I order -- AW shadow hijacks it
+. libs/dolphin/include/dolphin/gx.h
+.. /Users/scott/Hermes/pso-metal/compat/repin/dolphin/types.h
+... libs/dolphin/include/libc/stdio.h
+.... include/clib/stdarg.h
+..... include/clib/../../libs/PowerPC_EABI_Support/include/libc/stdarg.h
+... libs/dolphin/include/libc/stdarg.h
