@@ -53,12 +53,19 @@ SDK_INCS := -I$(DECOMP_ROOT)/include -I$(DECOMP_ROOT)/include/clib \
 # 2026-11-27: TItemWeaponDrillLauncher.cpp NJS_OBJECT_size negative-array under
 # ILP32+rebind — not in the AZ collateral ledger; plus 5 unrequested flips).
 COLLISION_PIN := $(REPO)/compat/collision/pin_dolphin_types.h
-# apply-6 additions (docs/p2-stitch-apply6.md): -I compat/net (NP era-model
+# apply-6 additions (docs/p2-stitch-apply5/6.md): -I compat/net (NP era-model
 # shadow — hijacks all 50 quoted NetworkRuntime.h edges, NP receipt) and
 # -I compat/repin (MA AT_ADDRESS dialect shadows, 38-row class) land per the
 # verified NP paste block order. compat/njs stays PER-TU ONLY (allow-list).
+# apply-7 adds compat/facade (D4 era OSAlloc/OSTime decls — MUST precede
+# host/bringup/include: bringup's OSAlloc.h wins that angle otherwise,
+# docs/p2-d4facade-1.md OF-A/OF-B proof) and compat/dialect/pshim (P2-T
+# hw_regs supply, docs/p2-tail-1.md Play-1). Facade wins first AT/inclusive
+# edges; pso_bringup's divergent DVD spellings vs era reconciled by the
+# anchor-guarded skip blocks in compat/repin/dolphin/dvd.h (apply-7).
 LP64_REBIND   := -DPSO_PORT_LAYOUT_WAIVER -include $(COLLISION_PIN) \
                  -I$(REPO)/compat/net -I$(REPO)/compat/repin \
+                 -I$(REPO)/compat/facade -I$(REPO)/compat/dialect/pshim \
                  -I$(REPO)/host/bringup/include
 
 # The waiver header is ALWAYS force-included after compat. With zero active
@@ -117,7 +124,7 @@ define PARSE_RECIPE
 	@rm -rf $(PARSE_DIR); mkdir -p $(PARSE_DIR)/err; : > $(PARSE_DIR)/fail.txt
 	@cd $(DECOMP_ROOT) && xargs -n1 -P $(JOBS) bash -c ' \
 	  f="$$0"; abs="$$PWD/$$f"; safe=$$(echo "$$f" | tr / _); \
-	  extra=""; case "$$f" in *.cpp) grep -qxF "$$f" $(NJS_ALLOWLIST) && extra="-I$(REPO)/compat/njs" ;; esac; \
+	  extra=""; if [ -n "$$NJS_LEG" ]; then case "$$f" in *.cpp) grep -qxF "$$f" $(NJS_ALLOWLIST) && extra="-I$(REPO)/compat/njs" ;; esac; fi; \
 	  case "$$f" in \
 	    *.cpp) clang++ $$extra $$CXXFLAGS_PARSE "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
 	    *.c)   case "$$f" in src/musyx/runtime/*) clang++ $$MUSYX_CXXFLAGS -x c++ "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
@@ -131,6 +138,7 @@ endef
 parse: export TARGET_USED := $(PARSE_TARGET)
 parse: export TAG := parse
 parse: export REBIND_FLAGS :=
+parse: export NJS_LEG :=
 parse: units waivers
 	$(PARSE_RECIPE)
 
@@ -141,6 +149,7 @@ parse-lp64: export PARSE_TARGET := $(LINK_TARGET)
 parse-lp64: export TARGET_USED := $(LINK_TARGET)
 parse-lp64: export TAG := parse-lp64
 parse-lp64: export REBIND_FLAGS := $(LP64_REBIND)
+parse-lp64: export NJS_LEG := 1
 parse-lp64: units waivers
 	$(PARSE_RECIPE)
 

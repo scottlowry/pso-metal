@@ -8,15 +8,15 @@ the arm64_32 achievement. Prints the delta either way.
 Baseline history: 669 (Phase-0 compat shim) -> 1416 -> 1,578 (arm64_32
 achieved at apply-2) -> 1,576 (apply-5 stage-1 allow-list cost) -> 1,601
 (apply-6 adjudication: musyx-as-C++ routing recovers 25 on this leg;
-stage-2 rows measure ILP32-clean, zero cost). The floor decomposes as
-1,578 - 2 + 25: the 2 are stage-1 NJS allow-list TUs
-(docs/p2-gx-tex-consumer.md §4) that passed ILP32 plain and pay the
-enumerated u32-slot cluster while opted into the shadow. The collision pin +
-rebind (docs/p2-collision-debt.md §5) is LP64-only: parse-lp64 measures the
-adopted shape (162 -> 261 -> 350, ledger in
-docs/p2-stitch-apply5.md / docs/p2-stitch-apply6.md); it is not gated here.
+stage-2 rows measure ILP32-clean, zero cost) -> 1,605 (apply-7: NJS_LEG
+gate makes the allow-list LP64-only, recovering the -2 stage-1 term; WT
+mechanism clears the ILP32 waiver-dup walls on 2 TUs). The floor
+decomposes as 1,578 + 25 + 2: pure legacy shape + musyx flip + WT tail.
+The collision pin + rebind + net/repin/facade/pshim + NJS shadow regime are
+LP64-only: parse-lp64 measures the adopted shape (162 -> 261 -> 350 ->
+1,163, ledger in docs/p2-stitch-apply5/6/7.md); it is not gated here.
 
-    python3 tools/parse_gate.py            # gate at 1601
+    python3 tools/parse_gate.py            # gate at 1605
     PSO_PARSE_BASELINE=700 python3 tools/parse_gate.py
     make -C build parse  # (what the gate drives)
 
@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-BASELINE = int(os.environ.get("PSO_PARSE_BASELINE", "1601"))
+BASELINE = int(os.environ.get("PSO_PARSE_BASELINE", "1605"))
 SUMMARY_RE = re.compile(r"TOTAL=(\d+)\s+FAIL=(\d+)\s+PASS=(\d+)")
 
 

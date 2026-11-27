@@ -59,14 +59,14 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 
 | meter | value |
 |---|---|
-| arm64_32 parse gate (legacy anchor) | **1,601 / 1,680** — `tools/parse_gate.py` floor 1601 |
-| true-LP64 parse, official adopted shape | **350 / 1,680** — `make -C build parse-lp64` |
+| arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
+| true-LP64 parse, official adopted shape | **1,163 / 1,680 (69.2%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
-| logo | era CLUT supply chain **executing**; synthetic-fixture regime green both paths (era + AV-1 stand-in), genuine disc art in flight |
+| logo | era CLUT supply chain **executing**; genuine 256×256 sinbd PAL8 + GVPL palette extracted from disc read-only (hash-only, gitignored local assets), readback-EXACT through the era chain; synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
 | suites | bring-up 128/128 · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
-| residual classes (measured, owned) | NJS-handle ~125 · packets 64→adjudicated · PppFrame 50→adjudicated · MWCC-asm 38→landed · musyx 27→landed (2 named facade residuals) · tail ~68 |
+| residual classes (measured, owned) | NJS adapter-queue 169 · runtime-gated handle rows 260 (uaddr stamping program) · other-class tail 83 + TL census 19 · musyx 2 named facade residuals · packets/PppFrame/MWCC-asm/musyx-main all landed |
 
 The `docs/p2-*.md` series is the working ledger — every claim above has a receipt file
 and a re-run command. "Almost matches" does not count here; gates print numbers or the

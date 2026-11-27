@@ -14,8 +14,11 @@
 #undef LAYOUT_ASSERT
 
 #define PSO_LA_KEEP(nm, cond) typedef char nm[(cond) ? 1 : -1]
-/* Waived case: a harmless zero-cost TU-local definition; consumes the ';'. */
-#define PSO_LA_NOP(nm, cond)  static int pso_la_waived_##nm = 0
+/* Waived case: TU-safe zero-cost typedef; consumes the ';'. P2-WT: an
+ * identical typedef redefinition is legal in -std=c11 AND -std=c++17, so a
+ * TU that reaches the same waived assert NAME through two emission sites
+ * (two headers, or header + body) no longer gets a variable redefinition. */
+#define PSO_LA_NOP(nm, cond)  typedef int pso_la_waived_##nm
 
 /* Dispatch: PSO_LA_FLAG_<nm> must be generated for every assert name.
  * If it is missing, PSO_LA_ACT_PSO_LA_FLAG_<nm> is not a macro and the unit

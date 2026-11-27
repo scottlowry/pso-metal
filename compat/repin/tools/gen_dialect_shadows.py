@@ -43,11 +43,22 @@ PREAMBLE = """\
 
 """
 
-# (era path in decomp, shadow path under compat/repin, 1-based era line of first AT_ADDRESS site)
+# (era path in decomp, shadow path under compat/repin, 1-based era line of first AT_ADDRESS site,
+#  optional SKIP-GUARD: when this macro is already defined the whole era body is skipped — the
+#  host facade world (pso_bringup.h via bringup/include/dolphin/os/OSAlloc.h) re-supplies the
+#  same surface under its OWN guard, so era-copy collision is certain whenever the facade wins
+#  the angle race first; apply-6/7 finding by P2-TL docs/p2-tail-1.md §4 + P2-D4 probes)
 FILES = [
     ("libs/dolphin/include/dolphin/gx/GXVert.h", "dolphin/gx/GXVert.h", 25),
     ("libs/dolphin/include/dolphin/os/OSExec.h", "dolphin/os/OSExec.h", 25),
-    ("libs/dolphin/include/dolphin/dvd.h", "dolphin/dvd.h", 196),
+    # apply-7 (docs/p2-tail-1.md §4): the host facade pso_bringup.h re-supplies
+    # DVDCommandBlock/DVDFileInfo/DVDGetCommandBlockStatus under guard
+    # PSO_BRINGUP_H but with DIVERGENT spellings (void* id not DVDDiskID*,
+    # non-const proto). When that facade wins the <dolphin/os/OSAlloc.h> angle
+    # race first, those three era constructs collide. Skip ONLY them (anchor-
+    # guarded, fail-loud) and keep the rest of the era body — notably DVDDiskID,
+    # which era os.h (OSBootInfo) embeds and pso_bringup does NOT define.
+    ("libs/dolphin/include/dolphin/dvd.h", "dolphin/dvd.h", 196, "PSO_BRINGUP_H"),
     ("include/pso/quest/QuestDownloadServer.h", "pso/quest/QuestDownloadServer.h", 134),
     # apply-6 integrator erratum: self-heal claim holds only for TUs that hit
     # a shipped shadow first; src/pso/system/RelModule.cpp includes OSLink.h
@@ -56,7 +67,19 @@ FILES = [
     ("libs/dolphin/include/dolphin/os/OSLink.h", "dolphin/os/OSLink.h", 27),
 ]
 
-for src, dest, site in FILES:
+# For a skip-guarded file: exact whole-line anchors whose blocks to hide under
+# `#ifndef <guard>`. open=first line of the construct, close=its terminating line.
+SKIP_BLOCKS = {
+    "libs/dolphin/include/dolphin/dvd.h": [
+        ("struct DVDCommandBlock {", "};"),
+        ("struct DVDFileInfo", "};"),
+        ("s32 DVDGetCommandBlockStatus(const DVDCommandBlock* block);", None),
+    ],
+}
+
+for entry in FILES:
+    src, dest, site = entry[0], entry[1], entry[2]
+    skip_guard = entry[3] if len(entry) > 3 else None
     with open(os.path.join(DECOMP, src), "r", encoding="utf-8", errors="strict") as fh:
         lines = fh.readlines()
     idx = next(i for i, l in enumerate(lines) if "AT_ADDRESS(" in l)
@@ -64,6 +87,31 @@ for src, dest, site in FILES:
         sys.exit(f"STALE PIN: {src}: first AT_ADDRESS at line {idx+1}, generator says {site}")
     dst = os.path.join(OUT, dest)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
+    body = lines[:idx] + [PREAMBLE] + lines[idx:]
+    nblocks = 0
+    if skip_guard:
+        blocks = SKIP_BLOCKS.get(src)
+        if not blocks:
+            sys.exit(f"SKIP-GUARD: {src} has guard {skip_guard} but no SKIP_BLOCKS entry")
+        for open_anchor, close_anchor in blocks:
+            # find the open line (exact match, ignoring trailing newline)
+            try:
+                oi = next(i for i, l in enumerate(body) if l.rstrip("\n") == open_anchor)
+            except StopIteration:
+                sys.exit(f"SKIP-GUARD: open anchor not found in {src}: {open_anchor!r}")
+            if close_anchor is None:
+                ci = oi
+            else:
+                ci = next((i for i in range(oi, len(body))
+                           if body[i].rstrip("\n") == close_anchor), None)
+                if ci is None:
+                    sys.exit(f"SKIP-GUARD: close anchor not found after {open_anchor!r}")
+            wrap = ([f"#ifndef {skip_guard}  /* facade owns this (apply-7) */\n"]
+                    + body[oi:ci + 1]
+                    + [f"#endif  /* !{skip_guard} */\n"])
+            body = body[:oi] + wrap + body[ci + 1:]
+            nblocks += 1
     with open(dst, "w", encoding="utf-8") as fh:
-        fh.writelines(lines[:idx] + [PREAMBLE] + lines[idx:])
-    print(f"{dest}: era {len(lines)} lines verbatim + preamble before :{site}")
+        fh.writelines(body)
+    print(f"{dest}: era {len(lines)} lines verbatim + preamble before :{site}"
+          + (f" + {nblocks} facade-skip block(s) !{skip_guard}" if skip_guard else ""))

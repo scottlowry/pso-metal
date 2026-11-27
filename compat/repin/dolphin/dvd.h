@@ -33,6 +33,7 @@ typedef struct DVDDiskID {
     u8 padding[22];
 } DVDDiskID;
 
+#ifndef PSO_BRINGUP_H  /* facade owns this (apply-7) */
 struct DVDCommandBlock {
     DVDCommandBlock* next;
     DVDCommandBlock* prev;
@@ -47,7 +48,9 @@ struct DVDCommandBlock {
     DVDCBCallback callback;
     void* userData;
 };
+#endif  /* !PSO_BRINGUP_H */
 
+#ifndef PSO_BRINGUP_H  /* facade owns this (apply-7) */
 struct DVDFileInfo
 {
  DVDCommandBlock cb;
@@ -55,6 +58,7 @@ struct DVDFileInfo
  u32 length;
  DVDCallback callback;
 };
+#endif  /* !PSO_BRINGUP_H */
 
 typedef struct DVDDir {
     u32 entryNum;
@@ -109,7 +113,9 @@ s32 DVDCancel(volatile DVDCommandBlock* block);
 s32 DVDChangeDisk(DVDCommandBlock* block, DVDDiskID* id);
 BOOL DVDChangeDiskAsync(DVDCommandBlock* block, DVDDiskID* id, DVDCBCallback callback);
 
+#ifndef PSO_BRINGUP_H  /* facade owns this (apply-7) */
 s32 DVDGetCommandBlockStatus(const DVDCommandBlock* block);
+#endif  /* !PSO_BRINGUP_H */
 s32 DVDGetDriveStatus();
 BOOL DVDSetAutoInvalidation(BOOL doAutoInval);
 void* DVDGetFSTLocation();
