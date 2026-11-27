@@ -17,7 +17,7 @@ line; where the receipt predates apply-8 the era is named. Consistency audit:
 | executing suites (`bash host/bringup/run.sh`) | **200/200 PASS**, exit 0 | `docs/p2-ladder7-play2.md`, re-verified integrator 2026-11-27 |
 | frame-loop test binary | **43/43 PASS** (28 PLAY-1 + 15 PLAY-2) | `docs/p2-ladder7-play2.md:29` |
 | display-list replay | **210/210** samples, verify_failures=0 | `docs/p2-stitch-apply7.md:56` |
-| logo window gates | era **12/12** + alt regime **10/10**; readback coverage + fnv anchor — **all self-consistency gates; genuine-record decode disputed (CI14), see issue #8** | `docs/p2-stitch-apply7.md:56-57`, `docs/p2-v-wave.md:164` |
+| logo window gates | genuine regime **13/13** (incl. L7-P4 coherence + wrong-decode canary) + fixture/AV-1 regimes green; human-verified render | `docs/p2-oracle-1.md` §5, integrator suite rerun 2026-11-27 (WIN_RC=0) |
 | first-link boot slice | **8/8 receipts** (Mach-O) | `docs/p2-stitch-apply7.md:60` |
 | waiver machine | **2,946 / 3,333** asserts over **1,549** types | `docs/p2-stitch-apply7.md:51`; disk `build/waivers/waiver-status.txt` |
 | big-endian hazard index | 629 files carry ≥1 hazard (of 3,814 scanned) | `docs/be-index-summary.md` §intro |
@@ -37,7 +37,7 @@ fail-loud generators (`AGENTS.md` §2); host code supplies seams only.
 | 3 | GSL archive table walk (era `find_gsl_entry` verbatim) | same run.sh; `docs/p2-tex-supply.md` |
 | 4 | GVRT/GVPL texture supply: synthetic 32×32 PAL8 GVR walked by the era chunk finder | same run.sh; `docs/p2-tex-supply.md`, commit-era note in `docs/p2-public-audit-1.md` §1c |
 | 5 | texture consumer chain (Ginja table → upload doorstep) | same run.sh; `docs/p2-gx-tex-consumer.md` |
-| 6 | logo driver: era CLUT supply chain end-to-end into a Metal drawable, pixel-readback gated — **caveat:** gates are self-consistency proofs; genuine-record decode is disputed (CI14 vs PAL8 label), see issue #8 | `docs/p2-v-wave2.md`, `docs/p2-v-wave3.md:38,57-77` + erratum in `docs/p2-oracle-1.md` (in flight) |
+| 6 | logo driver: era CLUT supply chain end-to-end into a Metal drawable — genuine plate **owner-verified rendering**; TI 8×4 + RGB5A3 fixes landed with coherence gate + canary | `docs/p2-oracle-1.md` §5 (fix receipts, honest hash moves), issue #8 (closed) |
 | 7 | title frame loop: five promoted `TLogo::run_frame` legs execute era bodies verbatim, order-matched against the era source, with flip probes reading real era stores back | `docs/p2-ladder7-1.md` §1-2 (28/28) |
 | boot slice | first linked LP64 Mach-O: era PRS/heap/DVD chain, 8/8 receipts | `docs/p2-stitch-apply7.md:59-60`, `docs/p2-first-link.md` |
 

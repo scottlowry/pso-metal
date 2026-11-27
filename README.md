@@ -12,16 +12,15 @@ Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube
 from — [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp), consumed as a
 pinned read-only input.
 
-Status: **Phase 3 — the logo supply chain runs; the logo picture was broken — root cause found.**
-Era texture-supply code (`init_and_load_tlut` → GVRT/GVPL chain → CLUT expand)
-executes natively end-to-end in real era call order into a Metal drawable. The
-genuine disc record's bytes and the CI8 palette label were always right; the era
-container stores texels **TI 8×4-tiled** (decisive witness: `GXGetTexBufferSize`
-in the era disassembly + `GXEnum.h:144-179`), and our readback gates — all
-self-consistency proofs — never noticed the flat-vs-tiled addressing error.
-Fix in flight, tracked in [issue #8](https://github.com/scottlowry/pso-metal/issues/8);
-decode candidate board passed the machine coherence metric (0.276) and awaits
-owner confirmation. The first linked LP64 Mach-O boots the era logic with 8/8 receipts.
+Status: **Phase 3 — the logo draws, verified by human eyes.**
+Era texture-supply code (`init_and_load_tlut` → GVRT/GVPL chain → CLUT expand) executes
+natively end-to-end in real era call order into a Metal drawable. The genuine
+disc signboard plate renders correctly: the two-era defect (flat-vs-**TI 8×4**
+texel addressing + RGB5A3 bit-widths, root-caused via the era `GXGetTexBufferSize`
+disassembly) is fixed, the fix byte-matches the candidate the owner identified on
+the decode board, and a new coherence gate ships with a wrong-decode canary that
+fails by design (`docs/p2-oracle-1.md` §5; issue #8 closed).
+The first linked LP64 Mach-O boots the era logic with 8/8 receipts.
 
 ## What this is / isn't
 
@@ -67,7 +66,7 @@ owner confirmation. The first linked LP64 Mach-O boots the era logic with 8/8 re
 | arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
 | true-LP64 parse, official adopted shape | **1,167 / 1,680 (69.5%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
-| logo | era CLUT supply chain **executing**; genuine 256×256 record byte-verified end-to-end, palette label (CI8) correct per era `GXEnum.h`/`GXGetTexBufferSize` disassembly witness — **rendering defect root-caused to flat-vs-TI-8×4 texel addressing** (+ RGB5A3 444-vs-555 leg), machine-coherent fixed decode awaiting owner eyeball; gates so far are self-consistency proofs, coherence gate being added — issue #8, `docs/p2-oracle-1.md` |
+| logo | era CLUT supply chain **executing and human-verified**: genuine 256×256 signboard plate renders owner-confirmed art (TI 8×4 expand + RGB5A3/BE-carrier fixes per era disassembly witness); gate set now includes L7-P4 coherence with planted wrong-decode canary; pre/post fix hashes recorded honestly in `docs/p2-oracle-1.md` §5 |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
 | suites | bring-up **200/200** (ladders 1–7 PLAY-2 + HG-1 handle golden) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 (self-consistency gates — see logo row) · VI both branches · link 8/8 — measured `docs/p2-ladder7-play2.md`, `docs/p2-stitch-apply7.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
