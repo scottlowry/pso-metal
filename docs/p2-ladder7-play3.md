@@ -117,4 +117,5 @@ decomposition. Remaining crossings, none gating the rung-5 EXIT:
 GREEN** (×2 back-to-back, exit 0); generator receipt:
 `python3 host/bringup/gen_ladder7_runframe.py $DECOMP_ROOT /tmp/x.cpp`
 (24 slices + 5 anchors; replay `cmp` clean). Tips: 3fd635b (slices),
-d3e7c69 (prelude), c81d4f6 (seam), 00f9c02 (test+run.sh), this doc.
+d3e7c69 (prelude), c81d4f6 (seam), 00f9c02 (test+run.sh), 6b0aa12 (g_walk_cnt
+landed-state addendum), this doc.
