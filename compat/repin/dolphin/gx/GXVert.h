@@ -1,0 +1,180 @@
+#ifndef _DOLPHIN_GXVERT
+#define _DOLPHIN_GXVERT
+
+#include <dolphin/types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define GXFIFO_ADDR 0xCC008000
+
+typedef union {
+  u8 u8;
+  u16 u16;
+  u32 u32;
+  u64 u64;
+  s8 s8;
+  s16 s16;
+  s32 s32;
+  s64 s64;
+  f32 f32;
+  f64 f64;
+} PPCWGPipe;
+
+/* --- P2-MA MWCC-dialect preamble (shadow-only; docs/p2-mwccasm-1.md) ------
+ * The era line below spells an MWCC/CodeWarrior absolute-address variable
+ * binding:  `T name AT_ADDRESS(addr);`  with the era types.h spelling
+ * `#define AT_ADDRESS(addr) : (addr)` (colon declarator). clang/C11/C++17
+ * rejects it ("expected ';' after top level declarator" cascade). The pin is
+ * a guest-linker contract with no clang parse-world analogue; host executing
+ * builds route these names through D4 facades, so the macro is neutralized
+ * empty here, per the P2-T precedent (compat/dialect/pso_dialect_compat.h
+ * section 1: "a port defines the pin empty"). One neutralization serves the
+ * whole TU: it also repairs era sites reached WITHOUT their own shadow
+ * (os.h:125-136, OSLink.h:27-28, dsp/dsp.h:10) when any chain hits this file
+ * first. Everything else below is era-VERBATIM. Guard name is era-identical,
+ * so the era copy and this copy can never both process in one TU, and the
+ * collision pin (compat/collision/pin_dolphin_types.h, which occupies the
+ * _DOLPHIN_TYPES_H_ guard but never any header guard below) does not
+ * suppress this file. */
+#ifdef AT_ADDRESS
+#undef AT_ADDRESS
+#endif
+#define AT_ADDRESS(addr) /* P2-MA: era address pin dropped host-side (parse world) */
+
+volatile PPCWGPipe GXWGFifo AT_ADDRESS(GXFIFO_ADDR);
+
+#ifdef TARGET_PC
+
+void GXPosition3f32(f32 x, f32 y, f32 z);
+void GXPosition3u16(u16 x, u16 y, u16 z);
+void GXPosition3s16(s16 x, s16 y, s16 z);
+void GXPosition3u8(u8 x, u8 y, u8 z);
+void GXPosition3s8(s8 x, s8 y, s8 z);
+
+void GXPosition2f32(f32 x, f32 y);
+void GXPosition2u16(u16 x, u16 y);
+void GXPosition2s16(s16 x, s16 y);
+void GXPosition2u8(u8 x, u8 y);
+void GXPosition2s8(s8 x, s8 y);
+
+void GXPosition1x16(u16 index);
+void GXPosition1x8(u8 index);
+
+void GXNormal3f32(f32 x, f32 y, f32 z);
+void GXNormal3s16(s16 x, s16 y, s16 z);
+void GXNormal3s8(s8 x, s8 y, s8 z);
+
+void GXNormal1x16(u16 index);
+void GXNormal1x8(u8 index);
+
+void GXColor4u8(u8 r, u8 g, u8 b, u8 a);
+
+void GXColor3u8(u8 r, u8 g, u8 b);
+
+void GXColor1u32(u32 clr);
+void GXColor1u16(u16 clr);
+
+void GXColor1x16(u16 index);
+void GXColor1x8(u8 index);
+
+void GXTexCoord2f32(f32 s, f32 t);
+void GXTexCoord2u16(u16 s, u16 t);
+void GXTexCoord2s16(s16 s, s16 t);
+void GXTexCoord2u8(u8 s, u8 t);
+void GXTexCoord2s8(s8 s, s8 t);
+
+void GXTexCoord1f32(f32 s, f32 t);
+void GXTexCoord1u16(u16 s, u16 t);
+void GXTexCoord1s16(s16 s, s16 t);
+void GXTexCoord1u8(u8 s, u8 t);
+void GXTexCoord1s8(s8 s, s8 t);
+
+void GXTexCoord1x16(u16 index);
+void GXTexCoord1x8(u8 index);
+
+extern void GXEnd(void);
+
+#else
+
+static inline void GXPosition2f32(f32 x, f32 y) {
+  GXWGFifo.f32 = x;
+  GXWGFifo.f32 = y;
+}
+
+static inline void GXPosition3s16(s16 x, s16 y, s16 z) {
+  GXWGFifo.s16 = x;
+  GXWGFifo.s16 = y;
+  GXWGFifo.s16 = z;
+}
+
+static inline void GXPosition3f32(f32 x, f32 y, f32 z) {
+  GXWGFifo.f32 = x;
+  GXWGFifo.f32 = y;
+  GXWGFifo.f32 = z;
+}
+
+static inline void GXNormal3f32(f32 x, f32 y, f32 z) {
+  GXWGFifo.f32 = x;
+  GXWGFifo.f32 = y;
+  GXWGFifo.f32 = z;
+}
+
+static inline void GXColor1u32(u32 clr) {
+  GXWGFifo.u32 = clr;
+}
+
+static inline void GXColor4u8(u8 r, u8 g, u8 b, u8 a) {
+  GXWGFifo.u8 = r;
+  GXWGFifo.u8 = g;
+  GXWGFifo.u8 = b;
+  GXWGFifo.u8 = a;
+}
+
+static inline void GXTexCoord2s16(s16 u, s16 v) {
+  GXWGFifo.s16 = u;
+  GXWGFifo.s16 = v;
+}
+
+static inline void GXPosition2s16(s16 x, s16 y)
+{
+  GXWGFifo.s16 = x;
+  GXWGFifo.s16 = y;
+}
+
+static inline void GXPosition2u16(u16 x, u16 y)
+{
+  GXWGFifo.u16 = x;
+  GXWGFifo.u16 = y;
+}
+
+static inline void GXTexCoord2f32(f32 u, f32 v) {
+  GXWGFifo.f32 = u;
+  GXWGFifo.f32 = v;
+}
+
+static inline void GXTexCoord2u8(u8 u, u8 v)
+{
+  GXWGFifo.u8 = u;
+  GXWGFifo.u8 = v;
+}
+
+static inline void GXPosition1x8(u8 index) {
+  GXWGFifo.u8 = index;
+}
+
+static inline void GXTexCoord2u16(u16 s, u16 t) {
+    GXWGFifo.u16 = s;
+    GXWGFifo.u16 = t;
+}
+
+static inline void GXEnd(void) {}
+
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
