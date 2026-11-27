@@ -88,3 +88,14 @@ TWindowMenuMainMenu	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowMen
 WallHitPacket	LOCKED-FORMAT	OVERLAY-CAST	src/pso/object/fence/TOVS2Wall01.cpp:94	HIGH
 TPhotonBlastSequence	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/player/TPhotonBlastSequence.h:44	HIGH
 TSendAction	LOCKED-FORMAT	FORMAT-TABLE-H	include/pso/network/protocol/packet_classes.h:1	HIGH
+GcciRequest	RUNTIME-WAIVE	POINTER-CLASS	include/pso/system/GcciRequests.h:29	HIGH
+TWindowActionPalette	RUNTIME-WAIVE	VIRTUAL-CLASS	src/pso/ui/window/TWindowActionPalette.cpp:35	HIGH
+RecoilWeaponView	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/weapon/SpecialProjectileWeaponsTypes.h:12	MED
+BmlArchiveEntry	LOCKED-FORMAT	AK-pre-collision	include/pso/system/BmlResourceTypes.h:38	HIGH
+BmlModelLoadRequest	RUNTIME-WAIVE	POINTER-CLASS	include/pso/system/BmlResourceTypes.h:14	HIGH
+Boss4ZakoDrawBuffer	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/boss/darkfalz/TBoss4ZakoDrawBuffer.h:19	MED
+Boss4ZakoDrawEntry	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/boss/darkfalz/TBoss4ZakoDrawBuffer.h:18	MED
+EquippedItemDrawQueue	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/item/EquippedItemDrawQueue.h:23	MED
+NetworkPacketBufferDescriptor	RUNTIME-WAIVE	POINTER-CLASS	src/pso/network/NetworkPacketRuntime.c:144	HIGH
+RawIpv6Receive	RUNTIME-WAIVE	POINTER-CLASS	src/pso/network/NetApi.c:39	HIGH
+ShinowaBattleTables	RUNTIME-WAIVE	POINTER-CLASS	src/pso/enemy/shinowa/TObjEneMe3Shinowa.cpp:76	HIGH
