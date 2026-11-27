@@ -1,0 +1,16 @@
+type	new-verdict	evidence-type	file:line	confidence
+CharacterSaveRecord	LOCKED-FORMAT	AK-pre-collision	include/pso/system/CharacterSaveRecordLookup.h:88	HIGH
+NetBufferPool	RUNTIME-WAIVE	POINTER-CLASS	include/pso/network/NetIpv6Route.h:53	MED
+TWindowKeyBoardSoft	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowKeyBoardSoft.h:57	HIGH
+NetSession	RUNTIME-WAIVE	POINTER-CLASS	include/pso/network/ModemSession.h:130	HIGH
+PppProtoBlocks	RUNTIME-WAIVE	FORMAT-TABLE-H	docs/p1-format-net-disc.md:78	HIGH
+TWindowKeyBoardBase	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowKeyBoardBase.h:124	HIGH
+TObjEneMe3SinowZoa	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/enemy/sinowzoa/TObjEneMe3SinowZoa.h:140	HIGH
+TBoss4Type3	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/darkfalz/TBoss4Type3.h:171	HIGH
+TBoss6Type2	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/olgaflow/TBoss6Type2.h:360	HIGH
+TObjMapCsn	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/map/TObjMapCsn.h:38	HIGH
+TBoss4Zako	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/darkfalz/TBoss4Zako.h:68	HIGH
+TBoss6Type1	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/olgaflow/TBoss6Type1.h:341	HIGH
+TContainerAncient01	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/object/container/TContainerAncient01.h:52	HIGH
+DragonAttackParams	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/boss/DragonAttackParams.h:17	HIGH
+TQuestListOnline	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/quest/TQuestListOnline.h:65	HIGH
