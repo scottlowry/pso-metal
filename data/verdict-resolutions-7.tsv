@@ -1,0 +1,26 @@
+type	new-verdict	evidence-type	file:line	confidence
+type	new-verdict	evidence-type	file:line	confidence
+ChangeShipOrBlockPacket	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(include/pso/network/TProtocol.h:176)	HIGH
+CharacterFileSlot	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-saves.md:64)	HIGH
+CharacterSaveInfoPacket	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(include/pso/network/TProtocol.h:167)	HIGH
+ChoiceSearchPacket	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+ChoiceSearchResultList	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+DhcpMessage	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(NO-PROMOTION: NetDhcp.h absent from H §1.2/§1.3 rows)	HIGH
+EndingWallTextureSet	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(NO-PROMOTION: not in G/H)	HIGH
+G_ModifyTradeProposal_6xA6	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(include/pso/network/protocol/subcmd_6x.h:703)	HIGH
+G_SendGuildCard_6x06	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-net-disc.md:14)	HIGH
+Ipv6NdMtuOption	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(include/pso/network/NetIPv6NeighborDiscovery.h:63)	HIGH
+Ipv6NdPrefixInfoOption	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(include/pso/network/NetIPv6NeighborDiscovery.h:50)	HIGH
+OnlineQuestMenu	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-net-disc.md:42)	HIGH
+Pso3CharacterFile	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-saves.md:64)	HIGH
+Pso3CharacterFileSlot	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-saves.md:64)	HIGH
+TPlyJoinData	LOCKED-FORMAT	wire-census-membership	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TPlyJoinLobby	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TRegister	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TSendAction	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TSendLogin	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TSendPsoRegist	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TSendQuestStatistic	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+TSendVerifyLicense	LOCKED-FORMAT	embed-pinned-sustain	data/flip-risk-ledger.tsv(gate=packet_header LOCKED docs/p1-format-net-disc.md:179)	HIGH
+gsl_archive_entries	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(docs/p1-format-net-disc.md:112)	HIGH
+packet_header	LOCKED-FORMAT	AK-census-yes-promotion	data/flip-risk-ledger.tsv(include/pso/network/protocol/protocol.h:14-19)	HIGH
