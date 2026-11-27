@@ -51,11 +51,16 @@ const char *const l7_call_names[] = {
     "render_geometry", "render_effects", "render_particle_effects",
     "render_objects", "render_ui", "render_clipout_and_fade",
     "render_info_icon_overlay",
+    "rt1:kbd_run_tasks", "rt2:begin_effect_render", "rt3:zmode_always",
+    "rt4:restore_full_screen_view", "rt5:set_cull_none", "rt6:debug_text",
+    "rt7:zmode_lequal", "rt8:viewport_640x480", "rt9:set_cull_none2",
+    "rt10:end_effect_render", "rt11:copy_efb", "rt12:present_once",
+    "rt13:eor_run_tasks",
 };
-int g_call_seq[160];
+int g_call_seq[512];
 int g_call_n;
 int g_begin_gx_calls, g_ctrl_calls, g_kbd_calls;
-int g_render_tick_calls;                  /* render_tick stays counted until PLAY-3 slices it */
+int g_render_tick_calls;                  /* PLAY-3: incremented at render_tick's FIRST statement (leg 1 :492 epoch, era-faithful tick count) */
 int g_cam_mode;
 Vec g_pose_a, g_pose_b;
 int g_adxf_open_calls, g_adxf_readnw_calls, g_adxf_getstat_calls;
@@ -87,13 +92,33 @@ u8 g_pass_trace[16];
 int g_pass_n;
 u32 g_flags_at_subpass;
 
+/* ---- PLAY-3 era zero-defs (spec §2.3; homes verified against the pinned tree
+ * this lane) + seam state (probes P10-P12 + invariants I3a..d REAL-read) ---- */
+s32 lbl_805D3584 = 1;            /* .data INIT 1 — TLobby_801E2F94.cpp:108 (spec §3 D7) */
+s8  scene_fog_enable_flag;       /* .bss zero — SceneFog.cpp:13 */
+void *video_current_framebuffer; /* .bss zero — gjSystem.c:23 */
+int g_fog_reads, g_clearshadow_calls, g_soundframe_calls, g_rfs_calls;
+int g_dbgtext_calls; u32 g_dbgtext_arg;
+int g_zmode_calls; int g_zmode_trace[3][3];
+int g_cull_calls, g_cull_mode;
+int g_vp_calls; float g_vp_l, g_vp_t, g_vp_w, g_vp_h, g_vp_n, g_vp_f;
+int g_colorupdate_calls;
+void *g_copydisp_fb; int g_copydisp_clear, g_copydisp_calls;
+int g_drawdone_calls, g_present_calls;
+/* per-render_tick capture epochs — render_tick's FIRST statement (leg 1,
+ * :492 -> TObjPlayer::clear_shadow_pass_request, the leg's first inner extern)
+ * opens each tick, so the in-tick call ordinal maps legs 3/7/11 (zmode),
+ * 5/9 (cull) and 2/10 (apply-fog) to their LC7_RT* notes in era order. */
+static int g_tick_zmode, g_tick_cull, g_tick_fog;
+
 /* ---- counted seams around the promoted five (L7-2, LOGO-2 shape) ---- */
 void begin_gx_frame(void) { l7_note(LC7_BEGIN_GX); g_begin_gx_calls++; }   /* real slice: gx tree LOGO-1 */
 void activate_camera_mode(s32 mode) { g_cam_mode = mode; l7_note(LC7_ACT_CAM_MODE); }
 void set_active_camera_pose(Vec *a, Vec *b) { g_pose_a = *a; g_pose_b = *b; l7_note(LC7_SET_POSE); }
 void controller_stuff(void) { l7_note(LC7_CTRL_STUFF); g_ctrl_calls++; }
 void update_keyboard_input_frame(void) { l7_note(LC7_KBD_FRAME); g_kbd_calls++; }
-void render_tick(void) { l7_note(LC7_RENDER_TICK); g_render_tick_calls++; }        /* Play 3 */
+/* PLAY-3: the render_tick counter body LEAVES — the seam is a REAL verbatim
+ * slice now (TLobby_801E2F94.cpp:491-505, glue); its legs count/capture below. */
 
 /* ---- counted tree-walk stand-in (LB-2 roster joins: RS §3 — reuse, no new
  * mechanism; era body TObject::run_tasks @TObject.cpp:116 walks child
@@ -108,6 +133,7 @@ void TObject::run_tasks() {
               : (this == &keyboard_task_object)    ? WALK_KBD : WALK_EOR;
     g_walk_flags = main_task.task_flags;            /* capture the caller's LIVE flags */
     l7_note(LC7_WALK_MAIN + (g_walk_root - WALK_MAIN));
+    if (g_walk_root == WALK_EOR) l7_note(LC7_RT13); /* leg 13 first-inner extern (spec §2.3 note rule) */
 }
 /* ---- counted pixel sub-passes (RS Play 2: the 8 stay counters; pixels keep
  * riding LOGO-3's single present). Each records the LIVE render_pass/
@@ -125,6 +151,46 @@ void TMainTask::render_objects()         { l7_subpass(LC7_OBJ,  &g_obj);  }
 void TMainTask::render_ui()              { l7_subpass(LC7_UI,   &g_ui);   }
 void TMainTask::render_clipout_and_fade(){ l7_subpass(LC7_CLIP, &g_clip); }
 void render_info_icon_overlay(void)      { l7_subpass(LC7_INFO, &g_info); }
+
+/* ---- PLAY-3 render_tick leg backings (spec §2.2 roster; era calls reach these
+ * from the VERBATIM slices in the glue — render_tick :491-505,
+ * TKeyBoardControl::run_tasks :100-107, run_end_of_render_tasks :113-115,
+ * begin/end_effect_render EffectRender.cpp:10/:12, set_cull_none :39,
+ * copy_efb :52-57, present_frame :59-61). ---- */
+/* leg 1 (:492) — first-inner counted extern; ALSO opens the tick capture epoch. */
+void TObjPlayer::clear_shadow_pass_request() {
+    l7_note(LC7_RT1); g_clearshadow_calls++; g_render_tick_calls++;   /* :492 is render_tick's first statement — tick count rides the epoch (receipt note) */
+    g_tick_zmode = g_tick_cull = g_tick_fog = 0;
+}
+void update_global_sound_frame(void) { g_soundframe_calls++; }        /* leg 1 — counted (musyx chain, SoundPlayback.cpp:232) */
+/* leg 10 inner (#2) / leg 2 inner (#1): (d) pixel chain — counted, reads the REAL
+ * fog flag the enable/disable slices just stored (P10/I3d). RT2/RT10 notes. */
+void apply_scene_fog(void) { int i = g_tick_fog++; g_fog_reads++;
+    l7_note(i == 0 ? LC7_RT2 : LC7_RT10); }
+void TCameraCtrl::restore_full_screen_view() { l7_note(LC7_RT4); g_rfs_calls++; }  /* leg 4 (d) — era TCameraCtrl.cpp:1148-1156 statics, lane J; camera_ctrl_instance era NULL (L7-1) */
+void render_debug_text(u32 enabled) { l7_note(LC7_RT6); g_dbgtext_calls++; g_dbgtext_arg = enabled; }  /* leg 6 (d) — era DebugFont.cpp:140 text chain; arg = lbl_805D3584 (era INIT 1, §3 D7) */
+/* GX capture seams (legs 3,5,7,8,9,11-inner): args logged, no state, no hardware.
+ * In-tick ordinals map to era text positions: zmode #1=:494 #2=:498 #3=copy_efb :53;
+ * cull #1=:496 #2=:500. */
+void GXSetZMode(s32 test, s32 comp, s32 mask) {
+    int i = g_tick_zmode++; g_zmode_calls++;
+    if (i < 3) { g_zmode_trace[i][0] = test; g_zmode_trace[i][1] = comp; g_zmode_trace[i][2] = mask; }
+    l7_note(i == 0 ? LC7_RT3 : (i == 1 ? LC7_RT7 : LC7_RT11));
+}
+void GXSetCullMode(s32 mode) { int i = g_tick_cull++; g_cull_calls++; g_cull_mode = mode;
+    l7_note(i == 0 ? LC7_RT5 : LC7_RT9); }
+void GXSetViewport(float left, float top, float width, float height, float near, float far) {
+    l7_note(LC7_RT8); g_vp_calls++;
+    g_vp_l = left; g_vp_t = top; g_vp_w = width; g_vp_h = height; g_vp_n = near; g_vp_f = far;
+}
+void GXSetColorUpdate(s32 on) { (void)on; g_colorupdate_calls++; }
+void GXCopyDisp(void *fb, s32 clear) { g_copydisp_calls++; g_copydisp_fb = fb; g_copydisp_clear = clear; }
+void GXDrawDone(void) { g_drawdone_calls++; }
+/* leg 12 SINGLE-present seam (:503 -> present_frame_and_wait_vsync): one note +
+ * one count per render_tick — a second present must never appear (RS §3, I3b).
+ * The gx tree rides the EXISTING LOGO-3 backing (host/gx/dl — sibling seat);
+ * bringup never re-mints it (spec §2.2 leg 12). */
+void present_frame_and_wait_vsync(void) { l7_note(LC7_RT12); g_present_calls++; }
 
 /* LB-2 pump-count seam (RS §3: wait_ready_loop JOINS this roster, no new
  * mechanism). Era-true disk-present path: run_disk_error_check()==1 returns
@@ -185,3 +251,7 @@ s32 check_sound_pitch_request_range(s32 slot, s32 flag) {
     (void)slot; (void)flag; l7_fatal("check_sound_pitch_request_range"); return 0;
 }
 void stop_sound_request(s32 idx) { (void)idx; l7_fatal("stop_sound_request"); }
+/* PLAY-3 LB-3: the :103 guard inside the REAL TKeyBoardControl::run_tasks slice
+ * (SystemBootInit.cpp:103) is era-unreachable with sound_requests_enabled==0;
+ * any fire is a contract violation (P12 proves the guard load is real). */
+void update_music_sequencer(void) { l7_fatal("update_music_sequencer"); }
