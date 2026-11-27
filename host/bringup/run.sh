@@ -51,4 +51,8 @@ echo "== P2-HG1 handle-program golden: window registry bound on the crt0 era-win
 "$R/build/bringup/bin/hg1_test"
 echo "hg1_test: EXIT=0"
 echo
+echo "== P2-HG2 static-tree golden: crt0 4th anchor row W-STATIC-TREE [0x80080000,0x80081000) <-> arena+0x80000 (STA1 §3); pso_static_tree_stage() stages the 82x32 blob (81 census cells + texlist_null_name rider) + ONE L-IMAGE bind; unbound-reject pre-stage, per-cell VALUE/CROSSING/CONTENT byte-exact vs python-generated era vectors (246 acceptance asserts), TEffect.cpp:98-style texlist chain-walk through the registry, RW-arena memmove-into-payload era fidelity, and the NEGATIVE CANARY — g2h(0x80081000) exclusive end MUST trip where the legacy single-base fallback would resolve silently (docs/p2-static-init-1.md §5) =="
+"$R/build/bringup/bin/hg2_test"
+echo "hg2_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"

@@ -17,8 +17,9 @@
  * registry-backed resolver (gate-can-fail proof, STA1 §5).
  * Expected vectors: pso_st_{blob,name,slot,cell_len,site}[] are EMITTED by
  * host/bringup/gen_hg2_static_tree.py from the era sources READ-ONLY — this
- * file hand-types no census bytes (the one literal in HG2.2 is the shorter
- * replacement name the era memmove path itself invents at runtime).
+ * file hand-types no census vectors (the only literals here are the two names
+ * STA1 §5 itself quotes for the HG2.2 legs, held as triple-against-generated
+ * cross-checks, and the "f256_mc" replacement the memmove path invents).
  */
 #include "hg2_static_tree.h"
 #include "pso_bringup.h"
@@ -37,6 +38,13 @@ static int cell_tail_zero(const u8 *host, u32 from) {
     for (u32 j = from; j < PSO_ST_CELL; j++) if (host[j]) return 0;
     return 1;
 }
+
+/* HG2.2 fabricated consumer shapes — era slot-space forms (NJS_TEXNAME 3 x u32
+ * per compat GinjaMaterialState.h; NJS_TEXLIST {textures@0, nbTexture@4} per
+ * NinjaTypes.h:65-68). Golden-internal mirrors: no era TU is linked here. */
+struct HG2TexName { u32 filename, attr, texture; };
+struct HG2TexList { u32 textures, nbTexture; };
+struct HG2Rec     { u32 textures; };
 
 int main(void) {
     setvbuf(stdout, 0, _IOLBF, 0);
@@ -127,7 +135,71 @@ int main(void) {
               pso_st_site[k], pso_st_name[k] ? pso_st_name[k] : "(rider)",
               pso_st_name[k] ? "" : " = 32 zero bytes");
     }
-    printf("== P2-HG2 golden (legs 0-1): %d/%d PASS (rejects=%u) ==\n",
+    /* ============ HG2.2 consumer leg: texlist chain-walk (STA1 §5) ============
+     * TEffect.cpp:10/:98 shape without touching batch-3's files: a POOL record
+     * stamps its texlist slot, the texlist stamps its entries slot, entries
+     * hold PSO_ST_SLOT values — texlist->texname->string ALL resolve through
+     * the SAME registry the 81 sites rely on. */
+    HG2Rec *rec = (HG2Rec *)(pso_arena_base + 0x34040u);
+    HG2TexList *L = (HG2TexList *)(pso_arena_base + 0x34100u);
+    HG2TexName *E = (HG2TexName *)(pso_arena_base + 0x34200u);
+    memset(rec, 0, sizeof *rec); memset(L, 0, sizeof *L);
+    memset(E, 0, 3 * sizeof *E);
+    E[0].filename = PSO_ST_SLOT(0);    /* "f008_white_npr01" (class A)       */
+    E[1].filename = PSO_ST_SLOT(54);   /* "ki_u256_vo_mo_moji001" (class B)  */
+    E[2].filename = PSO_ST_SLOT(81);   /* clear_texlist_names store shape    */
+    L->nbTexture = 3u;
+    u32 ts = pso_handle_stamp_once(&rec->textures, (const u8 *)L, PSO_W_POOL);
+    u32 es = pso_handle_stamp_once(&L->textures, (const u8 *)E, PSO_W_POOL);
+    CHECK(ts == 0x80034100u && rec->textures == 0x80034100u,
+          "HG2.2a genesis stamp 1: record@+0x34040 textures-slot := h2g_main(arena+0x34100) == 0x80034100 (TEffect.cpp:10 effect_texture_file shape)");
+    CHECK(es == 0x80034200u && L->textures == 0x80034200u && pso_handle_stamp_count() == 2u,
+          "HG2.2b genesis stamp 2: list@+0x34100 textures-slot := h2g_main(arena+0x34200) == 0x80034200; ledger holds exactly 2 genesis stamps");
+    HG2TexList *Lw = NJS_HANDLE(HG2TexList, rec->textures);
+    CHECK(Lw == L && Lw->nbTexture == 3u,
+          "HG2.2c link-1 resolve: rec->textures -> fabricated NJS_TEXLIST (registry walk, not fallback arithmetic)");
+    HG2TexName *tn = NJS_HANDLE(HG2TexName, Lw->textures);
+    CHECK(tn == E, "HG2.2d link-2 resolve: L->textures -> entries array (chain-walk like TEffect.cpp:98)");
+    const char *w0 = (const char *)NJS_HANDLE(char, tn[0].filename);
+    const char *w54 = (const char *)NJS_HANDLE(char, tn[1].filename);
+    const char *wr = NJS_HANDLE(char, tn[2].filename);
+    CHECK(tn[0].filename == PSO_ST_SLOT(0) && w0 && strcmp(w0, pso_st_name[0]) == 0
+          && strcmp(w0, "f008_white_npr01") == 0,
+          "HG2.2e entry0: filename slot 0x%08X -> staged \"%s\" byte-exact (the STA1 §1 rewrite pattern end-to-end)",
+          tn[0].filename, w0 ? w0 : "?");
+    CHECK(tn[1].filename == PSO_ST_SLOT(54) && w54 && strcmp(w54, pso_st_name[54]) == 0
+          && strcmp(w54, "ki_u256_vo_mo_moji001") == 0,
+          "HG2.2f entry1: cross-block cell 54 -> staged \"%s\" byte-exact (one window owns ALL four TUs)",
+          w54 ? w54 : "?");
+    CHECK(tn[2].filename == PSO_ST_SLOT(81) && wr && cell_tail_zero((const u8 *)wr, 0),
+          "HG2.2g RIDER: texlist_null_name cell resolves to 32 zero bytes — the clear-store target (NinjaUtil.cpp:12) + every aliased reader resolve INSIDE the window (STA1 §2 RIDER)");
+    rj = pso_handle_reject_count;
+    u32 cellval = PSO_ST_SLOT(79);
+    u8 *c79 = pso_njs_handle_g2h(cellval);
+    memmove(c79, "f256_mc", 8);        /* era replace_gvm_texture_directory / */
+                                       /* move_data write-INTO-the-name path  */
+    CHECK(rejects_since(rj) == 0 && cellval == PSO_ST_SLOT(79)
+          && pso_njs_handle_g2h(cellval) == c79
+          && strcmp((const char *)c79, "f256_mc") == 0
+          && c79[8] == (u8)'o' && cell_tail_zero(c79, 23),
+          "HG2.2h era write fidelity (optional STA1 §5 extension leg): memmove into cell 79 (TAdMcSelectCursorGC.cpp:20 payload) lands in the RW arena — slot value unchanged, bytes updated (new name visible, era remnant byte[8]='o' stands exactly as era move_data leaves it), ZERO rejects (a host .rodata target would SIGSEGV; the staging design is what keeps this path era-true)");
+
+    /* ============ HG2.3 NEGATIVE CANARY — exactly one (STA1 §5) ============ */
+    rj = pso_handle_reject_count;
+    u8 *got = pso_njs_handle_g2h(0x80081000u);   /* EXCLUSIVE end of the tree */
+    CHECK(got == 0 && rejects_since(rj) == 1,
+          "HG2.3a NEGATIVE CANARY TRIPS: g2h(0x80081000) — the static tree's exclusive end, covered by NO record — LOUD-REJECTS to NULL with reject_count +1 (gate-can-fail proof; a 4 KB -> 4 KB+32 span drift trips this)");
+    CHECK(got != pso_arena_base + 0x81000u
+          && pso_arena_base + (0x80081000u - PSO_HANDLE_GUEST_RAM_BASE) < pso_aram_base,
+          "HG2.3b legacy-single-base fallback TRIPPED: the AR-shadow body (base + slot - 0x80000000) would resolve 0x80081000 to arena+0x81000, a LIVE byte INSIDE [arena,aram) — silently; the registry-backed resolver refused it, so this golden rode the window contract (why STA1 §5 calls this the right canary)");
+    rj = pso_handle_reject_count;
+    CHECK(pso_njs_handle_g2h(PSO_ST_SLOT(0)) == pso_arena_base + PSO_ST_ARENA_OFF
+          && rejects_since(rj) == 0,
+          "HG2.3c contrast leg after the canary (HG1-J pattern): PSO_ST_SLOT(0) still resolves byte-exact — the registry never got wedged");
+    CHECK(pso_handle_reject_count == 2u && pso_handle_window_records() == 4u
+          && pso_handle_stamp_count() == 2u,
+          "HG2.4 reject arithmetic exact: 2 planted rejects (HG2.0c unbound-pre-stage + HG2.3a exclusive-end), 0 missing; 4 window records + 2 genesis stamps at exit");
+    printf("== P2-HG2 golden (legs 0-3): %d/%d PASS (rejects=%u) ==\n",
            total - failures, total, pso_handle_reject_count);
     return failures != 0;
 }
