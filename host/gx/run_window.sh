@@ -11,7 +11,7 @@ B=$(cd "$(dirname "$0")" && pwd)
 R=$(cd "$B/../.." && pwd)
 export PSO_FAKE_DISC="$B/../bringup/fake_disc"
 
-echo "== pso-metal P2-W gx window: build (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp}) =="
+echo "== pso-metal P2-W gx window: build (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp-port-pin}) =="
 make -C "$B" -f gx_window.mk all
 
 echo

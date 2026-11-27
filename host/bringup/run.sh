@@ -7,7 +7,7 @@ B=$(cd "$(dirname "$0")" && pwd)
 R=$(cd "$B/../.." && pwd)
 export PSO_FAKE_DISC="$B/fake_disc"
 
-echo "== pso-metal bringup: build (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp}) =="
+echo "== pso-metal bringup: build (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp-port-pin}) =="
 make -C "$B" -f bringup.mk "${MAKE_GOALS:-all}"
 
 echo

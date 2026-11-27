@@ -24,7 +24,7 @@ R=$(cd "$B/../../.." && pwd)
 export PSO_FAKE_DISC="$R/host/bringup/fake_disc"
 DEBUG=${1:-}
 
-echo "== pso-metal P2-Z/P2-AQ display-list: clean rebuild (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp}) =="
+echo "== pso-metal P2-Z/P2-AQ display-list: clean rebuild (DECOMP_ROOT=${DECOMP_ROOT:-$HOME/Hermes/pso-decomp/pso-decomp-port-pin}) =="
 make -C "$B" -f gx_dl.mk clean
 make -C "$B" -f gx_dl.mk all
 
