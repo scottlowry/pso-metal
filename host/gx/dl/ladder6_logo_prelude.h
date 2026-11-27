@@ -94,4 +94,61 @@ extern TMainTaskStub main_task;
 /* never-ready trap guard (row 8 / ledger 34): is_ready() member declared in
  * the shared tex prelude; returns 0, INVARIANT asserted at L7-R3. */
 
+/* ---- P2-BB V5-S1: era CLUT supply leg (GinjaTextureHeader.cpp home) -----
+ * The three bodies below arrive VERBATIM from the decomp in
+ * build/gxdl/gen/ladder6_logo_glue.cpp:
+ *   swap_u32_bytes      (GinjaTextureHeader.cpp:17, GVPL magic/size swap op)
+ *   load_gvpl_palette   (:35, era GVPL chunk consumer: magic gate, size-8
+ *                        byte-true move_data into palette->data, format +
+ *                        entry_count recorded)
+ *   init_and_load_tlut  (:56, era TLUT store: GXInitTlutObj + GXLoadTlut)
+ * Types mirror the era layout (include/pso/unk/text_803DAFA8.h:9-26) as a
+ * host-port copy — D4 keep-the-dolphin-tree-off-decl-rule. GXTlutObj is the
+ * era record (GXStruct.h:43 opaque u32[3] on TARGET_GC); the host seam holds
+ * the decoded {lut,fmt,count} so the CPU display path can read the loaded
+ * bank (era GXLoadTlut stores r->tlutObj = *t — GXTexture.c:445 — same job).
+ * DEVIATION BB-1 (this lane): GX_TL_RGB8-style 24-bit carrier — the era
+ * GXTlutFmt set is IA8/RGB565/RGB5A3 (GXEnum.h:782-787); the host CPU
+ * expand route (AV §2.2 bullet 2) needs an 8-bit-per-channel lossless
+ * carrier to reproduce 256 gray-ramp entries byte-exactly, so the seam
+ * decodes formats 0/1/2 era-quantized AND 3 = RGBA8 byte-true. The golden
+ * feeds format 3 through the era chain. R3: chunk words are supplied the
+ * psoBe working-value regime (magic u32 = PPC-lwz interpretation of 'GVPL',
+ * size likewise) exactly like the AN GVR fixture's GVRT desc bytes. */
+struct GvplChunk {
+    u32 magic;
+    u32 size;
+    u16 format;
+    s16 pad_0A;
+    s16 pad_0C;
+    s16 entry_count;
+    u8 data[1];
+};
+struct GvplPalette {
+    void *data;
+    u16 format;
+    s16 pad_06;
+    s16 pad_08;
+    s16 entry_count;
+};
+struct GXTlutObj { u32 dummy[3]; };
+typedef int GXTlutFmt;   /* same alias as host/gx/gx_era.h:23 (identical C++ retypedef is legal) */
+enum { GX_TL_IA8 = 0, GX_TL_RGB565 = 1, GX_TL_RGB5A3 = 2, GX_TL_RGBA8_PORT = 3 };  /* :3 = BB-1 carrier */
+
+s32 load_gvpl_palette(GvplChunk *chunk, GvplPalette *palette);   /* era slice */
+void init_and_load_tlut(s32 tlut_name, s32 format, s32 entry_count, void *entries);
+void swap_u32_bytes(u32 *word);
+
+/* GX TLUT seams (driver-owned storage; era call sites are the slices above). */
+extern "C" {
+void GXInitTlutObj(GXTlutObj *tlut_obj, void *lut, int fmt, unsigned short n_entries);
+void GXLoadTlut(GXTlutObj *tlut_obj, unsigned int tlut_name);
+}
+struct HostTlutBank {
+    void *lut; unsigned fmt; unsigned count; int loaded;
+};
+#define GXH_TLUT_BANKS 16
+extern HostTlutBank g_host_tlut_banks[GXH_TLUT_BANKS];
+extern int g_gxinit_tlut_calls, g_gxload_tlut_calls;
+
 #endif /* LADDER6_LOGO_PRELUDE_H */

@@ -41,4 +41,51 @@ static inline void gxh_pal8_clut_expand(const unsigned char *idx, unsigned char 
         gxh_pal8_rgba8(idx[i], rgba8 + (size_t)i * 4);
 }
 
+/* P2-BB V5-S1: expand through a LOADED TLUT BANK entry (era supply route:
+ * GVPL chunk -> load_gvpl_palette -> init_and_load_tlut -> GX seams ->
+ * HostTlutBank {lut,fmt,count}). Decode models per GXTlutFmt
+ * (libs/dolphin GXEnum.h:782-787 {IA8,RGB565,RGB5A3}) — 16-bit entries,
+ * u16 working values BE-carrier; format 3 = RGBA8 byte-true carrier per
+ * DEVIATION BB-1 (host CPU-expand route needs lossless 8-bit channels;
+ * era HW formats decode quantized). */
+static inline void gxh_tlut_rgba8(const void *lut, unsigned fmt,
+                                  unsigned char index, unsigned char rgba[4]) {
+    if (fmt == 3) {
+        const unsigned char *e = (const unsigned char *)lut + (size_t)index * 4;
+        rgba[0] = e[0]; rgba[1] = e[1]; rgba[2] = e[2]; rgba[3] = e[3];
+        return;
+    }
+    unsigned short v = ((const unsigned short *)lut)[index];
+    if (fmt == 0) {           /* IA8: (I<<8)|A -> gray with data alpha */
+        rgba[0] = rgba[1] = rgba[2] = (unsigned char)(v >> 8);
+        rgba[3] = (unsigned char)(v & 0xFF);
+    } else if (fmt == 1) {    /* RGB565 opaque */
+        rgba[0] = (unsigned char)(((v >> 11) & 0x1F) << 3);
+        rgba[1] = (unsigned char)(((v >> 5) & 0x3F) << 2);
+        rgba[2] = (unsigned char)((v & 0x1F) << 3);
+        rgba[3] = 255;
+    } else if (fmt == 2) {    /* RGB5A3: MSB=0 opaque RGB444, MSB=1 RGBA322 */
+        if (v & 0x8000) {
+            unsigned a = (v >> 12) & 7;
+            rgba[0] = (unsigned char)(((v >> 8) & 3) << 6);
+            rgba[1] = (unsigned char)(((v >> 4) & 3) << 6);
+            rgba[2] = (unsigned char)((v & 3) << 6);
+            rgba[3] = (unsigned char)(a == 7 ? 255 : a << 5);
+        } else {
+            rgba[0] = (unsigned char)(((v >> 8) & 0xF) << 4);
+            rgba[1] = (unsigned char)(((v >> 4) & 0xF) << 4);
+            rgba[2] = (unsigned char)((v & 0xF) << 4);
+            rgba[3] = 255;
+        }
+    }
+}
+
+/* expand w*h PAL8 through the loaded bank (V5 era supply path) */
+static inline void gxh_pal8_clut_expand_lut(const void *lut, unsigned fmt,
+                                            const unsigned char *idx,
+                                            unsigned char *rgba8, unsigned w, unsigned h) {
+    for (unsigned i = 0; i < w * h; i++)
+        gxh_tlut_rgba8(lut, fmt, idx[i], rgba8 + (size_t)i * 4);
+}
+
 #endif /* GX_LOGO_CLUT_H */

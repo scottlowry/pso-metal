@@ -26,9 +26,10 @@ OBJCFLAGS := -fobjc-arc -g -Wall -D_DARWIN_C_SOURCE -I$(BRINGUP)/include \
              -I$(GXDIR) -I$(DLDIR) -isysroot $(SDK) -target $(LINK_TARGET)
 FRAMEWORKS := -framework Foundation -framework AppKit -framework Metal -framework QuartzCore
 
-.PHONY: all clean logo
+.PHONY: all clean logo logo-av1
 all: $(BIN)/gx_dl
 logo: $(BIN)/gx_logo
+logo-av1: $(BIN)/gx_logo_av1
 
 # ---- P2-BA V4: LOGO VISIBLE binary (docs/p2-v-wave.md) ----
 # Era-chain objects come from the bringup fragment (sub-make; the WAIVER_HDR
@@ -65,6 +66,12 @@ $(OUT)/gx_logo_driver.o: $(DLDIR)/gx_logo_driver.cpp $(DLDIR)/gx_logo_clut.h \
         $(BRINGUP)/include/ladder6_tex_prelude.h | $(OUT)
 	clang++ $(L6CXXFLAGS) -c -o $@ $<
 
+# P2-BB V5: AV-1 stand-in palette regime (same sources, one define) — the
+# synthetic-fixture regime stays buildable+green alongside the era CLUT path.
+$(OUT)/gx_logo_driver_av1.o: $(DLDIR)/gx_logo_driver.cpp $(DLDIR)/gx_logo_clut.h \
+        $(BRINGUP)/include/ladder6_tex_prelude.h | $(OUT)
+	clang++ $(L6CXXFLAGS) -DGX_LOGO_AV1 -c -o $@ $<
+
 BRINGOBJS := $(BRINGUB)/crt0_nomain.o $(BRINGUB)/osinit.o $(BRINGUB)/osalloc_era.o $(BRINGUB)/dvd_shim.o \
              $(BRINGUB)/gen/move_data_glue.o $(BRINGUB)/gen/ladder4_gvr_glue.o $(BRINGUB)/ladder4_supply.o \
              $(BRINGUB)/gen/ladder5_gxtexture_glue.o $(BRINGUB)/gen/ladder5_tex_glue.o $(BRINGUB)/ladder5_seam.o \
@@ -74,6 +81,12 @@ LOGOBJS  := $(OUT)/gx_logo_driver.o $(OUT)/gen/ladder6_logo_glue.o $(OUT)/gen/la
 
 $(BIN)/gx_logo: $(LOGOBJS) $(BUILD_DIR)/bringup/.ba-stamp | $(BIN)
 	clang -target $(LINK_TARGET) -o $@ $(LOGOBJS) $(BRINGOBJS) $(FRAMEWORKS)
+
+$(BIN)/gx_logo_av1: $(OUT)/gx_logo_driver_av1.o $(OUT)/gen/ladder6_logo_glue.o \
+        $(OUT)/gen/ladder6_gx_glue.o $(OUT)/gx_dl.o $(OUT)/gx_dl_metal.o \
+        $(BUILD_DIR)/bringup/.ba-stamp | $(BIN)
+	clang -target $(LINK_TARGET) -o $@ $(OUT)/gx_logo_driver_av1.o $(OUT)/gen/ladder6_logo_glue.o \
+	  $(OUT)/gen/ladder6_gx_glue.o $(OUT)/gx_dl.o $(OUT)/gx_dl_metal.o $(BRINGOBJS) $(FRAMEWORKS)
 # NOTE: gx_dl.o/gx_dl_metal.o/gx_dl_driver.o rules unchanged above; the
 # shipped 4x4 gate path is byte-identical (GX_DL_TEXN unset there).
 

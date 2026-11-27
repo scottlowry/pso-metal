@@ -101,8 +101,82 @@ TMainTaskStub main_task;
 /* ---- LOGO-3: render_tick presents the sinbd surface via the AQ replay ---- */
 static const double QX0 = 160, QY0 = 120, QX1 = 480, QY1 = 360;
 static int g_frames;
-static unsigned char g_tex_rgba[32 * 32 * 4];
+static unsigned char *g_tex_rgba = 0;   /* V5: malloc'd at the header dims */
+static unsigned g_tex_w = 32, g_tex_h = 32;
 static GinjaTextureHeader *g_logo_hdr;
+
+/* ================= P2-BB V5-S1: era CLUT supply ==========================
+ * Host TLUT bank seams: GXInitTlutObj records {lut,fmt,count} (era encodes
+ * them into the obj words, GXTexture.c:407-418; the host 64-bit lut pointer
+ * cannot live in the era u32[3] record — parked in the pending slot, the
+ * documented seam simplification); GXLoadTlut copies the record into
+ * bank[tlut_name] exactly like era `r->tlutObj = *t` (GXTexture.c:445). */
+HostTlutBank g_host_tlut_banks[GXH_TLUT_BANKS];
+int g_gxinit_tlut_calls, g_gxload_tlut_calls;
+static HostTlutBank g_tlut_pending;
+extern "C" void GXInitTlutObj(GXTlutObj *obj, void *lut, int fmt, unsigned short n) {
+    (void)obj;
+    g_tlut_pending = HostTlutBank{ lut, (unsigned)fmt, (unsigned)n, 1 };
+    g_gxinit_tlut_calls++;
+}
+extern "C" void GXLoadTlut(GXTlutObj *obj, unsigned int tlut_name) {
+    (void)obj;
+    if (tlut_name < GXH_TLUT_BANKS && g_tlut_pending.loaded)
+        g_host_tlut_banks[tlut_name] = g_tlut_pending;
+    g_gxload_tlut_calls++;
+}
+
+/* BB-2: GVRT tlut-chunk walk leg (port code, era chunk-scan regime:
+ * magic word compared AFTER swap_u32_bytes like load_gvpl_palette's gate and
+ * find_gvrt_texture_chunk's tag switch; unknown tags terminate loud). The hit
+ * chunk goes through the VERBATIM era chain load_gvpl_palette ->
+ * init_and_load_tlut -> GX seams -> bank. TLanguage::load_palette_tlut
+ * (TLanguageFontPalette.cpp:35-37) is the era caller pattern: after the
+ * palette loads, init_and_load_tlut(tlut_name, palette->format,
+ * palette->entry_count, palette->data). */
+static GvplChunk *find_gvpl_chunk(u8 *blob, u32 len) {
+    for (u32 off = 0; off + 0x10 <= len; ) {
+        GvplChunk *c = (GvplChunk *)(blob + off);
+        u32 word = c->magic;
+        swap_u32_bytes(&word);
+        if (word == 0x4C505647) return c;           /* era gate value */
+        /* not a GVPL header here: step 4 (chunk stream is 4B-aligned) */
+        off += 4;
+    }
+    return 0;
+}
+
+/* Synthetic CLUT for the era golden (DEVIATION BB-1 format-3 RGBA8 carrier:
+ * 256 entries = the AV-1 palette bytes exactly — the known-bytes proof
+ * target). Carried into the era chain as a GVPL chunk blob (psoBe working
+ * values: magic u32 = PPC-lwz of 'GVPL', size likewise). */
+static unsigned char g_gvpl_blob[0x10 + 256 * 4];
+static unsigned char g_palette_bytes[256 * 4 + 16];   /* + slack: era copy rule */
+static GvplPalette g_palette;
+
+static void build_synthetic_gvpl(void) {
+    u32 ndata = 256 * 4;
+    GvplChunk *c = (GvplChunk *)g_gvpl_blob;
+    c->magic = 0x4756504Cu;                  /* PPC lwz('G','V','P','L') */
+    u32 sz = ndata + 8; swap_u32_bytes(&sz); /* era swap yields ndata+8 */
+    c->size = sz;
+    c->format = 3;                           /* BB-1 RGBA8 carrier */
+    c->pad_0A = 0; c->pad_0C = 0;
+    c->entry_count = 256;
+    for (unsigned i = 0; i < 256; i++)
+        gxh_pal8_rgba8((unsigned char)i, g_gvpl_blob + 0x10 + (size_t)i * 4);
+}
+
+static int supply_clut_era(void) {
+    build_synthetic_gvpl();
+    GvplChunk *c = find_gvpl_chunk(g_gvpl_blob, sizeof g_gvpl_blob);
+    if (!c) return 0;
+    g_palette.data = g_palette_bytes;
+    if (load_gvpl_palette(c, &g_palette) != 1) return 0;       /* era */
+    init_and_load_tlut(0, g_palette.format, g_palette.entry_count,
+                       g_palette.data);                        /* era */
+    return g_host_tlut_banks[0].loaded;
+}
 
 void render_tick(void) {
     l6_note(LC_RENDER_TICK);
@@ -163,9 +237,13 @@ int main(void) {
     CHECK(texture_surfaces[0].id == 0x999 && g_logo_hdr->format == 9
           && g_logo_hdr->width == 32 && g_logo_hdr->height == 32 && g_logo_hdr->pixels,
           "L7-W1 era consumer walk bound the sinbd surface inside the window binary (V2 chain reruns here): {id 0x999, fmt 9, 32x32, pixels heap}");
+    g_tex_w = g_logo_hdr->width; g_tex_h = g_logo_hdr->height;   /* V5-S3: dims come FROM the era header */
+    g_tex_rgba = (unsigned char *)malloc((size_t)g_tex_w * g_tex_h * 4);
 
-    /* ---------- V3: CLUT expand golden (stand-in palette AV-1) ---------- */
-    gxh_pal8_clut_expand((const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, 32, 32);
+#ifdef GX_LOGO_AV1
+    /* ---------- V3 AV-1 stand-in regime (kept behind define; BOTH regimes
+       must stay green — docs/p2-v-wave2.md S1) ---------- */
+    gxh_pal8_clut_expand((const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, g_tex_w, g_tex_h);
     int pal_ok = 1;
     for (int i = 0; i < 256; i++) {
         unsigned char want[4], probe[4], ib = (unsigned char)i;
@@ -178,9 +256,40 @@ int main(void) {
     gxh_pal8_rgba8(0, pal0); gxh_pal8_rgba8(7, pal7); gxh_pal8_rgba8(14, pal14); gxh_pal8_rgba8(5, pal5);
     CHECK(pal_ok && !memcmp(t00, pal0, 4) && !memcmp(t10, pal7, 4)
           && !memcmp(t20, pal14, 4) && !memcmp(t30, pal5, 4),
-          "L7-C1 CLUT golden: 256/256 table + fixture index stream row0 {0,7,14,5} (gen_gvr_fixture formula, E4b bytes) expand to pal[i] — DEVIATION AV-1 stand-in palette (tlut=0, no CLUT chunk rung); AQ 16-diagnostic lineage + gray ramp");
-    gx_dl_set_texture(32, 32, g_tex_rgba);
-    CHECK(1, "L7-C2 expanded RGBA8 handed to the AQ display entry gxh_dl_set_texture(32,32) — §2.2 rung-5 binding (Shared/default storage, getBytes regime); fragment reader = GX_DL_TEXN uint2 variant (R2)");
+          "L7-C1 CLUT golden (AV-1 STAND-IN REGIME): 256/256 table + fixture index stream row0 {0,7,14,5} expand to pal[i] — DEVIATION AV-1 pinned palette behind -DGX_LOGO_AV1");
+#else
+    /* ---------- V5-S1: era CLUT supply — palette flows through era code ---
+     * GVPL chunk bytes -> find_gvpl_chunk (BB-2 walk leg) -> load_gvpl_palette
+     * (era verbatim) -> init_and_load_tlut (era verbatim) -> GXInitTlutObj/
+     * GXLoadTlut seams -> TLUT bank -> gxh_pal8_clut_expand_lut. The golden
+     * feeds the era chain the SYNTHETIC CLUT and proves byte-exact AV-1
+     * reproduction (known-bytes proof of port fidelity). */
+    CHECK(supply_clut_era() && g_gxinit_tlut_calls == 1 && g_gxload_tlut_calls == 1
+          && g_palette.entry_count == 256 && g_palette.format == 3
+          && p2an_fnv1a64(g_palette_bytes, 256 * 4) == p2an_fnv1a64(g_gvpl_blob + 0x10, 256 * 4),
+          "L7-T1 era CLUT supply leg executed: GVPL chunk -> load_gvpl_palette -> init_and_load_tlut (era bodies), bank0 loaded, palette->data fnv == chunk entry bytes (byte-true move_data, R3)");
+    static unsigned char pal_era[256 * 4], pal_av1[256 * 4];
+    for (int i = 0; i < 256; i++) {
+        unsigned char ib = (unsigned char)i;
+        gxh_pal8_clut_expand_lut(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
+                                 &ib, pal_era + (size_t)i * 4, 1, 1);
+        gxh_pal8_rgba8(ib, pal_av1 + (size_t)i * 4);
+    }
+    uint64_t h_era = p2an_fnv1a64(pal_era, sizeof pal_era);
+    uint64_t h_av1 = p2an_fnv1a64(pal_av1, sizeof pal_av1);
+    printf("  era-chain CLUT palette fnv1a64   = 0x%016llX\n", (unsigned long long)h_era);
+    printf("  AV-1 stand-in palette fnv1a64    = 0x%016llX\n", (unsigned long long)h_av1);
+    CHECK(h_era == h_av1 && memcmp(pal_era, pal_av1, sizeof pal_av1) == 0,
+          "L7-C1E GOLDEN FIDELITY: era path fed the SYNTHETIC CLUT reproduces the AV-1 palette EXACTLY (256/256 byte-for-byte, hash equality printed) — port fidelity proof");
+    gxh_pal8_clut_expand_lut(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
+                             (const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, g_tex_w, g_tex_h);
+    const unsigned char *e00 = g_tex_rgba, *e10 = g_tex_rgba + 4, *e20 = g_tex_rgba + 8, *e30 = g_tex_rgba + 12;
+    CHECK(!memcmp(e00, pal_av1 + 0 * 4, 4) && !memcmp(e10, pal_av1 + 7 * 4, 4)
+          && !memcmp(e20, pal_av1 + 14 * 4, 4) && !memcmp(e30, pal_av1 + 5 * 4, 4),
+          "L7-C2E fixture index stream row0 {0,7,14,5} (gen_gvr_formula, E4b bytes) expand to era-bank pal[i] — surface->palette coherence through the era chain");
+#endif
+    gx_dl_set_texture((int)g_tex_w, (int)g_tex_h, g_tex_rgba);
+    CHECK(1, "L7-C2 expanded RGBA8 (%ux%u, dims from the era header) handed to the AQ display entry gxh_dl_set_texture — §2.2 rung-5 binding; fragment reader = GX_DL_TEXN uint2 variant (R2)", g_tex_w, g_tex_h);
 
     /* ---------- V4: the era frame chain executes ---------- */
     main_phase_state.cur = main_phase_state.prev = main_phase_state.next = main_phase_state.result = 0;
@@ -206,19 +315,20 @@ int main(void) {
     /* ---------- readback gate: region-nonzero + fnv of the logo region ---- */
     gxh_dl_flush();
     const int RW = (int)(QX1 - QX0), RH = (int)(QY1 - QY0);
-    static unsigned xs[32 * 32], ys[32 * 32], got[32 * 32], want[32 * 32];
-    for (int j = 0; j < 32; j++) for (int i = 0; i < 32; i++) {
-        int k = j * 32 + i;
-        xs[k] = (unsigned)(QX0 + (i + 0.5) * RW / 32.0);
-        ys[k] = (unsigned)(QY0 + (j + 0.5) * RH / 32.0);
+    const int NT = (int)(g_tex_w * g_tex_h);
+    static unsigned xs[1024 * 1024], ys[1024 * 1024], got[1024 * 1024], want[1024 * 1024];
+    for (unsigned j = 0; j < g_tex_h; j++) for (unsigned i = 0; i < g_tex_w; i++) {
+        int k = (int)(j * g_tex_w + i);
+        xs[k] = (unsigned)(QX0 + (i + 0.5) * RW / (double)g_tex_w);
+        ys[k] = (unsigned)(QY0 + (j + 0.5) * RH / (double)g_tex_h);
         const unsigned char *tx = g_tex_rgba + (size_t)k * 4;   /* runtime-derived reference */
         want[k] = ((unsigned)tx[0] << 24) | ((unsigned)tx[1] << 16) |
                   ((unsigned)tx[2] << 8) | tx[3];
     }
-    if (gxh_dl_sample(xs, ys, got, 32 * 32) != 0) { fprintf(stderr, "sample failed\n"); return 4; }
+    if (gxh_dl_sample(xs, ys, got, NT) != 0) { fprintf(stderr, "sample failed\n"); return 4; }
     int mism = 0;
-    for (int k = 0; k < 32 * 32; k++) if (got[k] != want[k]) mism++;
-    CHECK(mism == 0, "L7-P1 logo texel map: all 32x32 cell centers of the drawable == the CLUT-expanded surface texels (±0) — sinbd art is on screen, addressed through the AQ uint2 fetch");
+    for (int k = 0; k < NT; k++) if (got[k] != want[k]) mism++;
+    CHECK(mism == 0, "L7-P1 logo texel map: all %ux%u cell centers of the drawable == the CLUT-expanded surface texels (±0) — sinbd art is on screen, addressed through the AQ uint2 fetch", g_tex_w, g_tex_h);
 
     static unsigned full[(int)RW * (int)RH];
     static unsigned xsf[(int)RW * (int)RH], ysf[(int)RW * (int)RH];
@@ -231,10 +341,16 @@ int main(void) {
     CHECK(nonzero == RW * RH, "L7-P2 region-nonzero: %d/%d pixels of the (%d x %d) logo rect are non-black (readback coverage assertion)",
           nonzero, RW * RH, RW, RH);
 
-    uint64_t h_got = p2an_fnv1a64(got, sizeof got), h_want = p2an_fnv1a64(want, sizeof want);
-    printf("\n== P2-BA V4 LOGO VISIBLE ==\n");
-    printf("  logo texel region (32x32 cell centers, RGBA words) fnv1a64 readback = 0x%016llX\n", (unsigned long long)h_got);
-    printf("  reference fnv1a64 = 0x%016llX  (computed AT RUNTIME from the era-chain surface pixels via gxh_pal8_clut_expand — self-consistency anchor; no hardcoded expected hash)\n", (unsigned long long)h_want);
+    uint64_t h_got = p2an_fnv1a64(got, (size_t)NT * 4), h_want = p2an_fnv1a64(want, (size_t)NT * 4);
+    printf("\n== P2-BB V5 LOGO (era CLUT supply regime%s) ==\n",
+#ifdef GX_LOGO_AV1
+           ", AV-1 stand-in"
+#else
+           ", era code"
+#endif
+           );
+    printf("  logo texel region (%ux%u cell centers, RGBA words) fnv1a64 readback = 0x%016llX\n", g_tex_w, g_tex_h, (unsigned long long)h_got);
+    printf("  reference fnv1a64 = 0x%016llX  (computed AT RUNTIME from the era-chain surface pixels via the loaded-CLUT expand — self-consistency anchor; no hardcoded expected hash)\n", (unsigned long long)h_want);
     CHECK(h_got == h_want, "L7-P3 hash equality readback==runtime-reference");
     if (failures == 0 && getenv("GX_DL_DEBUG")) {
         gxh_dl_dump("/tmp/logo_dump.ppm");

@@ -25,12 +25,24 @@ if [ "$rc" = 0 ]; then echo "GX WINDOW GREEN: first real pixels proven by readba
 
 echo
 echo "== P2-BA V4 phase: LOGO VISIBLE — era request_main_phase -> TLogo::run_frame -> begin_gx_frame executes; render_tick presents the CLUT-expanded sinbd surface through the AQ replay; region readback gates =="
+echo "== P2-BB V5: default regime = ERA CLUT SUPPLY (GVPL chunk -> load_gvpl_palette -> init_and_load_tlut); AV-1 stand-in kept behind -DGX_LOGO_AV1 — both regimes must be green =="
 make -C "$B/dl" -f gx_dl.mk logo
 set +e
 GX_DL_TEXN= "$R/build/gxdl/bin/gx_logo"   # driver self-pins TEXN=32 before open
 lrc=$?
 set -e
 echo "-- gx_logo exit: $lrc"
-if [ "$lrc" = 0 ]; then echo "LOGO VISIBLE: sinbd texels proven in the backbuffer by readback"; fi
+if [ "$lrc" = 0 ]; then echo "LOGO VISIBLE: sinbd texels proven in the backbuffer by readback (era CLUT supply regime)"; fi
+
+echo
+echo "== P2-BB V5 AV-1 stand-in regime (synthetic-fixture regime stays green) =="
+make -C "$B/dl" -f gx_dl.mk logo-av1
+set +e
+GX_DL_TEXN= "$R/build/gxdl/bin/gx_logo_av1"
+av1rc=$?
+set -e
+echo "-- gx_logo_av1 exit: $av1rc"
+if [ "$av1rc" = 0 ]; then echo "AV-1 REGIME GREEN: pinned stand-in palette path intact behind define"; fi
 [ "$rc" = 0 ] || exit "$rc"
+[ "$av1rc" = 0 ] || exit "$av1rc"
 exit "$lrc"
