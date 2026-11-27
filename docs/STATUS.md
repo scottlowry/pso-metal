@@ -37,7 +37,7 @@ fail-loud generators (`AGENTS.md` §2); host code supplies seams only.
 | 3 | GSL archive table walk (era `find_gsl_entry` verbatim) | same run.sh; `docs/p2-tex-supply.md` |
 | 4 | GVRT/GVPL texture supply: synthetic 32×32 PAL8 GVR walked by the era chunk finder | same run.sh; `docs/p2-tex-supply.md`, commit-era note in `docs/p2-public-audit-1.md` §1c |
 | 5 | texture consumer chain (Ginja table → upload doorstep) | same run.sh; `docs/p2-gx-tex-consumer.md` |
-| 6 | logo driver: era CLUT supply chain end-to-end into a Metal drawable, pixel-readback gated; genuine 256×256 PAL8 regime re-certified against gitignored local assets | `docs/p2-v-wave2.md`, `docs/p2-v-wave3.md:38,57-77` |
+| 6 | logo driver: era CLUT supply chain end-to-end into a Metal drawable, pixel-readback gated — **caveat:** gates are self-consistency proofs; genuine-record decode is disputed (CI14 vs PAL8 label), see issue #8 | `docs/p2-v-wave2.md`, `docs/p2-v-wave3.md:38,57-77` + erratum in `docs/p2-oracle-1.md` (in flight) |
 | 7 | title frame loop: five promoted `TLogo::run_frame` legs execute era bodies verbatim, order-matched against the era source, with flip probes reading real era stores back | `docs/p2-ladder7-1.md` §1-2 (28/28) |
 | boot slice | first linked LP64 Mach-O: era PRS/heap/DVD chain, 8/8 receipts | `docs/p2-stitch-apply7.md:59-60`, `docs/p2-first-link.md` |
 

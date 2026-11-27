@@ -62,7 +62,7 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 | arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
 | true-LP64 parse, official adopted shape | **1,167 / 1,680 (69.5%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
-| logo | era CLUT supply chain **executing**; genuine 256×256 sinbd PAL8 + GVPL palette extracted from disc read-only (hash-only, gitignored local assets), readback-EXACT through the era chain; synthetic + AV-1 regimes stay green as committed defaults |
+| logo | era CLUT supply chain **executing** on synthetic fixtures (green); genuine 256×256 record extracted from disc read-only is byte-verified AT THE SUPPLY LAYER ONLY — its format semantics are **DISPUTED**: the "PAL8" label for descriptor fmt 9 is refuted by the era's own palette predicate (`is_palette_texture_format` {8,9,10} = CI8/CI14/CI24 ⇒ 9 = CI14), and the current decode renders as noise. Readback gates so far prove self-consistency, not correctness; decode-oracle fix in flight — tracked publicly in issue #8. Synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
 | suites | bring-up **185/185** (ladders 1–7 + HG-1 handle golden 29) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 — measured `docs/p2-hg1-1.md`, `docs/p2-stitch-apply7.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
