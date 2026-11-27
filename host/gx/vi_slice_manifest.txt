@@ -1,0 +1,11 @@
+# pso-metal P2-AB verbatim era-slice manifest — pin pso-decomp @ 6b38b5383.
+# Columns: <src-relative-path> <start-line> <end-line> <sha256-of-exact-range>
+# Extracted in order into one generated TU (vi_slice_gen.py). Any decomp
+# drift in these ranges FAILS the build — the branch proof re-pins explicitly.
+src/pso/ui/TLogo.cpp 36 36 99d995bef6d0e3e0d8273545856881819c94f22d65504f171a4d0160f0de220c
+src/pso/ui/TLogo.cpp 56 56 0948b10c5ee95e0344d841a3d73b3d1074397d42fb3e35542c2ae4c02143dbb7
+src/pso/ui/TLogo.cpp 123 131 b8823af14df48954708f97058b2fdeac0da7a690e36ae077aa036b5e8ca2ac31
+src/pso/ui/TLogo.cpp 135 197 7958610bad1e314ce316269ff93459b8d6b1047c66de50aa49c7b25f946c1d30
+src/pso/ui/frontend/TAdVIConfigGC.cpp 87 87 c7db818d37eedefdb75cbeee799b4c80e5aad6255a19e441e11d81dc61640381
+src/pso/ui/frontend/TAdVIConfigGC.cpp 192 192 f1b4ea3b3cfd8bbc3836271cf427923b3704cf48b4d52be1929bbdc94662d13f
+src/pso/ui/frontend/TAdVIConfigGC.cpp 226 236 58af3acef6ed6c44cb7e09c401d783043f1f2ac2379760893cdea4a5ea8f5d79
