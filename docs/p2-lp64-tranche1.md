@@ -109,3 +109,26 @@ umbrella-reachable base classes; expect tranche 2+ to be cheaper per file.
 Repro: `bash cache/scratch/clangprobe/run_p2r.sh` (scratch); census helpers
 `census.py`, `leverage.py`, `build_tranche2.py` alongside it. TSV schema:
 `type verdict asserts lp64-fail-sites lp64-tu-traffic header-include-leverage declaring-header evidence`.
+
+## Corpus corrections (AI)
+
+Additive flag note from lane AI (P2-AI corpus hygiene) — no verdict row in
+`data/verdict-tranche1.tsv` was rewritten here. Two rules used when this tranche
+was authored are invalidated per `p2-verdict-resolve-1.md` §5; future lanes must
+NOT re-apply them:
+
+1. **net-disc §2.2's blanket "Ginja/Ninja runtime = WAIVE" overreaches.** Loaded-image
+   structs — NJS_* and anything overlaid on disc/GVM/GVR byte images — are
+   FORMAT-KEEP, not runtime-waive (§2.2:119-123 stands only for structs field-wise
+   *built from* payloads). This tranche's own `NJS_OBJECT`/`NJS_MKEY_F` rows (:2-3)
+   already anticipated the correction; lane J handle conversion (p1-datamodel §3
+   rule-1) is owed, aligned to AD's 3 `NJS_*` LOCKED rows (resolutions-1:52,60,61).
+2. **"LP64-only fail site ⇒ pointer-overlay suspicion" is invalid as blanket
+   evidence.** Era `types.h:8-9` typedefs `s32/u32` as `long`, so at LP64 *every* POD
+   field doubles width; the arm64_32-vs-LP64 differential ("passes arm64_32, breaks
+   only when pointers widen") is width-noise, not overlay/format-crossing proof.
+   Positive overlay-cast hits or G/H FORMAT-table containment are required instead.
+
+Row-level enumeration: `data/corpus-corrections.tsv` (78 T1 RW rows + 44 T1 gate rows
+flagged here; the 94-vs-102 site-count fix is verified landed in resolve-1 §1 — not
+re-edited).

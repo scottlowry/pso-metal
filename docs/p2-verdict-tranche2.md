@@ -88,3 +88,26 @@ Repro: `python3 cache/scratch/clangprobe/build_tranche23.py` (reads the two prob
 corpora + `p2r_leverage.json`, asserts census invariance 1467/1444 before judging).
 TSV schema: `type verdict asserts lp64-fail-sites lp64-tu-traffic
 header-include-leverage declaring-header evidence`.
+
+## Corpus corrections (AI)
+
+Additive flag note from lane AI (P2-AI corpus hygiene) — no row in
+`data/verdict-tranche2.tsv` was rewritten. Two rules this tranche relied on are
+invalidated per `p2-verdict-resolve-1.md` §5; future lanes must NOT re-apply them:
+
+1. **The blanket "LP64-fail-site ⇒ overlay-suspicion" gate (§2 table :19, RW class
+   def :17, coverage :80) is invalid.** Era `types.h:8-9` typedefs `s32/u32` as
+   `long`, so ALL PODs widen at LP64 — many "passes arm64_32, breaks only when
+   pointers widen" sites are pure width-noise, not pointer-overlay or
+   format-crossing evidence. AD's settlement pass re-proved the 60 gated UNRESOLVED
+   types with positive overlay-cast grep / G-H table containment (357 RW rows + the
+   55 non-NJS gate rows flagged as evidence-confounded; resolutions override per
+   resolve-1 §2 precedence).
+2. **net-disc §2.2's blanket "Ninja runtime = WAIVE" overreaches** — loaded-image
+   structs (NJS_*, EnemySetRecord, FloorObjectSetRow: overlaid on disc/GVM/GVR byte
+   images) are FORMAT-KEEP; lane J handle conversion (p1-datamodel §3 rule-1) is the
+   resolving mechanism, rows stay LOCKED meanwhile (resolutions-1:16,17,52,60,61).
+
+Row-level enumeration: `data/corpus-corrections.tsv`. Verified (not re-edited): the
+94-vs-102 newly-waivable site count is already corrected in resolve-1 §1 — 94 is the
+measured number; 102 survives only in the immutable 1/2 commit message.
