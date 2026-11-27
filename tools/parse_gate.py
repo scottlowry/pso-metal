@@ -3,10 +3,18 @@
 
 Runs `make -C <repo>/build parse`, extracts the PASS count from the summary,
 and FAILS (exit 1) if PASS < BASELINE. This proves the tree never drops below
-Phase 0's achievement of 669 units parsing under the compat shim at the
-arm64_32 parse target. Prints the delta either way.
+the arm64_32 achievement. Prints the delta either way.
 
-    python3 tools/parse_gate.py            # gate at 669
+Baseline history: 669 (Phase-0 compat shim) -> 1416 -> 1,578 (arm64_32
+achieved at apply-2) -> 1,576 (apply-5 adoption wave, 2026-11-27). The
+current floor is the 1,578 anchor minus 2: stage-1 NJS allow-list TUs
+(docs/p2-gx-tex-consumer.md §4) that passed ILP32 plain now pay the
+enumerated u32-slot cluster while opted into the shadow. The collision pin +
+rebind (docs/p2-collision-debt.md §5) is LP64-only: parse-lp64 measures the
+adopted shape (162 -> 261, ledger in docs/p2-stitch-apply5.md); it is not
+gated here.
+
+    python3 tools/parse_gate.py            # gate at 1576
     PSO_PARSE_BASELINE=700 python3 tools/parse_gate.py
     make -C build parse  # (what the gate drives)
 
@@ -21,7 +29,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-BASELINE = int(os.environ.get("PSO_PARSE_BASELINE", "669"))
+BASELINE = int(os.environ.get("PSO_PARSE_BASELINE", "1576"))
 SUMMARY_RE = re.compile(r"TOTAL=(\d+)\s+FAIL=(\d+)\s+PASS=(\d+)")
 
 

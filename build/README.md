@@ -9,7 +9,8 @@ tree — the tree is only read (plus its sources compiled).
 ```sh
 make -C build parse          # syntax-only pass over every unit; prints TOTAL/FAIL/PASS
 make -C build list-fail      # same, then writes build/parse_fail.txt
-python3 tools/parse_gate.py  # regression gate: FAILs if PASS < 669 (Phase-0 baseline)
+python3 tools/parse_gate.py  # regression gate: FAILs if arm64_32 PASS < 1576 (apply-5 floor; history 669->1416->1578->1576)
+make -C build parse-lp64     # TRUE LP64 leg (rebind+pin adopted, docs/p2-stitch-apply5.md): 162 -> 261 PASS; not floor-gated
 make -C build smoke-link     # proves the real LP64 link toolchain compiles+links+execs
 make -C build clean
 ```

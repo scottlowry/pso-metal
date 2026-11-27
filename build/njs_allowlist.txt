@@ -1,0 +1,15 @@
+# P2-AV §4 per-TU C++ NJS shadow opt-in (docs/p2-njs-repin-1.md §6,
+# docs/p2-gx-tex-consumer.md §4; adopted 2026-11-27 adoption wave).
+# C++ TUs ONLY — enforcement by suffix lives in build/Makefile PARSE_RECIPE.
+# Listed TUs compile with -Icompat/njs FIRST (u32 NJS_HANDLE shadow slots);
+# the enumerated AR §3 error clusters are the accepted parse-world cost until
+# the §3 adapter legs land (runtime supply rides the ladder6 slices instead).
+# stage 1 (rung-5 logo trio, per §3 #1-#3):
+src/pso/render/psoLoadTexture.cpp
+src/pso/render/GinjaTextureTable.cpp
+src/pso/render/GinjaMaterial.cpp
+# stage 2 (§3 #4-#6, deferred — V6/NC lane submits probe receipts before these
+# rows go live; keep commented, one row per file, path verbatim from units.txt):
+# src/pso/system/BmlResource.cpp
+# src/pso/ui/charcreate/TCMCharacter.cpp
+# src/pso/ui/charcreate/TChCrLoadReq.cpp
