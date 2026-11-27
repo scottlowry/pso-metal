@@ -8,6 +8,7 @@
  * rather than trust it). Calls the main-equivalent spine below.
  */
 #include "pso_bringup.h"
+#include "hg1_windows.h"          /* P2-HG1 era-window anchors (docs/p2-hg1-1.md) */
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -16,6 +17,38 @@ u8 *pso_arena_base;
 u8 *pso_aram_base;
 u8 *pso_prs_window_base;
 PsoSysRet *pso_sysret;
+
+/* ---- P2-HG1: the two base registers above ARE the era-window anchors
+ * (docs/p2-handle-program-1.md §2: exactly TWO base registers — main-RAM
+ * windows share pso_arena_base, ARAM is pso_aram_base). This table is the
+ * HP §5 HG-1.0 bind set expressed against the crt0 arena; every host base
+ * is anchor-relative (deviation D1 — fixed guest mappings are impossible
+ * here, so the golden asserts reloc-relative + formula-exact guest bytes).
+ * Carve sites per the HP §2 window table: IMAGE = g_sinbd .data placement
+ * regime (docs/p2-v-wave.md V2 ledger, TObjSinBoard.cpp:37-40 era home,
+ * ladder6 L6_SINBD_OFF); POOL = runtime object/state pools, era THeap
+ * obj_heap/alt_heap operator-new path (THeap.cpp; ladder6 L6_POOL_OFF/
+ * L6_SURF_OFF texture regime); ARAM = ARAlloc-offset space
+ * (TSetManager.cpp:1561 alloc_item_drop_memory_pool ARAlloc(0x100000) +
+ * :1529 floor_set_archive_pool AramPool — the L-FLOOR/L-ARAM homes; the
+ * guest space here is offset-space, host base = arena + 24 MB =
+ * pso_aram_base exactly, pinned by HG-1.0). HEAP/CACHE/RESERVE classes
+ * stay loader-bound in later lanes (L-SYSHEAP memory.cpp:26-29,
+ * L-CACHE OSInitAlloc SystemBootInit.cpp:272, L-RESERVE init_game_systems
+ * :264-271) — NOT registered yet, and therefore unresolvable by law. ---- */
+const struct PsoEraWindowAnchor pso_era_window_anchors[PSO_ERA_WINDOW_COUNT] = {
+    { PSO_W_IMAGE, 0x80032000u, 0x80034000u, 0x00032000u,
+      "g_sinbd placement (p2-v-wave V2; TObjSinBoard.cpp:37-40 .data)" },
+    { PSO_W_POOL,  0x80034000u, 0x80038000u, 0x00034000u,
+      "runtime object/state pools (THeap obj_heap regime; ladder6 L6_POOL)" },
+    { PSO_W_ARAM,  0x00000000u, PSO_HANDLE_ARAM_CAP, PSO_MAIN_RAM_SIZE,
+      "ARAlloc offset space (TSetManager.cpp:1561/:1529; host = pso_aram_base)" },
+};
+
+u8 *pso_era_window_host_base(u32 i) {
+    return i < PSO_ERA_WINDOW_COUNT ? pso_arena_base + pso_era_window_anchors[i].arena_off
+                                    : (u8 *)0;
+}
 
 /* Mini OSInit globals live in osinit.c but their anchor values come from here. */
 extern void OSInit(void);
