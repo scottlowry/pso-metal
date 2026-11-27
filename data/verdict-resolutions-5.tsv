@@ -559,3 +559,9 @@ TSceneDirectionalLight	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/object/TSceneDire
 TSlicerHistory	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/technique/TSlicerHistory.h:12	HIGH
 TTecAntiEff	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/technique/TTecAntiEff.h:9	HIGH
 TTecRestaEff	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/technique/TTecRestaEff.h:12	HIGH
+TWeaponCasing	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/weapon/TWeaponCasing.h:11	HIGH
+TWindowCtrlClipOut	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowCtrlClipOut.h:7	HIGH
+TWindowCtrlScreen	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowCtrlScreen.h:7	HIGH
+WallPolygon	RUNTIME-WAIVE	POINTER-CLASS	src/pso/map/CsnQuery.cpp:20	HIGH
+gsl_archive_entries	LOCKED-FORMAT	FORMAT-TABLE-H	docs/p1-format-net-disc.md:112	HIGH
+trade_proposal_state_handlers	RUNTIME-WAIVE	COMPILED-TABLE	include/pso/network/TradeSession.h:22	HIGH
