@@ -87,6 +87,7 @@ int   gxh_dl_draw(const float *vc, unsigned nverts, /* 8 floats/v: ndc2 clr4 uv2
 int   gxh_dl_verify(const unsigned *xs, const unsigned *ys, const unsigned *want_rgba,
                     int npoints, int frame_no);
 void  gxh_dl_flush(void);                        /* CA flush + event pump      */
+void  gxh_dl_dump(const char *path);             /* P2 integrator: last drawable -> PPM */
 /* P2-AQ diagnostics: raw point sampler of the last drawable (packed RGBA)
  * and a CPU-side roundtrip print of the live GPU texture. */
 int   gxh_dl_sample(const unsigned *xs, const unsigned *ys,

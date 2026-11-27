@@ -236,6 +236,10 @@ int main(void) {
     printf("  logo texel region (32x32 cell centers, RGBA words) fnv1a64 readback = 0x%016llX\n", (unsigned long long)h_got);
     printf("  reference fnv1a64 = 0x%016llX  (computed AT RUNTIME from the era-chain surface pixels via gxh_pal8_clut_expand — self-consistency anchor; no hardcoded expected hash)\n", (unsigned long long)h_want);
     CHECK(h_got == h_want, "L7-P3 hash equality readback==runtime-reference");
+    if (failures == 0 && getenv("GX_DL_DEBUG")) {
+        gxh_dl_dump("/tmp/logo_dump.ppm");
+        printf("  debug: backbuffer dumped to /tmp/logo_dump.ppm\n");
+    }
     printf("== P2-BA logo: %d/%d PASS ==\n", total - failures, total);
     gxh_dl_flush();
     return failures == 0 ? 0 : 1;
