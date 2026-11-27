@@ -125,7 +125,30 @@ int gxh_dl_open(unsigned width, unsigned height) {
         NSError *err = nil;
         int fshop = getenv("GX_DL_FSHOP") ? atoi(getenv("GX_DL_FSHOP")) : 0;
         if (fshop < 0 || fshop > 6) fshop = 0;
-        NSString *src = [NSString stringWithFormat:@"%s%s", g_vs, g_fs[fshop]];
+        NSString *src;
+        const char *texn_env = getenv("GX_DL_TEXN");   /* P2-BA V3: N x N texel grid */
+        if (texn_env && fshop == 0) {
+            /* P2-AQ R2/§2.5 binding: vector read(uint2(cx, cy)) ONLY — the
+             * scalar overload is miscompiled on this machine (docs/p2-gx-dl2.md
+             * §2). This runtime-formatted body keeps the shipped 4x4 path
+             * byte-identical (TEXN unset == today) and generalizes the
+             * floor/last-texel constants for the 32x32 PAL8 logo texture. */
+            int tn = atoi(texn_env);
+            if (tn < 1 || tn > 1024) tn = 4;
+            static char body[512];
+            snprintf(body, sizeof body,
+                "fragment float4 fmain(VIn in[[stage_in]],\n"
+                "    texture2d<float> tex[[texture(0)]]) {\n"
+                "    uint cx = min(uint(in.uv.x * %d.0), %du);\n"
+                "    uint cy = min(uint(in.uv.y * %d.0), %du);\n"
+                "    return tex.read(uint2(cx, cy)) * in.col;\n"
+                "}\n", tn, tn - 1, tn, tn - 1);
+            printf("gxh_dl: TEXN=%d uint2-fragment variant: '%.*s%s",
+                   tn, 60, body, "...'\n");
+            src = [NSString stringWithFormat:@"%s%s", g_vs, body];
+        } else {
+            src = [NSString stringWithFormat:@"%s%s", g_vs, g_fs[fshop]];
+        }
         id<MTLLibrary> lib = [g_device newLibraryWithSource:src
                                                     options:nil error:&err];
         if (!lib) { fprintf(stderr, "gxh_dl: shader compile: %s\n",
