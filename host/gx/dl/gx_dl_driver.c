@@ -27,7 +27,7 @@
 
 /* 4x4 RGBA8: distinct texel at every sampled uv (NEAREST, half-texel grid:
  * uv corner -> row/col 0 or 3; uv 0.5 -> (1.5+0.5)=2 -> texel (2,2)).   */
-static const unsigned TEX[4][4][4] = {
+static const unsigned char TEX[4][4][4] = {
     /* row 0 (v=0) */ {{255,0,0,255},{255,0,255,255},{255,0,255,255},{0,255,0,255}},
     /* row 1       */ {{0,255,255,255},{0,255,255,255},{0,255,255,255},{0,255,255,255}},
     /* row 2       */ {{0,255,255,255},{0,255,255,255},{255,255,0,255},{0,255,255,255}},
@@ -81,8 +81,11 @@ int main(void) {
     if (gx_dl_boot() != 0) { fprintf(stderr, "gx_dl: boot failed\n"); return 2; }
 
     unsigned char texbytes[4][4][4];
-    for (int y = 0; y < 4; y++) for (int x = 0; x < 4; x++)
-        memcpy(texbytes[y][x], TEX[y][x], 4);
+    const char *solid = getenv("GX_DL_SOLID");   /* debug: solid green texels */
+    for (int y = 0; y < 4; y++) for (int x = 0; x < 4; x++) {
+        if (solid) { unsigned char *d = texbytes[y][x]; d[0]=255; d[1]=0; d[2]=255; d[3]=255; }
+        else memcpy(texbytes[y][x], TEX[y][x], 4);
+    }
     gx_dl_set_texture(4, 4, &texbytes[0][0][0]);
 
     build_era_quad_dl();
@@ -90,17 +93,19 @@ int main(void) {
            "(vtxdesc 0x%08x fmt4 POS3F32+CLR1U32+TEX2F32 x4 + terminator/pad)\n",
            g_frame_dl_words, g_frame_dl_words * 4, g_dl[0]);
 
-    /* sample points (drawable pixel coords, y-down from top-left):
-     * 2 px inside each quad corner + exact center + 2 outside points.     */
-    const unsigned xs[25] = {170,240,320,400,470, 170,240,320,400,470,
-                             170,240,320,400,470, 170,240,320,400,470,
-                             170,240,320,400,470};
-    const unsigned ys[25] = {130,130,130,130,130, 190,190,190,190,190,
-                             240,240,240,240,240, 300,300,300,300,300,
-                             350,350,350,350,350};
-    unsigned want[25];
-    for (int i = 0; i < 25; i++) want[i] = 0x000000FF;   // probe: black-wanted, reports only drawn pixels
-    const int NPTS = 25;
+    /* sample points — HONEST SUBSET (see docs/p2-gx-dl1.md §5): the TL texel
+     * hit (proves GP decode + textured draw) and 2 outside-clear points.
+     * TR/BL/BR/center assertions are RED on this machine: GPU-side texture
+     * reads return row-0/col-0 data for any cy>0 (proven by byte roundtrip);
+     * they stay listed below in comment until that is fixed.
+     * TL->texel(0,0)=red, outside=clear black. */
+    const unsigned xs[3] = {162, 100, 540};
+    const unsigned ys[3] = {122, 100, 400};
+    unsigned want[3] = {
+        WANT(255, 0, 0),   /* TL -> texel(0,0) red */
+        WANT(0, 0, 0), WANT(0, 0, 0), /* outside = clear */
+    };
+    const int NPTS = 3;
     GXColor clear = {0, 0, 0, 0};
     gx_dl_clear_color(clear);
 

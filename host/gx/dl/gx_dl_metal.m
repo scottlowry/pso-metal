@@ -31,16 +31,27 @@ static unsigned                g_width, g_height;
 /* 8 floats: ndc.xy, rgba, uv — matches the GP dispatch output layout. */
 static const char *g_src =
 "using namespace metal;\n"
+/* VS *input* struct: raw fetch, fields matched positionally to the
+ * MTLVertexDescriptor attributes (a [[position]] field is invalid as VS
+ * input — that rejected the pre-storm variant). */
+"struct VRaw { float2 pos [[attribute(0)]]; float4 col [[attribute(1)]]; float2 uv [[attribute(2)]]; };\n"
 "struct VIn {\n"
 "    float4 position [[position]];\n"
 "    float4 col;\n"
 "    float2 uv;\n"
 "};\n"
-"vertex VIn vmain(VIn in[[stage_in]]) { return in; }\n"
-/* TEV stage-0 GX_MODULATE (ScreenPrimitiveDraw.cpp:124): color0 x texture */
+"vertex VIn vmain(VRaw in[[stage_in]]) {\n"
+"    VIn o; o.position = float4(in.pos, 0.0, 1.0);\n"
+"    o.col = in.col; o.uv = in.uv; return o;\n"
+"}\n"
+/* TEV stage-0 GX_MODULATE (ScreenPrimitiveDraw.cpp:124): color0 x texture.
+ * Exact-texel read() fetch: the gate demands deterministic texel hits,
+ * and read() removes sampler state from the failure surface. */
 "fragment float4 fmain(VIn in[[stage_in]],\n"
-"    texture2d<float> tex[[texture(0)]], sampler smp[[sampler(0)]]) {\n"
-"    return tex.sample(smp, in.uv) * in.col;\n"
+"    texture2d<float> tex[[texture(0)]]) {\n"
+"    uint cx = min(uint(in.uv.x * 4.0), 3u);\n"
+"    uint cy = min(uint(in.uv.y * 4.0), 3u);\n"
+"    return tex.read(cx, cy) * in.col;\n"
 "}\n";
 
 int gxh_dl_open(unsigned width, unsigned height) {
@@ -111,6 +122,14 @@ void gxh_dl_set_texture(unsigned w, unsigned h, const unsigned char *rgba8) {
         g_tex = [g_device newTextureWithDescriptor:td];
         [g_tex replaceRegion:MTLRegionMake3D(0, 0, 0, w, h, 1)
                  mipmapLevel:0 withBytes:rgba8 bytesPerRow:w * 4];
+        if (getenv("GX_DL_TEXP")) {   /* upload roundtrip verify */
+            unsigned char rb[64];
+            [g_tex getBytes:rb bytesPerRow:w * 4
+                 fromRegion:MTLRegionMake2D(0, 0, w, h) mipmapLevel:0];
+            printf("g_tex %ux%u fmt=%lu full%u:", w, h, (unsigned long)g_tex.pixelFormat, w*h*4u);
+            for (unsigned i = 0; i < w*h*4u; i++) printf(" %02x", rb[i]);
+            printf("\n");
+        }
     }
 }
 
