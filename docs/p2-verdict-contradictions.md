@@ -7,7 +7,7 @@ roster ([`p2-residual-census`](p2-residual-census.md) §6 +
 per-file class roster (`cache/scratch/as2_rows.json`, all 1,519 fail-files, detail =
 `(site, class, type)` triples) so every count below is checkable against the same data
 AS2 published. Output: [`data/verdict-resolutions-6.tsv`](../data/verdict-resolutions-6.tsv)
-— 79 rows, same 5-col grammar `type|new-verdict|evidence-type|file:line|confidence`,
+— 78 rows, same 5-col grammar `type|new-verdict|evidence-type|file:line|confidence`,
 consume order 1>2>3>4>5>6 (later RUNTIME-WAIVE beats earlier keeper; deny-roots
 immune, per `gen_waivers.read_verdicts` precedence law).
 
@@ -249,8 +249,8 @@ the 16 units are NOT new parse wall (they re-appear as real files at new paths).
 
 * Named-verdict universe before AX: **1,602** (AT §5: 935 pre-tail + 101 AL + 566 AT).
 * Newly adjudicated by AX: **75 keep-firing types** (7 LOCKED-FORMAT / 68 RUNTIME-WAIVE)
-  **+ 4 more named rows** (TcpTcb canonical, `CaveRockArchive<4>`, `CaveRockArchive<7>`,
-  and the ChallengeRecord-cluster labels already inside the 75) = 79 res-6 rows total.
+  **+ 3 more named rows** (TcpTcb canonical, `CaveRockArchive<4>`,
+  `CaveRockArchive<7>`) = 78 res-6 rows total.
 * **Corpus named beyond AS2's gaps: 1,602 + 77 = 1,679 type-names with effective
   verdicts** (the 77 = 75 keep-firers + 2 template-instance names; TcpTcb was already
   counted in the 1,602 via its base row — its res-6 line canonicalizes, it does not add).
