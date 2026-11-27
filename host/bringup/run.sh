@@ -29,4 +29,8 @@ echo "== P2-AE boot ladder 3: resource_decompress_buffer era-caller chain + GSL 
 "$R/build/bringup/bin/ladder3_test"
 echo "ladder3_test: EXIT=0"
 echo
+echo "== P2-AN boot ladder 4: texture supply chain — era find_gvrt_texture_chunk walk over a synthetic GVR off fake_disc, descriptor + texel buffer at the upload doorstep =="
+"$R/build/bringup/bin/ladder4_test"
+echo "ladder4_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"

@@ -228,6 +228,46 @@ $(BIN)/ladder3_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
 
 all: $(BIN)/ladder3_test
 
+# --- P2-AN boot ladder rung 4: texture supply chain ------------------------
+# One new generated VERBATIM slice (find_gvrt_texture_chunk from
+# text_803D96A8.cpp:160-186, home 0x803D9C98) + the prelude-level identity
+# seam for its swap call site (deviation AN-1, docs/p2-tex-supply.md; the
+# era swap body must NOT enter this TU — guarded below). Reuses AE's
+# ladder3_gsl_glue.o (find_gsl_entry + era GSL globals) and Y's
+# move_data_glue.o, so the chain disc-table -> entry -> GVR walk -> era
+# byte-mover is era code end to end.
+GVR_SRC := $(DECOMP_ROOT)/src/pso/unk/text_803D96A8.cpp
+
+$(GEN)/ladder4_gvr_glue.cpp: $(GVR_SRC) $(BRINGUP)/include/ladder4_gvr_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@{ printf '#include "ladder4_gvr_prelude.h"\n'; \
+	   awk '/^u32 \*find_gvrt_texture_chunk\(TLobby \*lobby, u32 \*out_id, u32 \*data\) \{/{f=1} f{print} f&&/^\}$$/{exit}' $(GVR_SRC); \
+	 } > $@.body
+	@grep -qF 'move_data(lobby, p + 2, 8);' $@.body && \
+	 grep -qF 'case 0x58494247:' $@.body && grep -qF 'swap_gvrt_word(&len);' $@.body && \
+	 grep -qF 'texture_error.code = 4;' $@.body || \
+	 { echo "GUARD: ladder4 gvr slice body drifted — stop"; rm -f $@.body; exit 1; }
+	@grep -qF 'void swap_gvrt_word(u32 *p) {' $@.body && \
+	 { echo "GUARD: ladder4 slice leaked the era swap body (AN-1 keeps it at the prelude seam) — stop"; rm -f $@.body; exit 1; } || true
+	@mv $@.body $@; echo "gen: ladder4_gvr_glue.cpp (find_gvrt_texture_chunk — verbatim)"
+
+$(GEN)/ladder4_gvr_glue.o: $(GEN)/ladder4_gvr_glue.cpp $(BRINGUP)/include/ladder4_gvr_prelude.h | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+# C11 TU: the ONLY place compat/pso_byteswap.h is bound (the header refuses
+# C++); the ladder's entire endian vocabulary flows through its accessors.
+$(OUT)/ladder4_supply.o: $(BRINGUP)/ladder4_supply.c | $(OUT) $(OUT)/waiver.stamp
+	clang $(CFLAGS) -c -o $@ $<
+
+$(OUT)/ladder4_test.o: $(BRINGUP)/ladder4_test.cpp | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/ladder4_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                     $(GEN)/move_data_glue.o $(GEN)/ladder3_gsl_glue.o \
+                     $(GEN)/ladder4_gvr_glue.o $(OUT)/ladder4_supply.o $(OUT)/ladder4_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/ladder4_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"
