@@ -46,7 +46,7 @@ tail rows were re-judged structurally — 53 → RW, 5 pinned ONLY via confirmed
 embeds, never via the flag. LOCKED beats RW where both signals exist (CharacterFileSlot,
 FloorEventSet, G_SendGuildCard_6x06, DhcpMessage, OnlineQuestMenu are the `probable`-flagged
 tail rows pinned by confirmed-keeper embeds/typedef-chains, not by the flag
-(Pso3CharacterFileSlot/Pso3CharacterFile/TPlyJoinData carry `no`/`yes` flags and pin via
+(Pso3CharacterFileSlot/Pso3CharacterFile/TPlyJoinData carry `no` flags and pin via
 the same embeds law).
 
 ## 4. NEW escalations (loud)
