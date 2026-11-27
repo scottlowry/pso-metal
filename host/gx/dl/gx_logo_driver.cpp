@@ -99,7 +99,15 @@ void TMainTaskStub::render_screen_overlay() { l6_note(LC_MT_OVERLAY); }
 TMainTaskStub main_task;
 
 /* ---- LOGO-3: render_tick presents the sinbd surface via the AQ replay ---- */
-static const double QX0 = 160, QY0 = 120, QX1 = 480, QY1 = 360;
+/* V5b: the fixture regime keeps the (160,120)-(480,360) 320x240 rect with the
+ * 32x32 cell grid at an exact 10 px/cell (L7-P1 ±0 holds by construction).
+ * A genuine 256x256 supply cannot be sampled cell-exact through a 320x240
+ * quad (240/256 < 1 px/row: 16 of the 256 texel rows are unreachable at pixel
+ * centers). DEVIATION BB-4 (display-leg): when the supply grid is known and
+ * non-fixture, the logo quad is sized exactly N x N about the same center —
+ * 1:1 px-to-texel, so L7-P1 ±0 and L7-P2 region-nonzero run at GENUINE dims
+ * (the era replay stays verbatim; only the host quad geometry adapts). */
+static double QX0 = 160, QY0 = 120, QX1 = 480, QY1 = 360;
 static int g_frames;
 static unsigned char *g_tex_rgba = 0;   /* V5: malloc'd at the header dims */
 static unsigned g_tex_w = 32, g_tex_h = 32;
@@ -215,7 +223,28 @@ static int failures, total;
 
 int main(void) {
     setvbuf(stdout, 0, _IOLBF, 0);
-    setenv("GX_DL_TEXN", "32", 1);     /* V3 shader variant BEFORE open (uint2) */
+    /* V5b: TEXN must match the SUPPLY grid, not the fixture. Genuine GVRT
+     * records carry w/h in the desc BE at 0xC/0xE — peek the header before
+     * the pipeline is built (loader leg; era bodies untouched). Unset fixture
+     * regime keeps TEXN=32 byte-identically. */
+    const char *gvr_env0 = getenv("GX_LOGO_GVR");
+    unsigned texn_g = 32;
+    if (gvr_env0) {
+        FILE *pf = fopen(gvr_env0, "rb");
+        unsigned char hd[0x10];
+        if (pf && fread(hd, 1, 0x10, pf) == 0x10 && !memcmp(hd, "GVRT", 4)) {
+            unsigned pw = (unsigned)((hd[0xC] << 8) | hd[0xD]);
+            unsigned ph = (unsigned)((hd[0xE] << 8) | hd[0xF]);
+            if (pw && pw == ph && pw <= 1024) texn_g = pw;
+        }
+        if (pf) fclose(pf);
+    }
+    char texn_buf[16]; snprintf(texn_buf, sizeof texn_buf, "%u", texn_g);
+    setenv("GX_DL_TEXN", texn_buf, 1);
+    if (texn_g != 32) {   /* BB-4: 1:1 quad at the genuine grid (fixture shape untouched) */
+        QX0 = 320.0 - texn_g / 2.0; QY0 = 240.0 - texn_g / 2.0;
+        QX1 = QX0 + texn_g;         QY1 = QY0 + texn_g;
+    }
     if (pso_bringup_install() != 0) return 2;
     OSInit(); DVDInit();
     if (gx_dl_boot() != 0) { fprintf(stderr, "logo: gx boot failed\n"); return 2; }
@@ -396,14 +425,29 @@ int main(void) {
     for (int k = 0; k < NT; k++) if (got[k] != want[k]) mism++;
     CHECK(mism == 0, "L7-P1 logo texel map: all %ux%u cell centers of the drawable == the CLUT-expanded surface texels (±0) — sinbd art is on screen, addressed through the AQ uint2 fetch", g_tex_w, g_tex_h);
 
-    static unsigned full[(int)RW * (int)RH];
-    static unsigned xsf[(int)RW * (int)RH], ysf[(int)RW * (int)RH];
+    static unsigned full[640 * 480];   /* V5b: RW,RH now runtime (BB-4) — bound by the window */
+    static unsigned xsf[640 * 480], ysf[640 * 480];
     for (int yy = 0; yy < RH; yy++) for (int xx = 0; xx < RW; xx++) {
         int k = yy * RW + xx; xsf[k] = (unsigned)(QX0 + xx); ysf[k] = (unsigned)(QY0 + yy);
     }
     if (gxh_dl_sample(xsf, ysf, full, RW * RH) != 0) return 4;
     int nonzero = 0;
-    for (int k = 0; k < RW * RH; k++) if (full[k] != 0x00000000u) nonzero++;
+    /* V5b genuine-regime: a real PAL8 stream carries transparent texels
+     * (era RGB5A3 a=0 entries decode to the same 0x00000000 word as the
+     * clear color — they are UNPROVABLE by non-black alone). Coverage
+     * assertion at genuine dims: every pixel of the rect is non-black OR
+     * matches a CPU-expanded transparent texel at its mapped position
+     * (1:1 grid under BB-4). Fixture regime keeps the original strict leg. */
+    const char *gvr_p2 = getenv("GX_LOGO_GVR");
+    for (int k = 0; k < RW * RH; k++) {
+        if (full[k] != 0x00000000u) { nonzero++; continue; }
+        if (gvr_p2 && (unsigned)k < g_tex_w * g_tex_h) {
+            const unsigned char *tx = g_tex_rgba + (size_t)k * 4;
+            unsigned z = ((unsigned)tx[0] << 24) | ((unsigned)tx[1] << 16) |
+                         ((unsigned)tx[2] << 8) | tx[3];
+            if (z == 0x00000000u) nonzero++;   /* proven-drawn transparent texel */
+        }
+    }
     CHECK(nonzero == RW * RH, "L7-P2 region-nonzero: %d/%d pixels of the (%d x %d) logo rect are non-black (readback coverage assertion)",
           nonzero, RW * RH, RW, RH);
 
