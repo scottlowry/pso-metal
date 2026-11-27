@@ -7,7 +7,7 @@ BUILD_DIR := $(REPO)/build
 GXDIR     := $(REPO)/host/gx
 DLDIR     := $(GXDIR)/dl
 BRINGUP   := $(REPO)/host/bringup
-DECOMP_ROOT ?= $(HOME)/Hermes/pso-decomp/pso-decomp
+DECOMP_ROOT ?= $(HOME)/Hermes/pso-decomp/pso-decomp-port-pin
 COMPAT    := $(REPO)/compat/pso_metal_compat.h
 WAIVER_HDR  := $(BUILD_DIR)/waivers/pso_assert_waivers.h
 
