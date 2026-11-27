@@ -22,10 +22,13 @@
  * precedent). The sliced bodies touch ONLY the declared members — verified
  * against the era text this rung: run_frame touches no TLogo member;
  * begin_frame is empty; is_ready is a static with no member state.
- * DEVIATION L7-2 (counter legs stay): the pre-begin_gx legs P1–P4 (lane J)
- * and main_task run_task/render/render_screen_overlay (Play 2 material) are
- * COUNTED seams exactly as LOGO-2 shaped them — rung-5 edits only the seam
- * bodies BEHIND the five promoted legs, never the slices (§3 cross-check).
+ * DEVIATION L7-2 (counter legs stay): the pre-begin_gx legs P1–P4 (lane J) and
+ * render_tick (Play 3 material) are COUNTED seams exactly as LOGO-2 shaped
+ * them; PLAY-2 retired the main_task run_task/render/render_screen_overlay
+ * counters — those seams are REAL verbatim slices now (spec §1.1) and count
+ * through the shared walk extern + the 8-sub-pass roster (spec §1.3).
+ * rung-5 edits only the seam bodies BEHIND the sliced legs, never the slices
+ * (§3 cross-check).
  * begin_gx_frame/render_tick stay counters on the bringup side — the REAL
  * begin_gx_frame slice + era-present render_tick backings live in the gx
  * tree (LOGO-1/LOGO-3) and are not re-minted here.
@@ -109,14 +112,74 @@ extern u8 lobby_wait_ready_flag;          /* TLobby_800F8AA8.cpp:93          */
 /* ---- carriers for the sliced members (L7-1) ---- */
 struct TQuestVmDownLoadServer { static s32 is_ready(); };
 struct TLobby { static void wait_ready_loop(); };  /* LB-2 pump-count seam (R8) */
-struct TMainTask {
-    void begin_frame();                 /* REAL: verbatim TObject.cpp:640    */
-    void run_task();                    /* counter seam (Play 2 material)    */
-    void render();                      /* counter seam (Play 2 material)    */
-    void render_screen_overlay();       /* counter seam (Play 2 material)    */
+
+/* ---- PLAY-2 (spec docs/p2-ladder7-play23.md §1.2): TMainTask.h:17–38 verbatim
+ * macro trio + macros.h:89–90 iterator. NOT `#include "pso/system/task/TMainTask.h"`
+ * — that header drags the TL_OBJECTS externs + the full TObject include graph
+ * (D4/L7-1 keep-the-graph-off rule). Era sha256[:12]: TMainTask.h 2865c241009f,
+ * macros.h anchors re-opened this lane. ---- */
+#define FOREACH_NODE_NODECL_MULTI_ITER(type, first, varname, ...) \
+    for (varname = (type *)(first); varname != NULL; varname = (type *)(varname->m_next), __VA_ARGS__)
+#define X_OR_Y_CHILD(flags, old_flags, one_prefix, zero_prefix, suffix) \
+    if (flags != old_flags) { \
+        TMainTask *child; \
+        u32 bit = 1; \
+        FOREACH_NODE_NODECL_MULTI_ITER(TMainTask, main_task.m_down, child, bit <<= 1) { \
+            if (flags & bit) { \
+                child->one_prefix##_##suffix(); \
+            } else { \
+                child->zero_prefix##_##suffix(); \
+            } \
+        } \
+        old_flags = flags; \
+    }
+#define PAUSE_OR_RESUME_CHILD(flags, old_flags) \
+    X_OR_Y_CHILD(flags, old_flags, pause, resume, update)
+#define ALLOW_OR_DISALLOW_CHILD(flags, old_flags, flag_name) \
+    X_OR_Y_CHILD(flags, old_flags, disallow, allow, flag_name)
+
+/* main_task_flags TMainTask.h:80–89 verbatim (UPDATING 0x001 :81, RENDERING 0x002
+   :82, UPDATED 0x080 :86, RENDERED 0x100 :87); object_flags bits TMainTask.h
+   sibling TObject.h:29–36 (PAUSE_UPDATE 0x0008 :32, DISALLOW_RENDER 0x0010 :34)
+   — the two the macro carrier methods touch. */
+enum main_task_flags {
+    MAIN_TASK_UPDATING          = 0x001, // inside run_task / run_tl_camera_tasks
+    MAIN_TASK_RENDERING         = 0x002, // inside render / render_clipout_and_fade
+    MAIN_TASK_SCENE_PASSES      = 0x010, // inside render_scene_passes
+    MAIN_TASK_OBJECT_LAYERS     = 0x020, // inside render_object_layers
+    MAIN_TASK_LAYER_02          = 0x040, // inside render_task_layer_02
+    MAIN_TASK_UPDATED           = 0x080, // run_task finished this frame
+    MAIN_TASK_RENDERED          = 0x100, // render finished this frame
+    MAIN_TASK_DEFERRED_OBJECTS  = 0x200  // inside render_objects
 };
-extern TMainTask main_task;             /* era global (TObject.cpp home)     */
-struct TLogo { void run_frame(); };     /* bare carrier — gx precedent       */
+enum { PAUSE_UPDATE = 0x0008, DISALLOW_RENDER = 0x0010 };
+
+/* carriers: method members verbatim from the era decls — TObject.h:119–122
+ * inline bodies; TMainTask class shape per spec §1.2 (members the sliced
+ * bodies touch, verified against the era text this lane). */
+struct TObject {
+    u32 m_flags; TObject *m_prev, *m_down, *m_next;
+    void run_tasks();                       /* COUNTED extern (spec §1.3) — era walk :116 */
+    void debug_render();                    /* REAL era-empty slice (TObject.cpp:174) */
+    void allow_rendering()    { m_flags &= ~DISALLOW_RENDER; }
+    void disallow_rendering() { m_flags |=  DISALLOW_RENDER; }
+    void resume_update()      { m_flags &= ~PAUSE_UPDATE; }
+    void pause_update()       { m_flags |=  PAUSE_UPDATE; }
+};
+struct TMainTask : TObject {
+    u32 task_flags;                         /* era member; main_task def TObject.cpp:33 */
+    void begin_frame();                     /* REAL slice — PLAY-1, unchanged */
+    void run_task(); void render(); void render_screen_overlay();  /* REAL slices spec §1.1 */
+    void render_geometry(); void render_effects(); void render_particle_effects();
+    void render_objects();  void render_ui();      void render_clipout_and_fade();
+                                            /* COUNTED externs (spec §1.3) — homes below */
+    void render_after_scene(); void debug_render_overlay();        /* REAL era-empty  */
+};
+extern TMainTask main_task;                 /* era global (TObject.cpp home)     */
+extern TObject end_of_render_root, keyboard_task_object;  /* PLAY-3 roots, defs spec §1.3 */
+void render_info_icon_overlay(void);        /* COUNTED — free fn, TLobby_803382E4.cpp:145 */
+extern u32 render_pass, update_flags, old_update_flags, render_flags, old_render_flags;
+struct TLogo { void run_frame(); };         /* bare carrier — gx precedent       */
 
 /* request_main_phase: REAL verbatim slice (SystemBootInit.cpp:219, .s C6/C7
  * pins — same anchor gen_ladder6_logo.py uses). Trap leg can never fire with
@@ -131,16 +194,25 @@ extern MainPhaseState main_phase_state;
  * LC7_SOUND, LC7_POLL (verbatim slices cannot be logged from inside) — each
  * is bracketed at its era text position by the events before/after it, and
  * execution is proven by flip-probe real reads (receipts L7-P*). LC7_READY
- * fires INSIDE the era body chain at wait_ready_loop (LB-2 seam). ---- */
+ * fires INSIDE the era body chain at wait_ready_loop (LB-2 seam). PLAY-2:
+ * the LC7_MT_RUN/MT_RENDER/MT_OVERLAY counter slots LEAVE (their seams are
+ * REAL slices now); the flag spine counts through the walk extern
+ * (LC7_WALK_MAIN/KBD/EOR, spec §1.3) and the 8-sub-pass roster
+ * (GEOM/EFF/PTEX/OBJ/UI/CLIP/INFO — run_tasks is the walk, not a 9th).
+ * LC7_WALK_* must stay in that exact order: the extern notes
+ * LC7_WALK_MAIN + (root - WALK_MAIN). ---- */
 enum L7Call {
     LC7_BEGIN_GX = 1, LC7_ACT_CAM_MODE, LC7_SET_POSE, LC7_CTRL_STUFF, LC7_KBD_FRAME,
-    LC7_MT_RUN, LC7_MT_RENDER, LC7_MT_OVERLAY, LC7_ASYNC, LC7_SOUND,
-    LC7_POLL, LC7_READY, LC7_RENDER_TICK, LC7_COUNT
+    LC7_ASYNC, LC7_SOUND, LC7_POLL, LC7_READY, LC7_RENDER_TICK,
+    LC7_WALK_MAIN, LC7_WALK_KBD, LC7_WALK_EOR,
+    LC7_GEOM, LC7_EFF, LC7_PTEX, LC7_OBJ, LC7_UI, LC7_CLIP, LC7_INFO,
+    LC7_COUNT
 };
+enum { WALK_MAIN, WALK_KBD, WALK_EOR };   /* run_tasks root classification (spec §1.3) */
 extern const char *const l7_call_names[];
-extern int g_call_seq[64];
+extern int g_call_seq[160];               /* PLAY-2/3 sizing per spec §2.3 (15 events/frame already) */
 extern int g_call_n;
-inline void l7_note(int c) { if (g_call_n < 64) g_call_seq[g_call_n++] = c; }
+inline void l7_note(int c) { if (g_call_n < 160) g_call_seq[g_call_n++] = c; }
 
 /* counted seam decls (bodies: ladder7_seam.cpp) */
 void begin_gx_frame(void);              /* bringup-side count; REAL slice lives gx-side (L7-2) */
@@ -156,9 +228,9 @@ s32 poll_reset_request(void);
 
 /* ---- seam counters (L7-3; harness reads for the proven-invariant set) ---- */
 extern int g_begin_gx_calls, g_ctrl_calls, g_kbd_calls;
-extern int g_mt_run_calls, g_mt_render_calls, g_mt_overlay_calls, g_render_tick_calls;
+extern int g_render_tick_calls;           /* render_tick stays counted until PLAY-3 slices it */
 extern int g_cam_mode;
-extern Vec g_pose_a, g_pose_b;          /* captured set_active_camera_pose args */
+extern Vec g_pose_a, g_pose_b;            /* captured set_active_camera_pose args */
 extern int g_adxf_open_calls, g_adxf_readnw_calls, g_adxf_getstat_calls;
 extern const void *g_adxf_last_name;    /* ADXF_Open arg capture (probe read-back) */
 extern int g_tmpbuf_use_calls;
@@ -168,5 +240,16 @@ extern int g_loadbml_calls;
 extern BmlResource *g_loadbml_last_bml;
 extern const char *g_loadbml_last_name;
 extern int g_ready_pump_calls;          /* LB-2 wait_ready_loop pump count */
+
+/* ---- PLAY-2 flag-spine seam state (spec docs/p2-ladder7-play23.md §1.3/§1.5;
+ * definitions in ladder7_seam.cpp; the P5-P9 probes + I2a..e invariants REAL-read
+ * these — the same objects the verbatim slices drive). ---- */
+extern int g_walk_calls;                /* TObject::run_tasks extern count */
+extern int g_walk_root;                 /* WALK_MAIN / WALK_KBD / WALK_EOR */
+extern u32 g_walk_flags;                /* main_task.task_flags LIVE at run_tasks() */
+extern int g_geom, g_eff, g_ptex, g_obj, g_ui, g_clip, g_info;  /* 8 counted sub-pass externs */
+extern u8 g_pass_trace[16];             /* render_pass value at each sub-pass entry (I2a) */
+extern int g_pass_n;                    /* trace write cursor (clamped, spec §1.3) */
+extern u32 g_flags_at_subpass;          /* task_flags LIVE at the most recent sub-pass */
 
 #endif /* LADDER7_RUN_PRELUDE_H */
