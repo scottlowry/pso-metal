@@ -49,6 +49,11 @@ FILES = [
     ("libs/dolphin/include/dolphin/os/OSExec.h", "dolphin/os/OSExec.h", 25),
     ("libs/dolphin/include/dolphin/dvd.h", "dolphin/dvd.h", 196),
     ("include/pso/quest/QuestDownloadServer.h", "pso/quest/QuestDownloadServer.h", 134),
+    # apply-6 integrator erratum: self-heal claim holds only for TUs that hit
+    # a shipped shadow first; src/pso/system/RelModule.cpp includes OSLink.h
+    # with no other shadowed header in its chain (measured: the ONE corpus
+    # residual AT site after MA's four landed) -> own shadow.
+    ("libs/dolphin/include/dolphin/os/OSLink.h", "dolphin/os/OSLink.h", 27),
 ]
 
 for src, dest, site in FILES:

@@ -76,6 +76,9 @@ SITE_RE = re.compile(
     r"LAYOUT_ASSERT\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*,(.*)$", re.S)
 # permissive type extraction from the condition
 SIZEOF_RE = re.compile(r"sizeof\s*\(\s*([A-Za-z_][\w:<>~]*)")
+# apply-6: `sizeof(struct X)` — keyword must not be read as the type name
+SIZEOF_KW_RE = re.compile(
+    r"sizeof\s*\(\s*(?:struct|union|enum|class)\s+([A-Za-z_][\w:]*)")
 OFFSETOF_RE = re.compile(r"offsetof\s*\(\s*([A-Za-z_][\w:<>~]*)\s*,")
 # helper: #define H(args) LAYOUT_ASSERT(Name##param, offsetof(TYPE,param)==off)
 HELP_RE = re.compile(
@@ -124,6 +127,18 @@ def scan_tree(decomp: Path):
                 continue
             helpers[macro] = (segs, plist, typ)
         # direct (non-#define) sites
+        # apply-6 adjudication: two extraction gaps kept legitimately-RW types
+        # at flag 0 (bounded, verified corpus-wide):
+        #  (1) `sizeof(struct X)` — keyword prefix ate the type (exactly 1 site
+        #      tree-wide: NetworkRuntime.h:19 PppFrame; SIZEOF_KW_RE below);
+        #  (2) macro-indirect const checks `LAYOUT_ASSERT(nm, MACRO == lit)`
+        #      where the same-file #define is a pure layout expression
+        #      (NetTcpState.h:159-160 TcpTcb_f204_check -> offsetof/sizeof
+        #      TcpTcb; the ONLY ==literal-without-type site whose macro
+        #      resolves; others stay unmapped and fail closed at flag 0).
+        defines = {}
+        for dm in re.finditer(r"#define\s+([A-Za-z_]\w*)\s+([^\n]+)", text):
+            defines.setdefault(dm.group(1), dm.group(2))
         for line in text.splitlines():
             s = line.strip()
             if s.startswith("#define"):
@@ -132,7 +147,14 @@ def scan_tree(decomp: Path):
             if not m:
                 continue
             name, cond = m.group(1), m.group(2).split("*/")[0]
-            tm = SIZEOF_RE.search(cond) or OFFSETOF_RE.search(cond)
+            tm = (SIZEOF_KW_RE.search(cond) or SIZEOF_RE.search(cond)
+                  or OFFSETOF_RE.search(cond))
+            if not tm:
+                mm = re.match(r"\s*([A-Za-z_]\w*)\s*==", cond)
+                if mm and mm.group(1) in defines:
+                    body = defines[mm.group(1)]
+                    tm = (SIZEOF_KW_RE.search(body) or SIZEOF_RE.search(body)
+                          or OFFSETOF_RE.search(body))
             names.setdefault(name, tm.group(1) if tm else None)
 
     unresolved = []

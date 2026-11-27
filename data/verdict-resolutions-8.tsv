@@ -1,0 +1,2 @@
+type	new-verdict	evidence-type	file:line	confidence
+PsoCommandHandler	RUNTIME-WAIVE	field-level-re-tier	fn ptr member PsoCommandFn handle (include/pso/network/protocol/packet_classes.h:370-376); type ABSENT from the 10 named recv-class rows of docs/p1-format-net-disc.md:42 that verdict-resolutions-2.tsv:1893 file-scoped into LOCKED-FORMAT; wire packets carry no function pointers; measurement docs/p2-packets-1.md §2 (row 376 alone gates 64 TUs; the 6 real wire asserts in the same file PASS 1680/1680 keep-honest)	HIGH

@@ -53,7 +53,12 @@ SDK_INCS := -I$(DECOMP_ROOT)/include -I$(DECOMP_ROOT)/include/clib \
 # 2026-11-27: TItemWeaponDrillLauncher.cpp NJS_OBJECT_size negative-array under
 # ILP32+rebind — not in the AZ collateral ledger; plus 5 unrequested flips).
 COLLISION_PIN := $(REPO)/compat/collision/pin_dolphin_types.h
+# apply-6 additions (docs/p2-stitch-apply6.md): -I compat/net (NP era-model
+# shadow — hijacks all 50 quoted NetworkRuntime.h edges, NP receipt) and
+# -I compat/repin (MA AT_ADDRESS dialect shadows, 38-row class) land per the
+# verified NP paste block order. compat/njs stays PER-TU ONLY (allow-list).
 LP64_REBIND   := -DPSO_PORT_LAYOUT_WAIVER -include $(COLLISION_PIN) \
+                 -I$(REPO)/compat/net -I$(REPO)/compat/repin \
                  -I$(REPO)/host/bringup/include
 
 # The waiver header is ALWAYS force-included after compat. With zero active
@@ -75,7 +80,17 @@ CFLAGS_PARSE   = -fsyntax-only -std=c11   $(CORE) $(REBIND_FLAGS) $(SDK_INCS) \
 # P2-AV §4: per-TU C++ NJS shadow opt-in (docs/p2-njs-repin-1.md §6).
 NJS_ALLOWLIST := $(BUILD_DIR)/njs_allowlist.txt
 
-export DECOMP_ROOT COMPAT WAIVER_HDR PARSE_DIR CXXFLAGS_PARSE CFLAGS_PARSE
+# P2-MX (docs/p2-musyx-1.md §5): the musyx runtime is compiled as C++ — its
+# 28 .c TUs carry bare in-body `extern "C" {` blocks that no header supply can
+# launder in C mode (P2-T precedent, flags measured by MX: 25/27; residue
+# chorus_fx.c + reverb.c = asm-void bodies with absent orig_asm/*.inc, named
+# host-facade queue). -x c++ keeps the .c corpus honest everywhere else;
+# -Icompat/musyx BEFORE net/repin/SDK (MX + AA linknames audit attached).
+MUSYX_CXXFLAGS = -fsyntax-only -std=c++17 $(CORE) -I$(REPO)/compat/musyx \
+                 $(REBIND_FLAGS) $(SDK_INCS) \
+                 -target $(PARSE_TARGET) -ferror-limit=0
+
+export DECOMP_ROOT COMPAT WAIVER_HDR PARSE_DIR CXXFLAGS_PARSE CFLAGS_PARSE MUSYX_CXXFLAGS
 
 .PHONY: all units waivers parse parse-lp64 list-fail smoke-link clean
 
@@ -105,7 +120,9 @@ define PARSE_RECIPE
 	  extra=""; case "$$f" in *.cpp) grep -qxF "$$f" $(NJS_ALLOWLIST) && extra="-I$(REPO)/compat/njs" ;; esac; \
 	  case "$$f" in \
 	    *.cpp) clang++ $$extra $$CXXFLAGS_PARSE "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
-	    *.c)   clang   $$CFLAGS_PARSE   "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
+	    *.c)   case "$$f" in src/musyx/runtime/*) clang++ $$MUSYX_CXXFLAGS -x c++ "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
+	                   *) clang $$CFLAGS_PARSE "$$abs" > "$(PARSE_DIR)/err/$$safe.err" 2>&1 || echo "$$f" >> "$(PARSE_DIR)/fail.txt" ;; \
+	             esac ;; \
 	  esac' < $(UNITS)
 	@total=$$(wc -l < $(UNITS) | tr -d ' '); fail=$$(wc -l < $(PARSE_DIR)/fail.txt | tr -d ' '); \
 	 echo "== $(TAG): TOTAL=$$total FAIL=$$fail PASS=$$((total-fail)) (target=$(TARGET_USED))" | tee $(PARSE_DIR)/summary.txt

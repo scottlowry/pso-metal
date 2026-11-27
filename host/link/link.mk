@@ -45,7 +45,12 @@ $(OBJ) $(GEN) $(OUT):
 	@mkdir -p $@
 
 $(OBJ)/waiver.stamp: $(WAIV) | $(OBJ)
-	@grep -q 'STATE: 99 waived' $(WAIV) || { echo "GUARD: committed waiver header state changed — stop"; exit 1; }
+# D8-style sha-pinned verify (apply-6: replaces the pre-mass-waiver literal
+# grep 'STATE: 99 waived' — stale since the 2179/2943 header eras; literal
+# STATE guards rot silently, sha pins do not. Content authority =
+# host/bringup/waiver-header.sha256, re-pinned by the integrator per wave.)
+	@sha256sum $(WAIV) | cut -d' ' -f1 | grep -qxF "$$(cat $(BR)/waiver-header.sha256)" \
+	  || { echo "GUARD: waiver header sha != host/bringup/waiver-header.sha256 — stop (regen is integrator-only, at no-make boundaries)"; exit 1; }
 	@touch $@
 
 # --- generated era copies (same guards as bringup.mk D3; waiver header consumed AS-IS, never gen_waivers) ---

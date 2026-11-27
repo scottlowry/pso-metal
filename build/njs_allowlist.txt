@@ -8,8 +8,10 @@
 src/pso/render/psoLoadTexture.cpp
 src/pso/render/GinjaTextureTable.cpp
 src/pso/render/GinjaMaterial.cpp
-# stage 2 (§3 #4-#6, deferred — V6/NC lane submits probe receipts before these
-# rows go live; keep commented, one row per file, path verbatim from units.txt):
-# src/pso/system/BmlResource.cpp
-# src/pso/ui/charcreate/TCMCharacter.cpp
+# stage 2 (§3 #4-#6) — P2-NC receipts (docs/p2-njs-wave-1.md §4) landed
+# 2026-11-27: BmlResource + TCMCharacter proven H3-clean adapter-FREE -> live;
+# TChCrLoadReq stays commented (8-error §3#6 compare-in-slot-space cluster at
+# :38-:40/:43/:46 until a source-side adapter rides the slice program).
+src/pso/system/BmlResource.cpp
+src/pso/ui/charcreate/TCMCharacter.cpp
 # src/pso/ui/charcreate/TChCrLoadReq.cpp
