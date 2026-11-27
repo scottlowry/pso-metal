@@ -41,11 +41,13 @@ CharacterFile, TcpHdr, QuestListEntry, GuildCardSaveData); (b) G/H-table names v
 the docs (the 3 doc-name rows are all `yes`-flagged — zero locks from doc-naming alone);
 (c) embeds-locked-by-value propagation to fixpoint (TProtocol precedent), seeded ONLY from
 confirmed keepers: the 46 resolutions-1..4 LOCKED + the 12 assert-verdicts `L-P
-(FORMAT-KEEP)` types. `probable` and path-adjacency contributed ZERO locks: 58 `probable`
-tail rows were re-judged structurally (67-count in sim includes 2025-era flag deltas; all
-probable non-embedders → RW). LOCKED beats RW where both signals exist (CharacterFileSlot,
-FloorEventSet, Pso3CharacterFileSlot, Pso3CharacterFile, G_SendGuildCard_6x06, DhcpMessage,
-TPlyJoinData are `probable`-flagged rows pinned by confirmed-keeper embeds, not by the flag).
+(FORMAT-KEEP)` types. `probable` and path-adjacency contributed ZERO locks: the 58 `probable`
+tail rows were re-judged structurally — 53 → RW, 5 pinned ONLY via confirmed-keeper
+embeds, never via the flag. LOCKED beats RW where both signals exist (CharacterFileSlot,
+FloorEventSet, G_SendGuildCard_6x06, DhcpMessage, OnlineQuestMenu are the `probable`-flagged
+tail rows pinned by confirmed-keeper embeds/typedef-chains, not by the flag
+(Pso3CharacterFileSlot/Pso3CharacterFile/TPlyJoinData carry `no`/`yes` flags and pin via
+the same embeds law).
 
 ## 4. NEW escalations (loud)
 
