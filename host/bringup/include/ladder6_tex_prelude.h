@@ -54,7 +54,10 @@
  * SITE (TObjSinBoard.cpp:112 `TQuestVmDownLoadServer::alloc(size)`) is kept
  * structurally present in the slice; the allocator is backed by the AU-4
  * locked-cache heap (OSAllocFromHeap) — test TU owns the definition.        */
-struct TQuestVmDownLoadServer { static void *alloc(u32 size); };
+struct TQuestVmDownLoadServer {
+    static void *alloc(u32 size);
+    static s32 is_ready();      /* V4 rung4 §5 never-ready invariant owner */
+};
 
 /* ---- DEVIATION LB-2 (frame-pump seams) ---------------------------------
  * psoLoadTexture / LoadPvmFileTls pump frames while the GVM stream fills.
