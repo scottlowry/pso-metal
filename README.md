@@ -1,96 +1,116 @@
 # pso-metal
 
-Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube) for
-Apple Silicon, rendering through **Metal**.
+> ## ⚠️ Everything in this repository is AI-generated.
+> Every line of code, every document, every commit — written by AI agents (a fleet of
+> Hermes subagents coordinated by an integrator agent) under the direction and review of
+> **Scott Lowry**. Humans have review authority; no human has typed a line of this code.
+> PRs from agents: please follow [`AGENTS.md`](AGENTS.md). PRs from humans:
+> [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
-Status: **Phase 2 — first linked executable achieved.** A real LP64 Mach-O (`host/link/`)
-containing era game logic boots a scripted slice on Apple Silicon (arena, era OSAlloc heap,
-fake-disc reads, the full PRS decode chain, irq-gate, `memory.cpp` sys-heap — 8/8 receipts,
-exit 0). First real pixels are readback-proven through a Metal window, the logo state machine
-runs to its last pure-logic state, and a textured display-list quad is in bring-up.
+Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube,
+`GPOE8P`) for **Apple Silicon**, rendering through **Metal**. Built *on* — not forked
+from — [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp), consumed as a
+pinned read-only input.
+
+Status: **Phase 3 — the logo draws.** Era texture-supply code (`init_and_load_tlut` →
+GVRT/GVPL chain → CLUT expand) executes natively end-to-end and renders the SEGA logo
+through the real era call order into a Metal drawable, pixel-readback-gated
+(76,800/76,800 non-black, fnv self-consistency anchor). First linked LP64 Mach-O boots
+the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 
 ## What this is / isn't
 
-- **Not an emulator.** PSO's own decompiled C/C++ is compiled natively for arm64; the
-  original PPC GX/DSP/OS service calls are re-implemented against Metal, AVAudioEngine,
-  and POSIX. Think "the game, rebuilt," not "the console, simulated."
-- **Not a decompilation.** The decomp that makes this possible is
-  [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp) — 27,572 functions,
-  100% byte-matched, MIT-licensed. This repo vendors/links against it; it does not
-  fork its contents into a separate identity.
-- **Bring your own content.** No game assets, ROMs, or ISOs here, ever. You supply your
-  own legally-obtained PSO GPOE8P dump; a locator tool reads it locally.
+- **Not an emulator.** PSO's decompiled C/C++ is compiled natively for arm64; the PPC
+  GX/DSP/OS service calls are re-implemented against Metal, AVAudioEngine, and POSIX.
+  "The game, rebuilt" — not "the console, simulated."
+- **Not a decompilation.** Byte-matching the era binary is
+  [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp)'s job (100% matched).
+  This repo takes that decomp as a **pinned input** (currently `6b38b5383`) and makes it
+  *run* on a machine that was never a GameCube.
+- **Bring your own content.** No game assets, ROMs, or ISOs here, ever — not in any
+  commit, past or future. Everything under `host/bringup/fake_disc/` is synthetic —
+  hand-constructed micro-fixtures or generator-reproducible files (regeneration is
+  byte-identical; see that directory's README for each file's provenance). Real game
+  data stays on the owner's disk and is referenced by hash only.
 
-## The approach
+## The approach (as measured)
 
-Modeled on what the community proved feasible for other GameCube titles (Super Mario
-Sunshine on Apple Silicon being the visible 2026 milestone): decompile → recompile
-natively → re-host platform services on Metal. PSO's specific twists:
+1. **Two ABIs, honestly separated.** `arm64_32` (ILP32) reproduces the era data model as
+   a *parse-probe target only* — it cannot link on macOS. The runtime is LP64, where
+   every layout assert must be *earned*: a fail-closed per-type waiver machine
+   (`build/gen_waivers.py`, 8-source verdict corpus, deny-root list that can never be
+   overridden by a mislabeled row) neutralizes only RAM-only layouts. FORMAT-KEEP types
+   (wire/save/disc byte images) stay compile-honest forever.
+2. **Parse ≠ correct.** Passing `-fsyntax-only` under the rebind regime means
+   *compilable*, not runtime-correct. Pointer-in-u32 sites (the Ninja handle regime)
+   carry their own obligations: guest↔host address translation at stamped boundaries
+   (`compat/njs/`, per-TU C++-only allow-list), loader stamping, and a handle program —
+   tracked, not hand-waved.
+3. **Executing code arrives as verbatim slices.** Era functions are extracted
+   byte-verbatim from the pinned decomp tree at build time by guarded generators
+   (anchor checks fail loud on drift); host code supplies prelude seams, never
+   re-authored game logic. Goldens are hand-traced from the era PPC disassembly so
+   tests cannot share bugs with the ported code.
+4. **Big-endian bounded.** 629 hazard files indexed (`tools/be_scan.py`); wire/save
+   bytes stay byte-true through a proven swap layer (`compat/pso_byteswap.h`, 38/38
+   incl. UBSan); live dangerous sites: few and named.
 
-1. **Data model.** The GameCube is 32-bit PowerPC; Apple Silicon runs LP64. Measured both
-   ways (`probes/`, `docs/abi.md`, `docs/p2-lp64-tranche1.md`, `docs/p2-census-audit.md`):
-   ILP32 (`arm64_32`) makes **1,416/1,680** files parse and resolves word/pointer size — but
-   **cannot link on macOS** (no 32-bit arm libSystem), so it is a probe target only. The real
-   runtime is **LP64: 70/1,680 parse with the initial waiver set**; an uncapped re-audit found
-   the true failing population is **1,602 layout-assert types / 2,951 sites** — earlier
-   censuses were halved by clang's error cap. The path is a per-type FORMAT-KEEP vs
-   RUNTIME-WAIVE verdict queue (936+ types now named across tranches + resolutions; realized
-   ~150 files and climbing with the tail) plus two structural programs the queue exposed:
-   the **lane-J handle re-pin** (`NJS_OBJECT`/`NJS_MKEY_F` — loaded-image structs that every
-   boot-spine TU touches and waivers must never cover) and **`TItemData` save-layout
-   re-pin**. Runtime absolute-address / u32-as-pointer patterns are handled by an arena +
-   handle model (`docs/p1-datamodel.md`, proven executing).
-2. **Big-endian.** PSO's saves, network packets, and disc data are big-endian byte images.
-   Measured, not vibes: `tools/be_scan.py` indexes 629 files carrying at least one
-   byte-order hazard; genuinely dangerous live sites are few (4) and named in
-   `docs/be-index-summary.md`. The audits underway split "layout that crosses a binary
-   format" (must stay byte-true, swap-on-load layer) from "layout that only lives in RAM"
-   (host-free). Endianness is bounded — the scary-sounding bitfield class turned out to be
-   one header.
-3. **Graphics.** Headless Metal is proven on this machine (`spike/metal_clear.m`: offscreen
-   640×480 clear + pixel readback, CI-able, green). The port re-hosts the game's actual GX +
-   MetaCore/NuSystem call surface — measured at **272 distinct SDK functions, 1,415 call
-   sites, only 121 files touching platform code at all** (`docs/host-surface.md`). The
-   decompiled game logic above it stays untouched.
-4. **Audio.** The ADX decoder is already portable C in the decomp; the MusyX mixer is a
-   6.6 KB DSP microcode blob with no CPU-side tap. Plan: keep the CRI CPU layer, shim the
-   ~35 boundary calls onto AVAudioEngine (`docs/audio-survey.md`); ucode reverse-engineering
-   stays optional for bit-exact fidelity later.
+## Where the numbers actually are (2026-11-27, all integrator-run)
+
+| meter | value |
+|---|---|
+| arm64_32 parse gate (legacy anchor) | **1,601 / 1,680** — `tools/parse_gate.py` floor 1601 |
+| true-LP64 parse, official adopted shape | **350 / 1,680** — `make -C build parse-lp64` |
+| true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
+| logo | era CLUT supply chain **executing**; synthetic-fixture regime green both paths (era + AV-1 stand-in), genuine disc art in flight |
+| boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
+| suites | bring-up 128/128 · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 |
+| waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
+| residual classes (measured, owned) | NJS-handle ~125 · packets 64→adjudicated · PppFrame 50→adjudicated · MWCC-asm 38→landed · musyx 27→landed (2 named facade residuals) · tail ~68 |
+
+The `docs/p2-*.md` series is the working ledger — every claim above has a receipt file
+and a re-run command. "Almost matches" does not count here; gates print numbers or the
+change doesn't land.
 
 ## Layout
 
 | dir | contents |
 |---|---|
-| `compat/` | force-include headers: era-parse shims + the byteswap layer (`compat/RESULTS.md`) |
-| `probes/` | reproducible tree-wide clang probes that drive the numbers |
-| `docs/` | per-area surveys + the integration ledger: `abi`, `host-surface`, `boot-spine`, `audio-survey`, `be-index`, `p1-*` (formats, build-system, init ledger), `p2-*` (LP64 tranche, bring-up log) |
-| `host/` | the re-hosted platform layer: N's 274-entry API scaffold (`pso_host.h` + subsystem headers, effort-tagged) + Q's executing bring-up substrate (`host/bringup/`) |
-| `spike/` | runnable proofs: Metal offscreen clear+readback (green), data-model handles (green) |
-| `tools/` | `be_scan.py` endian hazard index, `parse_gate.py` regression gate; content locator (planned — reads your own ISO, writes nothing) |
-| `build/` | port build skeleton + fail-closed assert-waiver overlay + parse-regression gate |
-| `data/` | machine-readable indices (hazard CSV, assert verdicts, verdict tranche 1) |
+| `host/bringup/` | executing bring-up ladders 1–6 (crt0/arena → PRS → GSL/GVRT → texture supply → consumer chain → logo driver) + generators + fake_disc fixtures |
+| `host/gx/` | GX→Metal re-host: display-list replay, window/VI regimes, logo driver + readback gates |
+| `host/link/` | first-link boot slice (Mach-O receipts) |
+| `compat/` | parse-world machinery: collision pin (`collision/`), era-type rebinds (`repin/`), NJS handle shadows (`njs/`), era-model shadows (`net/`, `packets/`, `musyx/`, `dialect/`, `chorus/`), byteswap layer |
+| `build/` | parse batteries (both ABIs), fail-closed waiver generator + per-TU NJS allow-list, gates |
+| `data/` | verdict corpus TSVs (the waiver machine's authority), hazard indices, link-deps |
+| `docs/` | the ledger: `p1-*` (formats/abi/build-system/init-ledger), `p2-*` (per-lane receipts, stitch apply series, contracts) |
+| `probes/ spike/ tools/ tests/` | measurement runners, proofs-of-feasibility, gates (`parse_gate.py`, `link_hygiene.sh`, `be_scan.py`), byteswap tests |
 
-## Benchmarks
+## Building
 
-**What's green today** (each re-run by the integrator, not just lane-reported):
+Prereqs: Apple Silicon, Xcode clang, python3.9+. This repo **does not contain the game
+code** — point it at your own [`pso-decomp`](https://github.com/zeroz41/pso-decomp)
+checkout (the decomp itself requires your own legally-obtained disc to produce):
 
-| Proof | State |
-|---|---|
-| **First linked executable** | `host/link/out/pso_first_link` — Mach-O arm64, 15 objects (10 boot-spine + 4 whole-file era TUs + backings), 0 non-system undefined, boot slice **8/8 receipts exit 0** incl era PRS chain end-to-end (`docs/p2-first-link.md`) |
-| Era logic executing | 30+ named era functions on M-series: PRS full chain (`prs_decompress` + `_buffer`/`_alloc`), all 10 `memory.cpp` heap fns + era OSAlloc port, `find_gsl_entry`, logo state machine to **state 7** = last pure-logic state (GX wall: `begin_gx_frame` @0x8013F5F4); suites 16+13+26+27 green on clean rebuilds |
-| First real pixels | Metal window (640×480) readback-proven on era `GXSetCopyClear` literals; 41 boot-path GX/VI fns backed (20 real/21 counted shims); VI progressive branch proven on byte-verbatim era slices; textured quad in bring-up (`cy>0` texel bug under active fix) |
-| Texture supply | Synthetic GVR fixture through the era decode chain (both-regime GVRT swap trap executed), era-shaped descriptor pack ready for the gx consumer (`docs/p2-tex-supply.md`) |
-| Parse gate (probe target, arm64_32) | **1,416/1,680** (`make parse`), regression-gated at the 669 floor |
-| Parse at real runtime target (LP64) | **70/1,680** committed today; ~150 measured in the stitched-header dry-run (battery apply pending; true population 1,602 types/2,951 sites post-uncapped-audit, blind tail in adjudication) |
-| Assert waivers | fail-closed generator: 8-source multi-TSV (tranches + resolutions with later-wins precedence), deny-root set (29 format records incl NJS_* loaded-image structs), zero 1→0 regressions, per-source receipts |
-| Link hygiene | `tools/link_hygiene.sh`: musyx C++-mode mangling gate, 24/24 golden names incl `chorus_fx` stand-in (unhostable MWCC asm, fail-loud + removal checklist) |
-| Endianness layer | `compat/pso_byteswap.h`; **38/38 tests** incl UBSan; GVRT identity-vs-add-swap trap pinned by named cases |
-| Boot plan | 75-action init ledger → 23-step logo checklist → rung-4 chain contract (35 ordered rows to the GX boundary); DEFER audit 19 CONFIRMED/4 REFUTED with the VI-DTV glue contract proven executable |
+```sh
+make -C build parse DECOMP_ROOT=/path/to/pso-decomp   # arm64_32 legacy gate
+make -C build parse-lp64 DECOMP_ROOT=/path/to/pso-decomp  # true LP64 battery
+python3 tools/parse_gate.py                            # regression floor
+bash host/bringup/run.sh                               # executing-logic suites (ladders 1-6)
+bash host/gx/run_window.sh                             # logo-visible gates, both regimes
+make -f host/link/link.mk run                          # first-link boot slice receipts
+```
 
-Phase 2 exit: PSO title screen rendered by Metal on Apple Silicon, from a **linkable LP64
-build** reading your own dump. Game benchmark: a created character walking in CotL at
-unlocked framerate. Estimates, revised once against the LP64 measurement: linked executable
-~4–6 weeks of fleet-paced verdict+dialect work; title screen ~2–3 months.
+The suites pin the decomp input by sha (AB manifests) and **fail loud on drift** — that
+is a feature; see `docs/p1-buildsystem.md` and `docs/p2-stitch-apply*.md`.
+
+## Roadmap (honest)
+
+1. **Now**: genuine disc-supplied logo through the era archive-index; rung-5 seam ladder
+   (title-screen main-phase machine); long-tail class census.
+2. **Next**: uaddr-handle program (parse-clean → runtime-correct), link scale-up from the
+   boot slice toward real game frame states, MusyX host-shim audio.
+3. **Later**: title → char-select → first area. Playable single-player is the milestone;
+   online is a separate program. No dates promised.
 
 ## License
 
