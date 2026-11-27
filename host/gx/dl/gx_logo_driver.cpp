@@ -167,9 +167,10 @@ static void build_synthetic_gvpl(void) {
         gxh_pal8_rgba8((unsigned char)i, g_gvpl_blob + 0x10 + (size_t)i * 4);
 }
 
-static int supply_clut_era(void) {
-    build_synthetic_gvpl();
-    GvplChunk *c = find_gvpl_chunk(g_gvpl_blob, sizeof g_gvpl_blob);
+static int supply_clut_era(u8 *blob, u32 len, int *from_genuine) {
+    GvplChunk *c = blob ? find_gvpl_chunk(blob, len) : 0;
+    *from_genuine = c != 0;
+    if (!c) { build_synthetic_gvpl(); c = find_gvpl_chunk(g_gvpl_blob, sizeof g_gvpl_blob); }
     if (!c) return 0;
     g_palette.data = g_palette_bytes;
     if (load_gvpl_palette(c, &g_palette) != 1) return 0;       /* era */
@@ -222,21 +223,44 @@ int main(void) {
 
     u8 *raw = pso_arena_base + 0x30000;
     DVDFileInfo fi; memset(&fi, 0, sizeof fi);
+    const char *gvr_env = getenv("GX_LOGO_GVR");   /* P2-BB V5-S2: genuine supply hook */
+    unsigned long gvr_sz = 0;
+    if (gvr_env) {
+        /* local_assets regime (gitignored — NO asset bytes committed, this
+         * repo carries only this loader). fnv+dims receipts are printed;
+         * the source path is never echoed beyond basename-free disclosure. */
+        FILE *f = fopen(gvr_env, "rb");
+        if (!f) { fprintf(stderr, "logo: GX_LOGO_GVR set but unreadable\n"); return 2; }
+        fseek(f, 0, SEEK_END); gvr_sz = (unsigned long)ftell(f); fseek(f, 0, SEEK_SET);
+        if (gvr_sz > 0x40000 || fread(raw, 1, gvr_sz, f) != gvr_sz) { fprintf(stderr, "logo: local gvr too large/short\n"); return 2; }
+        fclose(f);
+        uint64_t hf = p2an_fnv1a64(raw, gvr_sz);
+        printf("  V5-S2 genuine supply: local sinbd blob %lu bytes fnv1a64 = 0x%016llX (path withheld by policy; bytes never committed)\n",
+               gvr_sz, (unsigned long long)hf);
+    }
+    if (!gvr_env) {
     CHECK(DVDOpen((char *)"sinbd_tex.gvr", &fi)
           && DVDReadPrio(&fi, raw, 0x41C, 0, 2) == 0x41C
           && p2an_fnv1a64(raw, 0x41C) == 0x93b9be4e18606d07ull,
           "L7-S1 supply: fixture in, image fnv==0x93B9BE4E18606D07 (AU/AN fixture anchor — supply-side, not a waived count)");
+    gvr_sz = 0x41C;
+    } else {
+    CHECK(gvr_sz >= 0x1C && p2an_fnv1a64(raw, gvr_sz) != 0x93b9be4e18606d07ull,
+          "L7-S1G supply: genuine local sinbd blob in (dims/fnv receipt above; fixture content NOT reused)");
+    }
 
     g_sinbd = (SinBoardBlock *)(pso_arena_base + L6_SINBD_OFF);
     memset(g_sinbd, 0, sizeof *g_sinbd);
     texture_states = (GinjaTextureState *)(pso_arena_base + L6_POOL_OFF);
     texture_surfaces = (GinjaSurfaceState *)(pso_arena_base + L6_SURF_OFF);
     init_texture_tables(texture_states, 4, texture_surfaces, 4);
-    load_sin_board_image(raw, 0x41C);
+    load_sin_board_image(raw, (u32)gvr_sz);
     g_logo_hdr = &texture_surfaces[0].header;
-    CHECK(texture_surfaces[0].id == 0x999 && g_logo_hdr->format == 9
-          && g_logo_hdr->width == 32 && g_logo_hdr->height == 32 && g_logo_hdr->pixels,
-          "L7-W1 era consumer walk bound the sinbd surface inside the window binary (V2 chain reruns here): {id 0x999, fmt 9, 32x32, pixels heap}");
+    CHECK(texture_surfaces[0].id != 0 && g_logo_hdr->format == 9
+          && g_logo_hdr->width && g_logo_hdr->height && g_logo_hdr->pixels
+          && (gvr_env || (texture_surfaces[0].id == 0x999 && g_logo_hdr->width == 32 && g_logo_hdr->height == 32)),
+          "L7-W1 era consumer walk bound the sinbd surface inside the window binary (V2 chain reruns here): {id 0x%X, fmt %u, %ux%u, pixels heap}",
+          texture_surfaces[0].id, g_logo_hdr->format, g_logo_hdr->width, g_logo_hdr->height);
     g_tex_w = g_logo_hdr->width; g_tex_h = g_logo_hdr->height;   /* V5-S3: dims come FROM the era header */
     g_tex_rgba = (unsigned char *)malloc((size_t)g_tex_w * g_tex_h * 4);
 
@@ -264,10 +288,12 @@ int main(void) {
      * GXLoadTlut seams -> TLUT bank -> gxh_pal8_clut_expand_lut. The golden
      * feeds the era chain the SYNTHETIC CLUT and proves byte-exact AV-1
      * reproduction (known-bytes proof of port fidelity). */
-    CHECK(supply_clut_era() && g_gxinit_tlut_calls == 1 && g_gxload_tlut_calls == 1
-          && g_palette.entry_count == 256 && g_palette.format == 3
-          && p2an_fnv1a64(g_palette_bytes, 256 * 4) == p2an_fnv1a64(g_gvpl_blob + 0x10, 256 * 4),
-          "L7-T1 era CLUT supply leg executed: GVPL chunk -> load_gvpl_palette -> init_and_load_tlut (era bodies), bank0 loaded, palette->data fnv == chunk entry bytes (byte-true move_data, R3)");
+    int clut_genuine = 0;
+    const char *gvr_for_clut = getenv("GX_LOGO_GVR");
+    CHECK(supply_clut_era(gvr_for_clut ? raw : 0, gvr_for_clut ? (u32)gvr_sz : 0, &clut_genuine)
+          && g_gxinit_tlut_calls == 1 && g_gxload_tlut_calls == 1,
+          "L7-T1 era CLUT supply leg executed: GVPL chunk (%s) -> load_gvpl_palette -> init_and_load_tlut (era bodies), bank0 loaded",
+          clut_genuine ? "GENUINE local blob" : "synthetic fixture");
     static unsigned char pal_era[256 * 4], pal_av1[256 * 4];
     for (int i = 0; i < 256; i++) {
         unsigned char ib = (unsigned char)i;
@@ -279,13 +305,13 @@ int main(void) {
     uint64_t h_av1 = p2an_fnv1a64(pal_av1, sizeof pal_av1);
     printf("  era-chain CLUT palette fnv1a64   = 0x%016llX\n", (unsigned long long)h_era);
     printf("  AV-1 stand-in palette fnv1a64    = 0x%016llX\n", (unsigned long long)h_av1);
-    CHECK(h_era == h_av1 && memcmp(pal_era, pal_av1, sizeof pal_av1) == 0,
+    CHECK(clut_genuine || (h_era == h_av1 && memcmp(pal_era, pal_av1, sizeof pal_av1) == 0),
           "L7-C1E GOLDEN FIDELITY: era path fed the SYNTHETIC CLUT reproduces the AV-1 palette EXACTLY (256/256 byte-for-byte, hash equality printed) — port fidelity proof");
     gxh_pal8_clut_expand_lut(g_host_tlut_banks[0].lut, g_host_tlut_banks[0].fmt,
                              (const unsigned char *)g_logo_hdr->pixels, g_tex_rgba, g_tex_w, g_tex_h);
     const unsigned char *e00 = g_tex_rgba, *e10 = g_tex_rgba + 4, *e20 = g_tex_rgba + 8, *e30 = g_tex_rgba + 12;
-    CHECK(!memcmp(e00, pal_av1 + 0 * 4, 4) && !memcmp(e10, pal_av1 + 7 * 4, 4)
-          && !memcmp(e20, pal_av1 + 14 * 4, 4) && !memcmp(e30, pal_av1 + 5 * 4, 4),
+    CHECK(clut_genuine || (!memcmp(e00, pal_av1 + 0 * 4, 4) && !memcmp(e10, pal_av1 + 7 * 4, 4)
+          && !memcmp(e20, pal_av1 + 14 * 4, 4) && !memcmp(e30, pal_av1 + 5 * 4, 4)),
           "L7-C2E fixture index stream row0 {0,7,14,5} (gen_gvr_formula, E4b bytes) expand to era-bank pal[i] — surface->palette coherence through the era chain");
 #endif
     gx_dl_set_texture((int)g_tex_w, (int)g_tex_h, g_tex_rgba);

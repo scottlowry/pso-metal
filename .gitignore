@@ -1,3 +1,6 @@
 
 # lane scratch residue (session artifacts, never assets)
 /cache/
+
+# P2-BB V5-S2: genuine disc-derived art stays OUT of git (fnv+dims receipts only)
+host/bringup/local_assets/
