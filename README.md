@@ -64,9 +64,9 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
 | logo | era CLUT supply chain **executing**; genuine 256×256 sinbd PAL8 + GVPL palette extracted from disc read-only (hash-only, gitignored local assets), readback-EXACT through the era chain; synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
-| suites | bring-up 128/128 · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 |
+| suites | bring-up **156/156** (ladders 1–7: prior 128 + frame-loop 28) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 — measured `docs/p2-ladder7-1.md`, `docs/p2-stitch-apply7.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
-| residual classes (measured, owned) | NJS adapter-queue 169 · runtime-gated handle rows 260 (uaddr stamping program) · other-class tail 83 + TL census 19 · musyx 2 named facade residuals · packets/PppFrame/MWCC-asm/musyx-main all landed |
+| residual classes (measured, owned) | apply-8 LP64 FAIL=513, first-error partition: NJS wall 485 · FloorPop 9 · musyx 2 named · named tail 17 (`docs/p2-stitch-apply8.md` §Battery, `docs/p2-tail-2.md` §1); inert supply authored: adapter-queue 169 rows/673 sites batch-1 top-30 (`docs/p2-adapter-queue-1.md` §0-1), runtime-gated handle rows 258 (`docs/p2-apply7-recensus.md` §3) · packets/PppFrame/MWCC-asm/musyx-main all landed |
 
 The `docs/p2-*.md` series is the working ledger — every claim above has a receipt file
 and a re-run command. "Almost matches" does not count here; gates print numbers or the
@@ -76,7 +76,7 @@ change doesn't land.
 
 | dir | contents |
 |---|---|
-| `host/bringup/` | executing bring-up ladders 1–6 (crt0/arena → PRS → GSL/GVRT → texture supply → consumer chain → logo driver) + generators + fake_disc fixtures |
+| `host/bringup/` | executing bring-up ladders 1–7 (crt0/arena → PRS → GSL/GVRT → texture supply → consumer chain → logo driver → frame-loop legs) + generators + fake_disc fixtures |
 | `host/gx/` | GX→Metal re-host: display-list replay, window/VI regimes, logo driver + readback gates |
 | `host/link/` | first-link boot slice (Mach-O receipts) |
 | `compat/` | parse-world machinery: collision pin (`collision/`), era-type rebinds (`repin/`), NJS handle shadows (`njs/`), era-model shadows (`net/`, `packets/`, `musyx/`, `dialect/`, `chorus/`), byteswap layer |
@@ -95,7 +95,7 @@ checkout (the decomp itself requires your own legally-obtained disc to produce):
 make -C build parse DECOMP_ROOT=/path/to/pso-decomp   # arm64_32 legacy gate
 make -C build parse-lp64 DECOMP_ROOT=/path/to/pso-decomp  # true LP64 battery
 python3 tools/parse_gate.py                            # regression floor
-bash host/bringup/run.sh                               # executing-logic suites (ladders 1-6)
+bash host/bringup/run.sh                               # executing-logic suites (ladders 1-7)
 bash host/gx/run_window.sh                             # logo-visible gates, both regimes
 make -f host/link/link.mk run                          # first-link boot slice receipts
 ```
