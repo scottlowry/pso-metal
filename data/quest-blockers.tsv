@@ -1,0 +1,488 @@
+error	first-line	class	count	fix-vehicle
+array size is negative	include/pso/player/PlayerAttackParams.h:41	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerAttackParams.h:42	layout-assert	1	waiver-list
+LAYOUT_ASSERT(AttackParamsSize) negative size	include/pso/player/PlayerAttackParams.h:43	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ItemDataSize) negative size	include/pso/item/TItemData.h:151	layout-assert	1	source-rewrite
+array size is negative	include/pso/item/TItemData.h:152	layout-assert	1	source-rewrite
+array size is negative	include/pso/item/TItemData.h:153	layout-assert	1	source-rewrite
+array size is negative	include/pso/player/PhotonBlastGauge.h:122	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PhotonBlastGaugeSize) negative size	include/pso/player/PhotonBlastGauge.h:123	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TombstoneRecordSize) negative size	include/pso/object/TObjTombstoneRecord.h:38	layout-assert	1	waiver-list
+array size is negative	include/pso/object/TObjTombstoneRecord.h:39	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ChallengeRecord_size) negative size	include/pso/quest/challenge/ChallengeRecord.h:43	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:44	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:45	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:46	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:47	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:48	layout-assert	1	source-rewrite
+array size is negative	include/pso/quest/challenge/ChallengeRecord.h:49	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(G_IntraMapWarp_6x55_size) negative size	include/pso/network/protocol/subcmd_6x.h:651	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/protocol/subcmd_6x.h:652	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/protocol/subcmd_6x.h:653	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(BattleParameterResistanceSize) negative size	include/pso/enemy/BattleParameters.h:35	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(BattleParameterMovementSize) negative size	include/pso/enemy/BattleParameters.h:36	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(BattleParameterBankSize) negative size	include/pso/enemy/BattleParameters.h:37	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(BattleParameterFileSize) negative size	include/pso/enemy/BattleParameters.h:38	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(NJS_OBJECT_size) negative size	include/pso/system/NinjaTypes.h:162	layout-assert	1	verdicts-needed
+array size is negative	include/pso/system/NinjaTypes.h:163	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(NinjaFloatKeySize) negative size	include/pso/system/NinjaTypes.h:240	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TScene_size) negative size	include/pso/system/scene/TScene.h:146	layout-assert	1	waiver-list
+array size is negative	include/pso/system/scene/TScene.h:147	layout-assert	1	waiver-list
+LAYOUT_ASSERT(GinjaRenderTarget_size) negative size	include/pso/render/GinjaRenderTarget.h:18	layout-assert	1	waiver-list
+array size is negative	include/pso/render/GinjaRenderTarget.h:20	layout-assert	1	waiver-list
+array size is negative	include/pso/render/GinjaRenderTarget.h:21	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TLevelSelect_size) negative size	include/pso/ui/TLevelSelect.h:25	layout-assert	1	waiver-list
+LAYOUT_ASSERT(SymbolChatPayloadSize) negative size	include/pso/ui/chat/SymbolChatPayload.h:25	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/chat/SymbolChatPayload.h:26	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/chat/SymbolChatPayload.h:27	layout-assert	1	waiver-list
+LAYOUT_ASSERT(SymbolChatPresetSize) negative size	include/pso/ui/chat/SymbolChatPreset.h:38	layout-assert	1	source-rewrite
+array size is negative	include/pso/ui/chat/SymbolChatPreset.h:39	layout-assert	1	source-rewrite
+array size is negative	include/pso/ui/chat/SymbolChatPreset.h:40	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(BattleRecord_size) negative size	include/pso/system/CharacterSaveRecordLookup.h:21	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(ChatShortcut_size) negative size	include/pso/system/CharacterSaveRecordLookup.h:42	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:88	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:89	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:90	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:91	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:92	layout-assert	1	source-rewrite
+array size is negative	include/pso/system/CharacterSaveRecordLookup.h:93	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(CharacterSaveRecord_size) negative size	include/pso/system/CharacterSaveRecordLookup.h:94	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(FloorEventCommandSize) negative size	include/pso/network/FloorEventCommand.h:18	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/FloorEventCommand.h:19	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(FloorTransitionState_size) negative size	include/pso/unk/TLobby_800FD78C.h:36	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/TLobby_800FD78C.h:37	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/TLobby_800FD78C.h:38	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TQuestManager_size) negative size	include/pso/unk/TQuestManager.h:23	layout-assert	1	waiver-list
+LAYOUT_ASSERT(WindowEntriesSize) negative size	include/pso/ui/window/WindowLayoutEntries.h:16	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/WindowLayoutEntries.h:17	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:70	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:71	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:72	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:73	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:74	layout-assert	1	waiver-list
+LAYOUT_ASSERT(WindowBaseSize) negative size	include/pso/ui/window/TWindowBase.h:75	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:76	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:77	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:78	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:79	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:80	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:81	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowBase.h:82	layout-assert	1	waiver-list
+LAYOUT_ASSERT(WindowAdditionSize) negative size	include/pso/ui/window/TWindowAddition.h:22	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowAddition.h:23	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowAddition.h:24	layout-assert	1	waiver-list
+LAYOUT_ASSERT(StatusGaugeLayout_size) negative size	include/pso/unk/WindowLayoutRecord.h:25	layout-assert	1	waiver-list
+LAYOUT_ASSERT(LayoutEntryCopyRecord_size) negative size	include/pso/unk/WindowLayoutRecord.h:34	layout-assert	1	waiver-list
+LAYOUT_ASSERT(SpritePartLayoutRecordSize) negative size	include/pso/unk/WindowLayoutRecord.h:88	layout-assert	1	waiver-list
+LAYOUT_ASSERT(DirectSpritePartLayoutRecordSize) negative size	include/pso/unk/WindowLayoutRecord.h:89	layout-assert	1	waiver-list
+LAYOUT_ASSERT(WindowDescriptorSize) negative size	include/pso/unk/WindowLayoutRecord.h:113	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/WindowLayoutRecord.h:114	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/WindowLayoutRecord.h:115	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TWindowMenu_size) negative size	include/pso/ui/window/TWindowMenu.h:94	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowMenu.h:95	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TWindowMessage_size) negative size	include/pso/ui/window/TWindowMessage.h:42	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TParticleCtrl_size) negative size	include/pso/effect/particle/TParticleCtrl.h:100	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ObjectSetDataSize) negative size	include/pso/object/base/ObjectSetData.h:23	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjCollidable.h:86	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjBaseSize) negative size	include/pso/object/base/TObjMotion.h:180	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjCollidableSize) negative size	include/pso/object/base/TObjMotion.h:181	layout-assert	1	waiver-list
+LAYOUT_ASSERT(CollisionBodySize) negative size	include/pso/object/base/TObjMotion.h:182	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjMotionSize) negative size	include/pso/object/base/TObjMotion.h:183	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjMotion.h:184	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjMotion.h:185	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjMotion.h:186	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjMotion.h:187	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItem.h:203	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItem.h:204	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItem.h:205	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItem.h:206	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TItemSize) negative size	include/pso/item/TItem.h:207	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItemEquipBase.h:79	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TItemEquipBase_size) negative size	include/pso/item/TItemEquipBase.h:80	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ItemHeapObjectSize) negative size	include/pso/item/TItemHeapObject.h:11	layout-assert	1	waiver-list
+LAYOUT_ASSERT(MagFollowParametersSize) negative size	include/pso/item/mag/TItemMagSub.h:53	layout-assert	1	waiver-list
+LAYOUT_ASSERT(MagChildSize) negative size	include/pso/item/mag/TItemMagSub.h:114	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:115	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:116	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:117	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:118	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:119	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:120	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:121	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:122	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:123	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:124	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:125	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:126	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:127	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:128	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:129	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:130	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:131	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:132	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:133	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:134	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:135	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:136	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMagSub.h:137	layout-assert	1	waiver-list
+array size is negative	include/pso/item/mag/TItemMag.h:192	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:193	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:194	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:195	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:196	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:197	layout-assert	1	verdicts-needed
+array size is negative	include/pso/item/mag/TItemMag.h:198	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(MagSize) negative size	include/pso/item/mag/TItemMag.h:199	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TWindowMessageQuest_size) negative size	include/pso/ui/window/TWindowMessageQuest.h:18	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowMessageScroll.h:20	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TWindowMessageScroll_size) negative size	include/pso/ui/window/TWindowMessageScroll.h:21	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TNpcPartnerSpawner_size) negative size	include/pso/npc/NpcPartnerControl.h:20	layout-assert	1	waiver-list
+LAYOUT_ASSERT(EnemyStateRecord_size) negative size	include/pso/enemy/EnemyStateRecord.h:22	layout-assert	1	waiver-list
+array size is negative	include/pso/enemy/EnemyStateRecord.h:23	layout-assert	1	waiver-list
+array size is negative	include/pso/enemy/EnemyStateRecord.h:24	layout-assert	1	waiver-list
+LAYOUT_ASSERT(SubtractiveRng_size) negative size	include/pso/system/SubtractiveRng.h:37	layout-assert	1	verdicts-needed
+array size is negative	include/pso/object/base/TObjChara.h:276	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:277	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:278	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:279	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:280	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:281	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:282	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:283	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:284	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:285	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjCharaSize) negative size	include/pso/object/base/TObjChara.h:286	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:287	layout-assert	1	waiver-list
+array size is negative	include/pso/object/base/TObjChara.h:289	layout-assert	1	waiver-list
+LAYOUT_ASSERT(EnemyMoveParamsSize) negative size	include/pso/enemy/TObjEnemy.h:73	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(EnemyBaseSize) negative size	include/pso/enemy/TObjEnemy.h:74	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TBoss4DarkFalzState_size) negative size	include/pso/boss/darkfalz/TBoss4DarkFalz.h:138	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:139	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:140	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:141	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:142	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:179	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:180	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:181	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TBoss4DarkFalz_size) negative size	include/pso/boss/darkfalz/TBoss4DarkFalz.h:182	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:183	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/darkfalz/TBoss4DarkFalz.h:184	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerTechniqueStateSize) negative size	include/pso/player/PlayerTechniqueState.h:75	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerTechniqueState.h:76	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerTechniqueState.h:77	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ControllerInputContext_size) negative size	include/pso/system/ControllerInputState.h:48	layout-assert	1	waiver-list
+array size is negative	include/pso/system/ControllerInputState.h:49	layout-assert	1	waiver-list
+array size is negative	include/pso/system/ControllerInputState.h:50	layout-assert	1	waiver-list
+array size is negative	include/pso/system/ControllerInputState.h:51	layout-assert	1	waiver-list
+array size is negative	include/pso/system/ControllerInputState.h:52	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ControllerInputState_size) negative size	include/pso/system/ControllerInputState.h:53	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlayerPadBindingSize) negative size	include/pso/player/PlayerPadBinding.h:39	layout-assert	1	waiver-list
+LAYOUT_ASSERT(MaterialUsage_size) negative size	include/pso/player/MaterialUsage.h:37	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlayerFollowParticles_size) negative size	include/pso/player/PlayerFollowParticles.h:60	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerScaleState_size) negative size	include/pso/player/PlayerScaleState.h:50	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerScaleState.h:51	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerScaleState.h:52	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlayerMoveSpeed_size) negative size	include/pso/player/PlayerMoveSpeed.h:31	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerAnimationState_size) negative size	include/pso/player/PlayerAnimationState.h:26	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/PlayerAttackController.h:84	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/PlayerAttackController.h:85	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/PlayerAttackController.h:86	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(AttackControllerSize) negative size	include/pso/player/PlayerAttackController.h:87	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/PlayerTelepipe.h:22	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerTelepipeSize) negative size	include/pso/player/PlayerTelepipe.h:23	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerAppearFade_size) negative size	include/pso/player/PlayerAppearFade.h:29	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(MovementHistory_size) negative size	include/pso/player/MovementHistory.h:22	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerPkState_size) negative size	include/pso/player/PlayerPkState.h:23	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerIntraMapWarp_size) negative size	include/pso/player/PlayerIntraMapWarp.h:18	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerSubObjectSlots_size) negative size	include/pso/player/PlayerBattleScore.h:56	layout-assert	1	waiver-list
+array size is negative	include/pso/player/PlayerBattleScore.h:57	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlayerBattleScore_size) negative size	include/pso/player/PlayerBattleScore.h:58	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ProtectionTimer_size) negative size	include/pso/player/TObjPlayer.h:79	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlayerNpcControl_size) negative size	include/pso/player/TObjPlayer.h:99	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(StickEscapeDetector_size) negative size	include/pso/player/TObjPlayer.h:112	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1234	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1235	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1236	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1237	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1238	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1239	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1240	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1241	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1242	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1243	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1244	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1245	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1246	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1247	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1248	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1249	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1251	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1252	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1253	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1254	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1255	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1256	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1257	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1258	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1259	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1260	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1261	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1262	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TObjPlayer.h:1263	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjPlayer_size) negative size	include/pso/player/TObjPlayer.h:1264	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TMessageWindowController_size_check) negative size	include/pso/ui/window/TMessageWindowController.h:36	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TQuestVmDownLoadServer_size_check) negative size	include/pso/quest/TQuestVmDownLoadServer.h:93	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(SystemSaveData_size) negative size	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:49	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(TAdSinglePlyChrSelectGC_size) negative size	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:241	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:242	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:243	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:244	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:245	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/frontend/TAdSinglePlyChrSelectGC.h:246	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TLobbyFloorItemEntrySize) negative size	include/pso/network/TLobby.h:56	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TLobby_size) negative size	include/pso/network/TLobby.h:575	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(EnemyPlacementSize) negative size	include/pso/enemy/EnemyPlacement.h:24	layout-assert	1	waiver-list
+array size is negative	include/pso/enemy/EnemyPlacement.h:29	layout-assert	1	waiver-list
+LAYOUT_ASSERT(AramBlock_size) negative size	include/pso/system/AramPool.h:17	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(AramPool_size) negative size	include/pso/system/AramPool.h:41	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(FloorObjectSetRow_size) negative size	include/pso/map/FloorPopulation.h:56	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:57	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:58	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:59	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(EnemySetRecordSize) negative size	include/pso/map/FloorPopulation.h:60	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:62	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:63	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:64	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:65	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:66	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:67	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(LobbyFloorRows_size) negative size	include/pso/map/FloorPopulation.h:69	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:70	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:71	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(LobbyPoolEntry_size) negative size	include/pso/map/FloorPopulation.h:72	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(FloorSetFlagsHeaderSize) negative size	include/pso/map/FloorPopulation.h:131	layout-assert	1	verdicts-needed
+array size is negative	include/pso/map/FloorPopulation.h:132	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChallengeClientRecords_size) negative size	include/pso/quest/challenge/ChallengeModeState.h:58	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChallengeRankOverride_size) negative size	include/pso/quest/challenge/ChallengeModeState.h:59	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/ChallengeModeState.h:60	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChallengeModeState_size) negative size	include/pso/quest/challenge/ChallengeModeState.h:61	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PlyCharDataSize) negative size	include/pso/player/TPlyCharData.h:78	layout-assert	1	source-rewrite
+array size is negative	include/pso/player/TPlyCharData.h:80	layout-assert	1	source-rewrite
+array size is negative	include/pso/player/TPlyCharData.h:81	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(TPlyClientConfigSize) negative size	include/pso/player/TPlyClientConfig.h:20	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TPlyClientConfig.h:21	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TPlyClientConfig.h:22	layout-assert	1	verdicts-needed
+array size is negative	include/pso/player/TPlyClientConfig.h:23	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TPlyMeetUserExtensionSize) negative size	include/pso/network/TPlyMeetUserExtension.h:21	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TPlyJoinLobbyEntrySize) negative size	include/pso/network/protocol/packet_classes.h:255	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TPlyJoinLobbySize) negative size	include/pso/network/protocol/packet_classes.h:257	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TRegisterSize) negative size	include/pso/network/protocol/packet_classes.h:298	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(TSendPsoRegistSize) negative size	include/pso/network/protocol/packet_classes.h:316	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(PsoCommandHandler_size) negative size	include/pso/network/protocol/packet_classes.h:376	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TPlyChallengeSize) negative size	include/pso/network/protocol/packet_classes.h:521	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChoiceSearchConfigSize) negative size	include/pso/network/protocol/choice_search.h:84	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/protocol/choice_search.h:85	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChoiceSearchPacketSize) negative size	include/pso/network/protocol/choice_search.h:86	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/protocol/choice_search.h:87	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/protocol/choice_search.h:88	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChoiceSearchResultSize) negative size	include/pso/network/protocol/choice_search.h:89	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ChoiceSearchResultListSize) negative size	include/pso/network/protocol/choice_search.h:90	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TSendVerifyLicenseSize) negative size	include/pso/network/TProtocol.h:86	layout-assert	1	verdicts-needed
+array size is negative	include/pso/network/TProtocol.h:112	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TSendLoginSize) negative size	include/pso/network/TProtocol.h:113	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TSendQuestStatisticSize) negative size	include/pso/network/TProtocol.h:230	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TSetManagerSize) negative size	include/pso/map/TSetManager.h:21	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TColorOverlayFade_size) negative size	include/pso/system/TColorOverlayFade.h:20	layout-assert	1	waiver-list
+LAYOUT_ASSERT(FloorMapSelectionSize) negative size	include/pso/unk/TLobby_80207644.h:13	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/TLobby_80207644.h:14	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TWindowMenuIconLine_size) negative size	include/pso/ui/window/TWindowMenuIconLine.h:124	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TWindowSubEquipKind_size) negative size	include/pso/ui/window/TWindowSubEquipKind.h:22	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowSubStatusDisp.h:91	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowSubStatusDisp.h:92	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowSubStatusDisp.h:93	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowSubStatusDisp.h:94	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowSubStatusDisp.h:95	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TWindowSubStatusDisp_size) negative size	include/pso/ui/window/TWindowSubStatusDisp.h:97	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TOMine_size) negative size	include/pso/object/trap/TOMine.h:71	layout-assert	1	verdicts-needed
+array size is negative	include/pso/object/trap/TOMine.h:72	layout-assert	1	verdicts-needed
+array size is negative	include/pso/object/trap/TOMine.h:73	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TOMineTrap_size) negative size	include/pso/object/trap/TOMineTrap.h:51	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TCameraController_size) negative size	include/pso/camera/TCameraController.h:54	layout-assert	1	waiver-list
+LAYOUT_ASSERT(CreationCamera_size) negative size	include/pso/camera/CreationCamera.h:69	layout-assert	1	verdicts-needed
+array size is negative	include/pso/camera/CreationCamera.h:70	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TCameraCtrl_size) negative size	include/pso/camera/TCameraCtrl.h:203	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TWindowSubComCard_size) negative size	include/pso/ui/window/TWindowSubComCard.h:137	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TAdPlayerLoadGCExtent) negative size	include/pso/ui/frontend/TAdPlayerLoadGC.h:65	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TAdStorySelectGC_size) negative size	include/pso/ui/frontend/TAdStorySelectGC.h:27	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TItemMenuCtrlSize) negative size	include/pso/item/TItemMenuCtrl.h:22	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItemMenuCtrl.h:23	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ModelNodeTablesSize) negative size	include/pso/unk/ModelNodeTables.h:32	layout-assert	1	waiver-list
+array size is negative	include/pso/unk/ModelNodeTables.h:33	layout-assert	1	waiver-list
+array size is negative	include/pso/boss/darkfalz/TBoss4Type2.h:153	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/darkfalz/TBoss4Type2.h:154	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TBoss4Type2_size) negative size	include/pso/boss/darkfalz/TBoss4Type2.h:155	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/olgaflow/TBoss6PlotFalz.h:43	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/olgaflow/TBoss6PlotFalz.h:44	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TQuestBgmCtrlSize) negative size	include/pso/quest/TQuestBgmCtrl.h:19	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TCameraConversation_size) negative size	include/pso/camera/TCameraConversation.h:31	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TShopSequence_size) negative size	include/pso/ui/city/TShopSequence.h:31	layout-assert	1	waiver-list
+LAYOUT_ASSERT(BankItemRecord_size) negative size	include/pso/ui/city/TCheckRoomSequence.h:89	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(TCheckRoomSequence_size) negative size	include/pso/ui/city/TCheckRoomSequence.h:90	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/city/TCheckRoomSequence.h:91	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(THunterGuildSeqOffline_size) negative size	include/pso/ui/city/THunterGuildSeqOffline.h:53	layout-assert	1	waiver-list
+LAYOUT_ASSERT(NpcPlayerView_size) negative size	include/pso/npc/TNpcPlayer.h:107	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TNpcPlayer_size) negative size	include/pso/npc/TNpcPlayer.h:227	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TNpcTalkTrigger_size) negative size	include/pso/npc/TNpcTalkTrigger.h:24	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TCineCtrl_size) negative size	include/pso/camera/TCineCtrl.h:45	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TOChatSensor_size) negative size	include/pso/object/switch/TOChatSensor.h:33	layout-assert	1	waiver-list
+array size is negative	include/pso/object/collision/TOSymbolchatColli.h:27	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TOSymbolchatColli_size) negative size	include/pso/object/collision/TOSymbolchatColli.h:28	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(BattleCtrlSize) negative size	include/pso/player/TPlayerBattleCtrl4P.h:133	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:134	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:135	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:136	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:137	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:138	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:139	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:140	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:141	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl4P.h:142	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:71	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:72	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:73	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:74	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:75	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:76	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:77	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlayerBattleCtrl.h:78	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TPlayerBattleCtrl_size) negative size	include/pso/player/TPlayerBattleCtrl.h:79	layout-assert	1	waiver-list
+LAYOUT_ASSERT(RadarPlayerMarkerSize) negative size	include/pso/ui/hud/TRaderMapCore.h:133	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:140	layout-assert	1	waiver-list
+LAYOUT_ASSERT(RaderMapCoreSize) negative size	include/pso/ui/hud/TRaderMapCore.h:141	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:142	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:143	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:144	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:145	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/hud/TRaderMapCore.h:146	layout-assert	1	waiver-list
+LAYOUT_ASSERT(EffectSize) negative size	include/pso/effect/TEffect.h:29	layout-assert	1	waiver-list
+array size is negative	include/pso/effect/TEffect.h:30	layout-assert	1	waiver-list
+array size is negative	include/pso/effect/TEffect.h:31	layout-assert	1	waiver-list
+array size is negative	include/pso/effect/TEffect.h:32	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TTecCircleSize) negative size	include/pso/technique/TTecCircle.h:42	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlayerWindowQuerySize) negative size	include/pso/ui/window/WindowCtrlCallback.h:10	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowCtrl.h:154	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowCtrl.h:155	layout-assert	1	waiver-list
+array size is negative	include/pso/ui/window/TWindowCtrl.h:156	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TWindowCtrl_size) negative size	include/pso/ui/window/TWindowCtrl.h:157	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjWarpBase_size) negative size	include/pso/object/warp/TObjWarpBase.h:29	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjAreaWarp_size) negative size	include/pso/object/warp/TObjAreaWarp.h:20	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjAreaWarpQuest_size) negative size	include/pso/object/warp/TObjAreaWarpQuest.h:29	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjCityMainWarp_size) negative size	include/pso/object/warp/TObjCityMainWarp.h:40	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjDoor_size) negative size	include/pso/object/door/TObjDoor.h:66	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ChatCaptureSize) negative size	include/pso/object/switch/TOChatSensorCapture.h:20	layout-assert	1	waiver-list
+array size is negative	include/pso/object/switch/TOChatSensorCapture.h:21	layout-assert	1	waiver-list
+array size is negative	include/pso/object/switch/TOChatSensorCapture.h:22	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TChallenge4PResult_size) negative size	include/pso/quest/challenge/TChallenge4PResult.h:48	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PResult.h:49	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PResult.h:50	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PResult.h:51	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PResult.h:53	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PResult.h:54	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColBase_size) negative size	include/pso/object/quest/TObjQuestColBase.h:27	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColApcINW_size) negative size	include/pso/object/quest/TObjQuestColApcINW.h:15	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestCol_size) negative size	include/pso/object/quest/TObjQuestCol.h:14	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColA_size) negative size	include/pso/object/quest/TObjQuestColA.h:14	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColALock_size) negative size	include/pso/object/quest/TObjQuestColALock.h:15	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColApc_size) negative size	include/pso/object/quest/TObjQuestColApc.h:13	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjQuestColApcIN_size) negative size	include/pso/object/quest/TObjQuestColApcIN.h:14	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TQuestColCtrl_size) negative size	include/pso/quest/TQuestColCtrl.h:41	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjSinBoard_size) negative size	include/pso/object/TObjSinBoard.h:15	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjTombstone_size) negative size	include/pso/object/TObjTombstone.h:68	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TQuestDamageTask_size) negative size	include/pso/quest/TQuestDamageTask.h:20	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:269	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:270	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:271	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:272	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:273	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:274	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:275	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:276	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:277	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:278	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:279	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:280	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:281	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:282	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:283	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:284	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:285	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:286	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:287	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:288	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:289	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:290	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:291	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:292	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:293	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:294	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:295	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:296	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:297	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:298	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:299	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:300	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:301	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:302	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:303	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:304	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:305	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:306	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:307	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:308	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:309	layout-assert	1	verdicts-needed
+array size is negative	include/pso/boss/dragon/TBoss1Dragon.h:310	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(DragonSize) negative size	include/pso/boss/dragon/TBoss1Dragon.h:311	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjEnemyCustom_size) negative size	include/pso/enemy/TObjEnemyCustom.h:59	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TBoss3Volopt_size) negative size	include/pso/boss/volopt/TBoss3Volopt.h:138	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TMotionModel_size) negative size	include/pso/object/base/TMotionModel.h:34	layout-assert	1	waiver-list
+LAYOUT_ASSERT(MarkerColor_size) negative size	include/pso/ui/hud/MarkerColor.h:22	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TPlyPhotonChair_size) negative size	include/pso/player/TPlyPhotonChair.h:36	layout-assert	1	waiver-list
+LAYOUT_ASSERT(PlacementRecordSize) negative size	include/pso/player/TPlyItem.h:107	layout-assert	1	waiver-list
+array size is negative	include/pso/player/TPlyItem.h:108	layout-assert	1	waiver-list
+array size is negative	include/pso/item/TItemList.h:41	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(InventorySlotSize) negative size	include/pso/item/TItemList.h:42	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TCameraFollow_size) negative size	include/pso/camera/TCameraFollow.h:63	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TCameraPan_size) negative size	include/pso/camera/TCameraPan.h:24	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TTokenList_size) negative size	include/pso/system/TTokenList.h:28	layout-assert	1	waiver-list
+array size is negative	include/pso/system/TScreenFade.h:25	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TScreenFadeOut_size) negative size	include/pso/system/TScreenFadeOut.h:15	layout-assert	1	waiver-list
+array size is negative	include/pso/quest/QuestScriptFormat.h:22	layout-assert	1	source-rewrite
+LAYOUT_ASSERT(BmlResourceDescriptor_size) negative size	include/pso/system/BmlResourceDescriptor.h:17	layout-assert	1	verdicts-needed
+array size is negative	include/pso/system/BmlResourceDescriptor.h:19	layout-assert	1	verdicts-needed
+array size is negative	include/pso/system/BmlResourceDescriptor.h:20	layout-assert	1	verdicts-needed
+array size is negative	include/pso/system/BmlResourceDescriptor.h:21	layout-assert	1	verdicts-needed
+array size is negative	include/pso/system/BmlResourceDescriptor.h:22	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(WarpStringScreenPosition_size) negative size	include/pso/object/warp/ForestWarpResources.h:23	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TGameProtocol_size) negative size	include/pso/network/TGameProtocol.h:17	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TObjLuker_size) negative size	include/pso/object/TObjLuker.h:34	layout-assert	1	waiver-list
+LAYOUT_ASSERT(ChallengeItemSelectSize) negative size	include/pso/quest/challenge/TChallenge4PItemSelect.h:27	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PItemSelect.h:28	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PItemSelect.h:29	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PItemSelect.h:30	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PItemSelect.h:31	layout-assert	1	verdicts-needed
+array size is negative	include/pso/quest/challenge/TChallenge4PItemSelect.h:32	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TChallenge4P_size) negative size	include/pso/quest/challenge/TChallenge4P.h:26	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(ShortMailEntrySize) negative size	include/pso/ui/chat/ShortMail.h:37	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/chat/ShortMail.h:38	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/chat/ShortMail.h:39	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/chat/ShortMail.h:40	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowComCardFollower.h:29	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowComCardFollower.h:30	layout-assert	1	verdicts-needed
+array size is negative	include/pso/ui/window/TWindowComCardFollower.h:31	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TWindowComCardFollower_size) negative size	include/pso/ui/window/TWindowComCardFollower.h:32	layout-assert	1	verdicts-needed
+array size is negative	include/pso/object/warp/TObjMapWarp.h:21	layout-assert	1	waiver-list
+array size is negative	include/pso/object/warp/TObjMapWarp.h:22	layout-assert	1	waiver-list
+LAYOUT_ASSERT(TObjLaboMapWarp_size) negative size	include/pso/object/warp/TObjLaboMapWarp.h:23	layout-assert	1	verdicts-needed
+LAYOUT_ASSERT(TSymbolChatCapture_size) negative size	include/pso/ui/chat/TSymbolChatCapture.h:21	layout-assert	1	waiver-list
+conflicting types for 'read_byte_advance__6TLobbyFv'	src/pso/quest/QuestOpcodeHandlers.cpp:484	other	1	source-rewrite
+LAYOUT_ASSERT(QuestVmContext_size) negative size	src/pso/quest/QuestOpcodeHandlers.cpp:5292	layout-assert	1	verdicts-needed
