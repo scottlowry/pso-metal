@@ -14,10 +14,10 @@ line; where the receipt predates apply-8 the era is named. Consistency audit:
 | true-LP64 parse (official `make -C build parse-lp64`) | **1,167 PASS / 513 FAIL** of 1,680 (69.5%) | `docs/p2-stitch-apply8.md:24` |
 | arm64_32 legacy parse anchor | **1,605 / 1,680**; regression floor 1,605 (`python3 tools/parse_gate.py`) | `docs/p2-stitch-apply7.md:47`; gate on disk `tools/parse_gate.py:34` |
 | rebind collateral (regressions vs control battery) | **empty set** | `docs/p2-stitch-apply7.md:48`, `docs/p2-apply7-recensus.md:37` |
-| executing suites (`bash host/bringup/run.sh`) | **156/156 PASS**, exit 0 | `docs/p2-ladder7-1.md:69` |
+| executing suites (`bash host/bringup/run.sh`) | **200/200 PASS**, exit 0 | `docs/p2-ladder7-play2.md`, re-verified integrator 2026-11-27 |
 | frame-loop test binary | **28/28 PASS** | `docs/p2-ladder7-1.md:70` |
 | display-list replay | **210/210** samples, verify_failures=0 | `docs/p2-stitch-apply7.md:56` |
-| logo window gates | era **12/12** + alt regime **10/10**; readback 76,800/76,800 non-black | `docs/p2-stitch-apply7.md:56-57`, `docs/p2-v-wave.md:164` |
+| logo window gates | era **12/12** + alt regime **10/10**; readback coverage + fnv anchor — **all self-consistency gates; genuine-record decode disputed (CI14), see issue #8** | `docs/p2-stitch-apply7.md:56-57`, `docs/p2-v-wave.md:164` |
 | first-link boot slice | **8/8 receipts** (Mach-O) | `docs/p2-stitch-apply7.md:60` |
 | waiver machine | **2,946 / 3,333** asserts over **1,549** types | `docs/p2-stitch-apply7.md:51`; disk `build/waivers/waiver-status.txt` |
 | big-endian hazard index | 629 files carry ≥1 hazard (of 3,814 scanned) | `docs/be-index-summary.md` §intro |

@@ -12,11 +12,15 @@ Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube
 from — [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp), consumed as a
 pinned read-only input.
 
-Status: **Phase 3 — the logo draws.** Era texture-supply code (`init_and_load_tlut` →
-GVRT/GVPL chain → CLUT expand) executes natively end-to-end and renders the SEGA logo
-through the real era call order into a Metal drawable, pixel-readback-gated
-(76,800/76,800 non-black, fnv self-consistency anchor). First linked LP64 Mach-O boots
-the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
+Status: **Phase 3 — the logo supply chain runs; the logo picture is broken, honestly.**
+Era texture-supply code (`init_and_load_tlut` → GVRT/GVPL chain → CLUT expand)
+executes natively end-to-end in real era call order into a Metal drawable, and the
+pixel-readback gates pass — but those gates are self-consistency proofs, and the
+genuine disc record does **not** decode correctly: descriptor format 9 is CI14 per
+the era's own palette predicate, our pipeline reads it as flat 8-bit, and the result
+on screen is color noise, not artwork. Fix and human-verifiable decode grid are in
+flight — see [issue #8](https://github.com/scottlowry/pso-metal/issues/8). The
+first linked LP64 Mach-O boots the era logic with 8/8 receipts.
 
 ## What this is / isn't
 
@@ -64,7 +68,7 @@ the era logic with 8/8 receipts. Genuine disc-supplied logo art is in flight.
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
 | logo | era CLUT supply chain **executing** on synthetic fixtures (green); genuine 256×256 record extracted from disc read-only is byte-verified AT THE SUPPLY LAYER ONLY — its format semantics are **DISPUTED**: the "PAL8" label for descriptor fmt 9 is refuted by the era's own palette predicate (`is_palette_texture_format` {8,9,10} = CI8/CI14/CI24 ⇒ 9 = CI14), and the current decode renders as noise. Readback gates so far prove self-consistency, not correctness; decode-oracle fix in flight — tracked publicly in issue #8. Synthetic + AV-1 regimes stay green as committed defaults |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
-| suites | bring-up **185/185** (ladders 1–7 + HG-1 handle golden 29) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 · VI both branches · link 8/8 — measured `docs/p2-hg1-1.md`, `docs/p2-stitch-apply7.md` |
+| suites | bring-up **200/200** (ladders 1–7 PLAY-2 + HG-1 handle golden) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 (self-consistency gates — see logo row) · VI both branches · link 8/8 — measured `docs/p2-ladder7-play2.md`, `docs/p2-stitch-apply7.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
 | residual classes (measured, owned) | apply-8 LP64 FAIL=513, first-error partition: NJS wall 485 · FloorPop 9 · musyx 2 named · named tail 17 (`docs/p2-stitch-apply8.md` §Battery, `docs/p2-tail-2.md` §1); inert supply authored: adapter-queue 169 rows/673 sites batch-1 top-30 (`docs/p2-adapter-queue-1.md` §0-1), runtime-gated handle rows 258 (`docs/p2-apply7-recensus.md` §3) · packets/PppFrame/MWCC-asm/musyx-main all landed |
 
