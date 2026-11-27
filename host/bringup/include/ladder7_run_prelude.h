@@ -22,14 +22,15 @@
  * precedent). The sliced bodies touch ONLY the declared members — verified
  * against the era text this rung: run_frame touches no TLogo member;
  * begin_frame is empty; is_ready is a static with no member state.
- * DEVIATION L7-2 (counter legs stay): the pre-begin_gx legs P1–P4 (lane J) and
- * render_tick (Play 3 material) are COUNTED seams exactly as LOGO-2 shaped
- * them; PLAY-2 retired the main_task run_task/render/render_screen_overlay
- * counters — those seams are REAL verbatim slices now (spec §1.1) and count
- * through the shared walk extern + the 8-sub-pass roster (spec §1.3).
+ * DEVIATION L7-2 (counter legs stay): the pre-begin_gx legs P1–P4 (lane J) are
+ * COUNTED seams exactly as LOGO-2 shaped them; PLAY-2 retired the main_task
+ * run_task/render/render_screen_overlay counters — those seams are REAL verbatim
+ * slices now (spec §1.1) and count through the shared walk extern + the
+ * 8-sub-pass roster (spec §1.3). PLAY-3 retires the render_tick counter too:
+ * R9 :491-505 is a REAL verbatim slice whose 13 legs run the spec §2.2 roster.
  * rung-5 edits only the seam bodies BEHIND the sliced legs, never the slices
  * (§3 cross-check).
- * begin_gx_frame/render_tick stay counters on the bringup side — the REAL
+ * begin_gx_frame stays a counter on the bringup side — the REAL
  * begin_gx_frame slice + era-present render_tick backings live in the gx
  * tree (LOGO-1/LOGO-3) and are not re-minted here.
  * DEVIATION L7-3 (LB-3 roster): reset_system (card-named), check_reset_button,
@@ -75,12 +76,15 @@ extern "C" BOOL DVDCheckDisk(void);
 extern SetSoundPitchRequestSndEnt sound_pitch_requests[];  /* era def SoundRequests.cpp:200 [40] */
 extern s8 lbl_805D6279;                                     /* SoundRequests.cpp:82               */
 extern f32 sound_listener_position[4];                      /* SoundRequests.cpp:202              */
-struct TCameraCtrl { Vec pos; };                            /* carrier: body reads ->pos only     */
+/* PLAY-3: carrier gains the render_tick leg-4 static (TObjPlayer/TKeyBoardControl/
+ * TParticleCtrl static members verified against era headers this lane:
+ * TObjPlayer.h:1105, TKeyBoardControl.h:36, TParticleCtrl.h:56-57, TCameraCtrl.h:151). */
+struct TCameraCtrl { Vec pos; static void restore_full_screen_view(); };
 extern TCameraCtrl *camera_ctrl_instance;                   /* era decl TCameraCtrl.h:209         */
 s32 get_sound_voice_state(s32 voice);                       /* SoundControlState.h:86             */
 s32 check_sound_pitch_request_range(s32 slot, s32);         /* SoundRequests.cpp:185              */
 void update_music_fade(void);                               /* MusicControl.h:22                  */
-struct TObjPlayer;
+struct TObjPlayer { static void clear_shadow_pass_request(); };  /* TObjPlayer.h:1105 static — COUNTED (leg 1 first-inner, era body CameraCapture.cpp:384 static store, do NOT drag the graph) */
 TObjPlayer *get_player_by_client_id(s32 client);            /* PlayerSlots.h:12                   */
 Vec *VecCopy(Vec *dst, const Vec *src);                     /* system/vector.h:7                  */
 void move_words(void *destination, const void *source, s32 count);  /* system/memory.h:14         */
@@ -188,6 +192,37 @@ void request_main_phase(s32 phase);
 struct MainPhaseState { s32 cur, prev, next, result; };
 extern MainPhaseState main_phase_state;
 
+/* ---- PLAY-3 (spec docs/p2-ladder7-play23.md §2.3): render_tick decomposition
+ * zero-defs, GX capture seams, counted legs. ---- */
+extern s32 lbl_805D3584;              /* .data INIT 1 — TLobby_801E2F94.cpp:108 (spec §3 D7: debug text era-ENABLED; host def must == 1, P11 asserts the captured arg == 1) */
+extern s8  scene_fog_enable_flag;     /* .bss zero — SceneFog.cpp:13 (era s8, verified this lane) */
+extern void *video_current_framebuffer; /* .bss zero — gjSystem.c:23 */
+/* Era GXCompare/GXCullMode values from libs/dolphin/include/dolphin/gx/GXEnum.h:28–37/:499–504
+   (host-local names; the spec §2.3 snippet is incomplete — GX_ALWAYS is needed to
+   compile leg :494, and the era ordering is NEVER,LESS,EQUAL,LEQUAL,GREATER,NEQUAL,
+   GEQUAL,ALWAYS — the snippet swapped EQUAL/LEQUAL. Full era set pasted so log
+   values are era-faithful; deviation noted in the receipt). */
+enum { GX_FALSE = 0, GX_TRUE = 1 };
+enum { GX_NEVER, GX_LESS, GX_EQUAL, GX_LEQUAL, GX_GREATER, GX_NEQUAL, GX_GEQUAL, GX_ALWAYS };
+enum { GX_CULL_NONE = 0, GX_CULL_FRONT, GX_CULL_BACK, GX_CULL_ALL };
+/* GX capture seams (bodies ladder7_seam.cpp): legs 3/7/11-inner, 5/9, 8, 11 */
+void GXSetZMode(s32 test, s32 comp, s32 mask);
+void GXSetViewport(float left, float top, float width, float height, float near, float far);
+void GXSetCullMode(s32 mode);  void GXSetColorUpdate(s32 on);
+void GXCopyDisp(void *fb, s32 clear);  void GXDrawDone(void);
+void present_frame_and_wait_vsync(void);        /* SINGLE-present seam (leg 12, (c)) */
+/* sliced-leg decls (bodies arrive VERBATIM in the glue): */
+void set_cull_none(void);      void copy_efb_to_framebuffer(void);  void present_frame(void);
+void run_end_of_render_tasks(void);      /* render_tick :504 tail — def later in the glue */
+void enable_scene_fog(void);   void disable_scene_fog(void);
+/* counted/fail-loud externs behind the slices: */
+void apply_scene_fog(void);                     /* SceneFog.cpp:53 — (d) pixel chain, COUNTED */
+void update_global_sound_frame(void);           /* SoundPlayback.h:27 / .cpp:232 — COUNTED (musyx chain) */
+void update_music_sequencer(void);              /* MusicControl.cpp — LB-3 fail-loud (era-unreachable: sound_requests_enabled==0, guard :103 REAL) */
+void render_debug_text(u32 enabled);            /* DebugFont.cpp:140 — COUNTED, arg-captured (leg 6) */
+struct TKeyBoardControl { static void run_tasks(); };   /* TKeyBoardControl.h:36 static — body VERBATIM slice SystemBootInit.cpp:100 */
+struct TParticleCtrl { static void begin_effect_render(); static void end_effect_render(); };  /* TParticleCtrl.h:56-57 static — bodies VERBATIM EffectRender.cpp:10/:12 */
+
 /* ---- counted legs around the promoted five (LOGO-2 shape; the L7-R3 order
  * invariant compares this sequence against TLogo.cpp:95-114 text order).
  * Slots with NO event by design: LC7_MT_BEGIN (empty era body), LC7_ASYNC,
@@ -206,13 +241,20 @@ enum L7Call {
     LC7_ASYNC, LC7_SOUND, LC7_POLL, LC7_READY, LC7_RENDER_TICK,
     LC7_WALK_MAIN, LC7_WALK_KBD, LC7_WALK_EOR,
     LC7_GEOM, LC7_EFF, LC7_PTEX, LC7_OBJ, LC7_UI, LC7_CLIP, LC7_INFO,
+    /* PLAY-3 (spec §2.3): the 13 render_tick sub-leg notes — each fires at the
+     * leg's first INNER counted/capture extern (LB-2 LC7_READY precedent).
+     * LC7_RENDER_TICK retires with the render_tick counter body (seam-4). */
+    LC7_RT1, LC7_RT2, LC7_RT3, LC7_RT4, LC7_RT5, LC7_RT6, LC7_RT7,
+    LC7_RT8, LC7_RT9, LC7_RT10, LC7_RT11, LC7_RT12, LC7_RT13,
     LC7_COUNT
 };
 enum { WALK_MAIN, WALK_KBD, WALK_EOR };   /* run_tasks root classification (spec §1.3) */
 extern const char *const l7_call_names[];
-extern int g_call_seq[160];               /* PLAY-2/3 sizing per spec §2.3 (15 events/frame already) */
+extern int g_call_seq[512];               /* PLAY-3 sizing: 29 events/frame post-PLAY-3
+                                           * x 6 harness frames + probes > the spec §2.3
+                                           * [160] estimate (receipt deviation D8) */
 extern int g_call_n;
-inline void l7_note(int c) { if (g_call_n < 160) g_call_seq[g_call_n++] = c; }
+inline void l7_note(int c) { if (g_call_n < 512) g_call_seq[g_call_n++] = c; }
 
 /* counted seam decls (bodies: ladder7_seam.cpp) */
 void begin_gx_frame(void);              /* bringup-side count; REAL slice lives gx-side (L7-2) */
@@ -228,7 +270,7 @@ s32 poll_reset_request(void);
 
 /* ---- seam counters (L7-3; harness reads for the proven-invariant set) ---- */
 extern int g_begin_gx_calls, g_ctrl_calls, g_kbd_calls;
-extern int g_render_tick_calls;           /* render_tick stays counted until PLAY-3 slices it */
+extern int g_render_tick_calls;           /* PLAY-3: tick count rides render_tick's first statement (leg 1 epoch in seam) */
 extern int g_cam_mode;
 extern Vec g_pose_a, g_pose_b;            /* captured set_active_camera_pose args */
 extern int g_adxf_open_calls, g_adxf_readnw_calls, g_adxf_getstat_calls;
@@ -251,5 +293,22 @@ extern int g_geom, g_eff, g_ptex, g_obj, g_ui, g_clip, g_info;  /* 8 counted sub
 extern u8 g_pass_trace[16];             /* render_pass value at each sub-pass entry (I2a) */
 extern int g_pass_n;                    /* trace write cursor (clamped, spec §1.3) */
 extern u32 g_flags_at_subpass;          /* task_flags LIVE at the most recent sub-pass */
+
+/* ---- PLAY-3 render_tick seam state (spec §2.2/§2.4: probes P10-P12 + I3a..d
+ * REAL-read these; definitions in ladder7_seam.cpp). ---- */
+extern int g_fog_reads;                 /* apply_scene_fog count (legs 2/10 inner) */
+extern int g_clearshadow_calls;         /* TObjPlayer::clear_shadow_pass_request (leg 1 first-inner) */
+extern int g_soundframe_calls;          /* update_global_sound_frame (leg 1) */
+extern int g_rfs_calls;                 /* TCameraCtrl::restore_full_screen_view (leg 4, counted (d)) */
+extern int g_dbgtext_calls;  extern u32 g_dbgtext_arg;   /* render_debug_text + arg capture (leg 6, lbl_805D3584) */
+extern int g_zmode_calls;               /* GXSetZMode capture count (legs 3/7/11-inner) */
+extern int g_zmode_trace[3][3];         /* (test,comp,mask) per capture — P11 */
+extern int g_cull_calls, g_cull_mode;   /* GXSetCullMode capture (legs 5/9) — must reach 2/frame */
+extern int g_vp_calls;                  /* GXSetViewport capture (leg 8) */
+extern float g_vp_l, g_vp_t, g_vp_w, g_vp_h, g_vp_n, g_vp_f;
+extern int g_colorupdate_calls;         /* GXSetColorUpdate capture (leg 11 inner) */
+extern void *g_copydisp_fb; extern int g_copydisp_clear, g_copydisp_calls;  /* GXCopyDisp args (leg 11) */
+extern int g_drawdone_calls;            /* GXDrawDone capture (leg 11) */
+extern int g_present_calls;             /* present_frame_and_wait_vsync — SINGLE present (I3b) */
 
 #endif /* LADDER7_RUN_PRELUDE_H */
