@@ -99,3 +99,4 @@ EquippedItemDrawQueue	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/item/EquippedI
 NetworkPacketBufferDescriptor	RUNTIME-WAIVE	POINTER-CLASS	src/pso/network/NetworkPacketRuntime.c:144	HIGH
 RawIpv6Receive	RUNTIME-WAIVE	POINTER-CLASS	src/pso/network/NetApi.c:39	HIGH
 ShinowaBattleTables	RUNTIME-WAIVE	POINTER-CLASS	src/pso/enemy/shinowa/TObjEneMe3Shinowa.cpp:76	HIGH
+TObjCity_Season_FireWork	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/object/city/TObjCity_Season_FireWork.h:25	HIGH
