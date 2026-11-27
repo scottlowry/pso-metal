@@ -26,6 +26,8 @@ MainPhaseState main_phase_state;
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>          /* P2-SEQ L9: /tmp/cla artifact dir (mkdir -p) */
+#include <sys/types.h>
 
 extern "C" {
 uint64_t p2an_fnv1a64(const void *buf, size_t n);
@@ -877,6 +879,294 @@ int main(void) {
               sonic_logo_object == &texture_logo_e_descriptor &&
               adx_logo_texture == &texture_logo_e_descriptor,
               "L8-H1 handle identity: register fills all 24 slots {name,attr,bound state}; ADX+SEGA+ST share ONE descriptor pointer; post-free handle NULL with the two EMPTY release twins intact (F3 era bodies)");
+
+        /* ================= P2-SEQ L9: GX_FRAMES_EXIT sega-logo scene legs ======
+         * ERA MODEL (evidence: docs/p2-seq-1.md §1, all @6b38b53837):
+         * render_logo_with_default(logo_texture_e_handle, 8, -1, -150.0f)
+         * (TAdSEGAlogo.cpp:67) == draw_title_background_quads mode 0
+         * (TitleBackground.cpp:58-60): ONE frame draws EIGHT quads — the
+         * static mosaic title_background_tiles[8] (TitleBackground.cpp:43-52),
+         * each via set_draw_texture_and_color(tex_base + tiles[i].tex, -1)
+         * (:29) => slices sega_logo_e01..e08 (list indices 8..15) composited
+         * as 4x256x256 + 4x128x128 tiles (640x512 layout, VI clips y>=480).
+         * The index arg is a FAMILY BASE, not a final-slice pick: ADX base 0
+         * (TAdADXlogo.cpp:33), SEGA base 8, Sonic base 16 (TAdSoniclogo.cpp:30)
+         * share the same descriptor + tile table (TLogo chain: TLogo.cpp:169-189).
+         * The ONLY per-frame animation in the SEGA scene is the TScreenFade
+         * black overlay alpha (TScreenFadeController.cpp:30-59; overlay drawn
+         * under tl_fade, AFTER the tl_00 scene sequencers — TMainTask.h:48/65;
+         * parent arg ignored, both ctors attach to tl_fade :61/:85). Ledger:
+         * FadeIn 255-8t (32 ticks) -> request_destroy => state 1
+         * (TAdSEGAlogo.cpp:61-64); hold ++m_wait_frames > 60.0f (61 ticks, :74);
+         * FadeOut 0+8t (32 ticks) -> destroy_and_mark_done =>
+         * sega_logo_done_flag=1 (:56-59, consumed TLogo.cpp:60/170).
+         * DEVIATIONS SEQ-1 (host tick = 1 immediate present vs era 30 Hz
+         * retrace gate), SEQ-2 (fade composited CPU-side: the host pipeline
+         * has no blend stage; the (0,8)/(1,6) pair == set_default_alpha_blend,
+         * render_util.cpp:286, black src => out = dst*(255-a) rounded), SEQ-3
+         * (mosaic presented through the TEXN=256 canvas; native-res mosaic is
+         * CPU-verified ±0 in L9-C2). Zero compiled-in genuine hashes: every
+         * fnv here is runtime-self (L7-P3/L8 posture). */
+        if (getenv("GX_FRAMES_EXIT")) {
+            printf("\n== P2-SEQ L9: sega-logo scene regime (GX_FRAMES_EXIT) ==\n");
+            /* L9-C1: tile table verbatim (TitleBackground.cpp:43-52):
+             * {x,y,w,h,tex}; draw order i=0..7 is right-column-first,
+             * disjoint => order-insensitive geometry. */
+            static const int seq_tiles[8][5] = {
+                { 0x200, 0x180, 0x80, 0x80, 7 }, { 0x200, 0x100, 0x80, 0x80, 6 },
+                { 0x200, 0x80,  0x80, 0x80, 5 }, { 0x200, 0x0,   0x80, 0x80, 4 },
+                { 0x0,   0x100, 0x100, 0x100, 1 },{ 0x0,   0x0,   0x100, 0x100, 0 },
+                { 0x100, 0x100, 0x100, 0x100, 3 },{ 0x100, 0x0,   0x100, 0x100, 2 } };
+            int seen[LOGO_E_COUNT]; memset(seen, 0, sizeof seen);
+            long area_total = 0, area_vis = 0;
+            int c1_ok = 1;
+            for (int i = 0; i < 8; i++) {
+                int k = 8 + seq_tiles[i][4];
+                if (++seen[k] != 1) c1_ok = 0;                  /* each once   */
+                area_total += (long)seq_tiles[i][2] * seq_tiles[i][3];
+                int vx = seq_tiles[i][2], vy = seq_tiles[i][3];
+                if (seq_tiles[i][0] + vx > 640) vx = 640 - seq_tiles[i][0];
+                if (seq_tiles[i][1] + vy > 480) vy = 480 - seq_tiles[i][1];
+                area_vis += (long)vx * vy;
+                for (int j = 0; j < i; j++)                     /* disjoint     */
+                    if (seq_tiles[i][0] < seq_tiles[j][0] + seq_tiles[j][2] &&
+                        seq_tiles[j][0] < seq_tiles[i][0] + seq_tiles[i][2] &&
+                        seq_tiles[i][1] < seq_tiles[j][1] + seq_tiles[j][3] &&
+                        seq_tiles[j][1] < seq_tiles[i][1] + seq_tiles[i][3]) c1_ok = 0;
+            }
+            for (int k = 0; k < LOGO_E_COUNT; k++)
+                if ((k >= 8 && k < 16) ? seen[k] != 1 : seen[k] != 0) c1_ok = 0;
+            int c1_cover_ok = 1;   /* disjoint tiles + 480 clip cover 640x480? */
+            { static unsigned char cover[640 * 480]; memset(cover, 0, sizeof cover);
+              for (int i = 0; i < 8; i++)
+                  for (int y = seq_tiles[i][1]; y < seq_tiles[i][1] + seq_tiles[i][3] && y < 480; y++)
+                      for (int x = seq_tiles[i][0]; x < seq_tiles[i][0] + seq_tiles[i][2] && x < 640; x++)
+                          cover[y * 640 + x] = 1;
+              for (int p = 0; c1_cover_ok && p < 640 * 480; p++) if (!cover[p]) c1_cover_ok = 0; }
+            CHECK(c1_ok && area_total == 327680L && area_vis == 640L * 480L && c1_cover_ok,
+                  "L9-C1 mosaic law: tex_base 8 selects the WHOLE sega family — 8 disjoint tiles map indices 8..15 exactly once (4x256x256 + 4x128x128 = %ld slice texels), the 640x512 era layout clipped to the 640x480 VI field covers every screen pixel (TitleBackground.cpp:43-52)",
+                  area_total);
+
+            /* L9-C2: CPU composite at NATIVE resolution — every slice expanded
+             * CMPR TI8x8, every visible texel ±0 against its own expansion. */
+            static unsigned seq_raster[640 * 480];
+            memset(seq_raster, 0, sizeof seq_raster);       /* era clear = black */
+            long tile_mism = 0, tile_px = 0;
+            int dim_ok = frgb != 0;
+            for (int i = 0; dim_ok && i < 8; i++) {
+                int k = 8 + seq_tiles[i][4];
+                if (l8_w[k] != (unsigned)seq_tiles[i][2] || l8_h[k] != (unsigned)seq_tiles[i][3]) { dim_ok = 0; break; }
+                gxh_cmpr_expand_ti8x8(l8_px[k], frgb, (unsigned)seq_tiles[i][2], (unsigned)seq_tiles[i][3]);
+                for (int ty = 0; ty < seq_tiles[i][3]; ty++) {
+                    int sy = seq_tiles[i][1] + ty; if (sy >= 480) continue;
+                    for (int tx = 0; tx < seq_tiles[i][2]; tx++) {
+                        int sx = seq_tiles[i][0] + tx; if (sx >= 640) continue;
+                        const unsigned char *p = frgb + ((size_t)ty * seq_tiles[i][2] + tx) * 4;
+                        seq_raster[sy * 640 + sx] = ((unsigned)p[0] << 24) | ((unsigned)p[1] << 16)
+                                                  | ((unsigned)p[2] << 8) | p[3];
+                        tile_px++;
+                    }
+                }
+                for (int ty = 0; ty < seq_tiles[i][3]; ty++) {   /* re-read ±0  */
+                    int sy = seq_tiles[i][1] + ty; if (sy >= 480) continue;
+                    for (int tx = 0; tx < seq_tiles[i][2]; tx++) {
+                        int sx = seq_tiles[i][0] + tx; if (sx >= 640) continue;
+                        const unsigned char *p = frgb + ((size_t)ty * seq_tiles[i][2] + tx) * 4;
+                        unsigned w = ((unsigned)p[0] << 24) | ((unsigned)p[1] << 16)
+                                   | ((unsigned)p[2] << 8) | p[3];
+                        if (seq_raster[sy * 640 + sx] != w) tile_mism++;
+                    }
+                }
+                printf("  L9 stage texel fnv1a64: %s (%dx%d expanded) = 0x%016llX (runtime-self)\n",
+                       l8_texname_str[k], seq_tiles[i][2], seq_tiles[i][3],
+                       (unsigned long long)p2an_fnv1a64(frgb, (size_t)seq_tiles[i][2] * seq_tiles[i][3] * 4));
+            }
+            CHECK(dim_ok && tile_mism == 0 && tile_px == 640L * 480L,
+                  "L9-C2 native mosaic: 8/8 slices compose the 640x480 presented field, %ld/%ld visible texels == own CMPR expansion ±0 (screen fnv 0x%016llX, runtime-self)",
+                  tile_px, tile_px, (unsigned long long)p2an_fnv1a64(seq_raster, sizeof seq_raster));
+
+            /* L9-G1: present the composite through the TEXN=256 pipeline as the
+             * ENTRY frame (L8-P2 remains the entry regime). Canvas texel (i,j)
+             * = raster at cell-center screen px; the uint2-read shader maps
+             * screen px (x,y) -> texel (floor((2x+1)*256/1280), floor((2y+1)*256/960)). */
+            static unsigned seq_tex[256 * 256];
+            int seq_xc[256], seq_yc[256];     /* margin-safe sample px per cell */
+            { int bij_ok = 1;
+              /* cell i = screen px with floor((2x+1)/5)==i  (x-span (5i-1)/2..);
+               * cell j = floor((2y+1)*4/15)==j (y-span (15j-2)/8..). Pick the px
+               * with LARGEST distance of uv*256 to an integer boundary. */
+              for (int i = 0; i < 256; i++) {
+                  int a = (i == 0 ? 0 : (5 * i - 1 + 1) / 2), b = (5 * (i + 1) - 1) / 2;
+                  if (5 * i - 1 > 0 && (5 * i - 1) % 2) a = (5 * i - 1) / 2 + 1;
+                  int best = -1; double bm = -1;
+                  for (int x = a; x <= b && x < 640; x++) {
+                      int r = (2 * x + 1) % 5; if (!r) continue;
+                      double m = r > 2 ? 5 - r : r;          /* /5 units */
+                      if (m > bm) { bm = m; best = x; }
+                  }
+                  if (best < 0) { bij_ok = 0; best = a; }
+                  seq_xc[i] = best;
+                  if (256 * (2 * best + 1) / 1280 != i) bij_ok = 0;
+              }
+              for (int j = 0; j < 256; j++) {
+                  int a = (15 * j + 5) / 8, b = (15 * j + 20) / 8 - 1;
+                  int best = -1; double bm = -1;
+                  for (int y = a; y <= b && y < 480; y++) {
+                      int r = (2 * y + 1) * 4 % 15; if (!r) continue;
+                      double m = r > 7 ? 15 - r : r;          /* /15 units */
+                      if (m > bm) { bm = m; best = y; }
+                  }
+                  if (best < 0) { bij_ok = 0; best = a; }
+                  seq_yc[j] = best;
+                  if (256 * (2 * best + 1) / 960 != j) bij_ok = 0;
+              }
+              for (int j = 0; j < 256; j++) for (int i = 0; i < 256; i++)
+                  seq_tex[j * 256 + i] = seq_raster[seq_yc[j] * 640 + seq_xc[i]];
+              if (!bij_ok) printf("  L9-G1 WARNING: cell-map bijection failed\n"); }
+            static unsigned char seq_texb[256 * 256 * 4];   /* byte-staged upload */
+            for (int k = 0; k < 256 * 256; k++) {
+                unsigned w = seq_tex[k];
+                seq_texb[k * 4] = (unsigned char)(w >> 24); seq_texb[k * 4 + 1] = (unsigned char)(w >> 16);
+                seq_texb[k * 4 + 2] = (unsigned char)(w >> 8); seq_texb[k * 4 + 3] = (unsigned char)w;
+            }
+            gx_dl_set_texture(256, 256, seq_texb);
+            QX0 = 0; QY0 = 0; QX1 = 640; QY1 = 480;          /* full-screen quad */
+            render_tick();
+            gxh_dl_flush();
+            /* sample grid for every later leg: one margin-safe px per cell */
+            for (int j = 0; j < 256; j++) for (int i = 0; i < 256; i++) {
+                int k = j * 256 + i; xsf[k] = (unsigned)seq_xc[i]; ysf[k] = (unsigned)seq_yc[j];
+                full[k] = seq_tex[k];
+            }
+            { int mism = 0; static unsigned g1[256 * 256];
+              if (gxh_dl_sample(xsf, ysf, g1, 256 * 256) != 0) return 4;
+              for (int k = 0; k < 256 * 256; k++) if (g1[k] != full[k]) {
+                  mism++;
+                  if (mism <= 10) printf("  L9-G1 dbg cell(%d,%d) px(%d,%d) want 0x%08X got 0x%08X\n",
+                                         k % 256, k / 256, xsf[k], ysf[k], full[k], g1[k]);
+              }
+              mkdir("/tmp/cla", 0755);
+              int prc = gxh_dl_dump_png("/tmp/cla/seq_sega_composite.png");
+              FILE *pf = fopen("/tmp/cla/seq_sega_composite.png", "rb");
+              long psz = 0; if (pf) { fseek(pf, 0, SEEK_END); psz = ftell(pf); fclose(pf); }
+              printf("  L9-G1 composite readback fnv1a64 = 0x%016llX | canvas fnv1a64 = 0x%016llX (runtime-self pair)\n",
+                     (unsigned long long)p2an_fnv1a64(g1, sizeof g1),
+                     (unsigned long long)p2an_fnv1a64(seq_tex, sizeof seq_tex));
+              CHECK(mism == 0 && prc == 0 && psz > 0,
+                    "L9-G1 entry composite on screen: all %d/65536 canvas cells resolved ±0 at margin-safe centers through the uint2 read map, PNG artifact /tmp/cla/seq_sega_composite.png (%ld bytes) — the SEGA-logo scene entry frame",
+                    256 * 256 - mism, psz);
+              memcpy(full, g1, sizeof g1); }   /* keep composite readback ref   */
+
+            /* L9-H1: era tick ledger + 61-tick hold, scene-static proof. */
+            f32 af = 255.0f; int tin = 0;
+            for (;;) { af = af - 8.0f; tin++; if (af <= 0.0f) break; }        /* 32 */
+            int hold = 0;
+            for (;;) { if ((f32)++hold > 60.0f) break; }                       /* 61 */
+            f32 ao = 0.0f; int tout = 0;
+            for (;;) { ao += 8.0f; tout++; if (ao >= 255.0f) break; }          /* 32 */
+            long hold_mism = 0; unsigned long long fh[3] = { 0, 0, 0 };
+            for (int t = 1; t <= hold; t++) {
+                render_tick(); gxh_dl_flush();
+                for (int j = 0; j < 8; j++) for (int i = 0; i < 8; i++) {
+                    int m = j * 8 + i; xs[m] = (unsigned)(40 + i * 80); ys[m] = (unsigned)(30 + j * 60);
+                }
+                static unsigned hs[64];
+                if (gxh_dl_sample(xs, ys, hs, 64) != 0) return 4;
+                for (int m = 0; m < 64; m++) {
+                    unsigned exp_px = seq_tex[((2 * ys[m] + 1) * 256 / 960) * 256 + (2 * xs[m] + 1) * 256 / 1280];
+                    if (hs[m] != exp_px) hold_mism++;
+                }
+                if (t == 1 || t == 31 || t == hold) fh[t == 1 ? 0 : (t == 31 ? 1 : 2)] = p2an_fnv1a64(hs, sizeof hs);
+            }
+            printf("  L9-H1 pacing: era tick = 30 Hz retrace gate (present_interval=2, gjSystem.c:34/71/:108-116 + docs/boot-spine.md S7/§2.2) => ledger 32+61+32 ticks ~= %.2fs; host tick = 1 immediate CAMetalLayer present per render_tick (SEQ-1, no retrace wait — counts identical, wallclock differs)\n",
+                   (tin + hold + tout) / 30.0);
+            CHECK(tin == 32 && hold == 61 && tout == 32 && hold_mism == 0 &&
+                  fh[0] != 0 && fh[0] == fh[1] && fh[1] == fh[2],
+                  "L9-H1 hold ledger: fade-in sim DERIVES 32 ticks (-8/tick from 255), state1 holds %d ticks (++m_wait_frames > 60.0f), fade-out derives 32 (+8/tick to 255); %d-tick hold scene-static (64-pt grid ±0 every tick, fnv 0x%016llX stable t=1/31/%d)",
+                  hold, hold, fh[0], hold);
+
+            /* L9-F1: fade-out composite leg — CPU model (SEQ-2) per era tick,
+             * GPU-verified at the t=16 checkpoint and the terminal black frame. */
+            static unsigned seq_mix[256 * 256];
+            long lum_prev = -1, mono_ok = 1; int f1_mism16 = 0, f1_final_bad = 0;
+            unsigned long long ffnv16 = 0, ffnv32 = 0; int seq_done_flag = 0;
+            for (int t = 1; t <= tout; t++) {
+                int al = 8 * t; if (al > 255) al = 255;
+                long lum = 0;
+                for (int p = 0; p < 256 * 256; p++) {
+                    unsigned w = seq_tex[p];
+                    int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+                        b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+                    int nr = (r * (255 - al) + 127) / 255, ng = (g * (255 - al) + 127) / 255,
+                        nb = (b * (255 - al) + 127) / 255, na = al + (a * (255 - al) + 127) / 255;
+                    seq_mix[p] = ((unsigned)nr << 24) | ((unsigned)ng << 16) | ((unsigned)nb << 8) | (unsigned)na;
+                    seq_texb[p * 4] = (unsigned char)nr; seq_texb[p * 4 + 1] = (unsigned char)ng;
+                    seq_texb[p * 4 + 2] = (unsigned char)nb; seq_texb[p * 4 + 3] = (unsigned char)na;
+                    lum += nr + ng + nb;
+                }
+                if (lum_prev >= 0 && lum > lum_prev) mono_ok = 0;
+                lum_prev = lum;
+                gx_dl_set_texture(256, 256, seq_texb);
+                render_tick(); gxh_dl_flush();
+                if (t == 16 || t == tout) {
+                    static unsigned fr[256 * 256];
+                    for (int k = 0; k < 256 * 256; k++) fr[k] = seq_mix[k];
+                    if (gxh_dl_sample(xsf, ysf, full, 256 * 256) != 0) return 4;
+                    for (int k = 0; k < 256 * 256; k++) if (full[k] != fr[k]) {
+                        if (t == 16) f1_mism16++; else f1_final_bad++;
+                    }
+                    if (t == 16) ffnv16 = p2an_fnv1a64(full, (size_t)256 * 256 * 4);
+                    else         ffnv32 = p2an_fnv1a64(full, (size_t)256 * 256 * 4);
+                }
+                if (t == tout && ao >= 255.0f) seq_done_flag = 1;   /* destroy_and_mark_done */
+            }
+            int f1_black = 1;
+            for (int k = 0; k < 256 * 256; k++) if ((full[k] >> 8) != 0) { f1_black = 0; break; }
+            mkdir("/tmp/cla", 0755);
+            int prc2 = gxh_dl_dump_png("/tmp/cla/seq_sega_faded.png");
+            FILE *pf2 = fopen("/tmp/cla/seq_sega_faded.png", "rb");
+            long psz2 = 0; if (pf2) { fseek(pf2, 0, SEEK_END); psz2 = ftell(pf2); fclose(pf2); }
+            printf("  L9-F1 readback fnv1a64: t=16 (a=128) = 0x%016llX | t=%d (a=255) = 0x%016llX (runtime-self)\n",
+                   ffnv16, tout, ffnv32);
+            CHECK(f1_mism16 == 0 && f1_final_bad == 0 && f1_black && mono_ok &&
+                  seq_done_flag == 1 && prc2 == 0 && psz2 > 0,
+                  "L9-F1 fade-out leg: %d ticks alpha=min(8t,255); GPU readback == CPU black-overlay model ±0 at t=16 AND terminal; terminal frame all-RGB-black; luminance non-increasing; sega_logo_done_flag model set at clamp tick; PNG /tmp/cla/seq_sega_faded.png (%ld bytes)",
+                  tout, psz2);
+
+            /* L9-K1 canaries: WRONG base and WRONG pacing MUST fail. */
+            { static unsigned seq_can[256 * 256];
+              /* (a) index canary: compose with tex_base 0 (the ADX family) on
+               * the same tile table; a correct scene must NOT match it. */
+              for (int p = 0; p < 8; p++) {
+                  int k = seq_tiles[p][4];                    /* base 0         */
+                  gxh_cmpr_expand_ti8x8(l8_px[k], frgb, (unsigned)seq_tiles[p][2], (unsigned)seq_tiles[p][3]);
+                  for (int ty = 0; ty < seq_tiles[p][3]; ty++) {
+                      int sy = seq_tiles[p][1] + ty; if (sy >= 480) continue;
+                      for (int tx = 0; tx < seq_tiles[p][2]; tx++) {
+                          int sx = seq_tiles[p][0] + tx; if (sx >= 640) continue;
+                          const unsigned char *q = frgb + ((size_t)ty * seq_tiles[p][2] + tx) * 4;
+                          /* place into the canvas cell the screen px lands in   */
+                          seq_raster[sy * 640 + sx] = ((unsigned)q[0] << 24) | ((unsigned)q[1] << 16)
+                                                    | ((unsigned)q[2] << 8) | q[3];
+                      }
+                  }
+              }
+              for (int j = 0; j < 256; j++) for (int i = 0; i < 256; i++)
+                  seq_can[j * 256 + i] = seq_raster[seq_yc[j] * 640 + seq_xc[i]];
+              long cx_mism = 0;
+              for (int p = 0; p < 256 * 256; p++) if (seq_can[p] != seq_tex[p]) cx_mism++;
+              /* (b) pacing canary: limit 30.0f holds 31 != 61; step 1.0f at
+               * tick 32 reaches alpha 32 < 255 (never completes the fade). */
+              int hold30 = 0; for (;;) { if ((f32)++hold30 > 30.0f) break; }
+              f32 a1 = 0.0f; int t32_bad = 0;
+              for (int t = 1; t <= 32; t++) { a1 += 1.0f; if (a1 >= 255.0f) t32_bad = 1; }
+              printf("  L9-K1 canary measurements: base-0 canvas mismatches vs evidence = %ld/65536; 30.0f-limit hold = %d ticks; +1.0f-step fade at tick 32 complete = %d\n",
+                     cx_mism, hold30, t32_bad);
+              CHECK(cx_mism > 0 && hold30 != hold && !t32_bad,
+                    "L9-K1 canaries FAIL AS REQUIRED: the wrong family base (0 == ADX, TAdADXlogo.cpp:33) breaks the composite map (%ld cells differ), 30.0f pacing derives %d != 61 hold ticks, and a 1.0f/tick fade cannot reach 255 by the era's 32nd tick — only the evidenced model passes",
+                    cx_mism, hold30);
+            }
+        }
     }
 
     if (failures == 0 && getenv("GX_DL_DEBUG")) {

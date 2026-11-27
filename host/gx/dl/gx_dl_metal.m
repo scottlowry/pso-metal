@@ -349,6 +349,39 @@ void gxh_dl_dump(const char *path) {
     }
 }
 
+/* P2-SEQ: PNG artifact dump of the last drawable (BGRA -> RGB8 rep -> PNG
+ * data through AppKit; zero new dependencies, zero shader/pipeline change —
+ * the shipped gate paths are untouched). Returns 0 on a non-empty write. */
+int gxh_dl_dump_png(const char *path) {
+    @autoreleasepool {
+        if (!g_last_cb || !g_last_drawable) return 6;
+        [g_last_cb waitUntilCompleted];
+        id<MTLTexture> tex = g_last_drawable.texture;
+        NSUInteger bpr = tex.width * 4;
+        unsigned char *px = (unsigned char *)malloc(bpr * tex.height);
+        [tex getBytes:px bytesPerRow:bpr
+           fromRegion:MTLRegionMake2D(0, 0, tex.width, tex.height) mipmapLevel:0];
+        NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes:NULL pixelsWide:(NSInteger)tex.width
+            pixelsHigh:(NSInteger)tex.height bitsPerSample:8 samplesPerPixel:3
+            hasAlpha:NO isPlanar:NO colorSpaceName:NSDeviceRGBColorSpace
+            bytesPerRow:(NSInteger)(tex.width * 3) bitsPerPixel:24];
+        unsigned char *dp = [rep bitmapData];
+        for (NSUInteger y = 0; y < tex.height; y++)
+            for (NSUInteger x = 0; x < tex.width; x++) {
+                dp[y*tex.width*3 + x*3 + 0] = px[y*bpr + x*4 + 2];
+                dp[y*tex.width*3 + x*3 + 1] = px[y*bpr + x*4 + 1];
+                dp[y*tex.width*3 + x*3 + 2] = px[y*bpr + x*4 + 0];
+            }
+        NSData *d = [rep representationUsingType:NSBitmapImageFileTypePNG
+                                      properties:@{}];
+        free(px);
+        if (!d.length) return 3;
+        BOOL ok = [d writeToFile:[NSString stringWithUTF8String:path] atomically:YES];
+        return ok ? 0 : 3;
+    }
+}
+
 void gxh_dl_close(void) {
     @autoreleasepool {
         if (g_window) { [g_window close]; g_window = nil; }
