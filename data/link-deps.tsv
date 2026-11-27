@@ -1,0 +1,571 @@
+symbol	source-objects	class	N-scaffold-entry-or-none	traffic-sites	evidence
+__ZN7TObjectdlEPv	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub;src_pso_weapon_shoot_TItemShootModel_dtor	game-internal-unresolved	none	1	def:src/pso/system/task/TObject.cpp :: void TObject::operator delete(void *ptr) {
+__ZN7TObjectC2EPS_	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	11	def:src/pso/system/task/TObject.cpp :: TObject::TObject(TObject *parent) {
+__ZN7TObjectD2Ev	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	11	def:src/pso/system/task/TObject.cpp :: TObject::TObject(TObject *parent) {
+__ZTI7TObject	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	11	def:include/pso/boss/darkfalz/TObjDFHorming.h :: using TObject::queue_destruction;
+__ZN7TObject6renderEv	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	7	def:src/pso/system/task/TObject.cpp :: void TObject::render() {
+_char_creation_tag_info_selected_index	src_pso_unk_text_80309890;src_pso_unk_text_803098DC	game-internal-unresolved	none	4	def:src/pso/ui/charcreate/TChCrTagInformationStr.cpp :: s32 char_creation_tag_info_selected_index = -1;
+__Z15calc_box_boundsP3VecS0_S0_	src_pso_math_BoxOverlap;src_pso_math_BoxSphereContact	game-internal-unresolved	none	3	def:src/pso/render/GinjaDrawUtil.cpp :: void calc_box_bounds(Vec *corners, Vec *min, Vec *max) {
+_mem_alloc	src_pso_item_TItemLockCountCtrl;src_pso_unk_LoadUnloadSet	game-internal-unresolved	none	2	def:include/pso/effect/TIndirectEffectDrawTask.h :: IndirectDrawRecord *entries;  // 16 records, mem_alloc(0x240) by the constructor
+_mem_free	src_pso_item_TItemLockCountCtrl;src_pso_unk_LoadUnloadSet	game-internal-unresolved	none	2	def:src/pso/boss/darkfalz/TOBoss4Rock.cpp :: void mem_free(void *allocation) {
+__ZN7TObject14render_shadowsEv	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	0	def:src/pso/system/task/TObject.cpp :: void TObject::render_shadows() {
+__ZN7TObject8run_taskEv	src_pso_item_TItemLockCountCtrl;src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	0	def:src/pso/system/task/TObject.cpp :: void TObject::run_task() {
+__Z22qst_getargs_void_resetl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	146	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_void_reset(s32 op) {
+__Z14qst_getargs_u8l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	133	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8(s32 op) {
+__Z16qst_getargs_voidl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	96	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_void(s32 op) {
+__Z17qst_getargs_u8_u8l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	63	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8_u8(s32 op) {
+__Z18qst_getargs_u8_s32l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	17	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8_s32(s32 op) {
+__Z17qst_getargs_u16_2l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	16	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u16_2(s32 op) {
+__Z21qst_getargs_u8_u8_u16l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	11	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8_u8_u16(s32 op) {
+__Z22qst_getargs_u8_s32_u16l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	10	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8_s32_u16(s32 op) {
+__Z8bswap_32Pm	src_pso_system_Lzss	game-internal-unresolved	none	4	def:include/pso/player/TPlyDispData.h :: #define bswap32(var) bswap_32(as(u32 *, var))
+_OSAllocFromHeap	src_pso_system_memory	in-N-scaffold	psosh_os.h	3	scaffold entry
+__Z15qst_getargs_s32l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	3	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_s32(s32 op) {
+__Z15qst_getargs_u16l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	3	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u16(s32 op) {
+__ZN7TObjectnwEm	src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	3	def:src/pso/system/task/TObject.cpp :: void *TObject::operator new(size_t size) {
+_chat_last_line_buffer	src_pso_unk_text_8026A328	game-internal-unresolved	none	3	def:src/pso/ui/window/TWindowMessageLog.cpp :: chat_last_line_buffer = NULL;
+_quest_thread_board	src_pso_quest_TQuestThreadBoard	game-internal-unresolved	none	3	def:src/pso/quest/TQuestThread.cpp :: quest_thread_board = this;
+_DVDChangeDir	src_pso_unk_text_803DEE48	in-N-scaffold	psosh_dvd.h	2	scaffold entry
+_GXBegin	src_pso_boss_derolle_ProjectedColorDraw	in-N-scaffold	psosh_gx.h	2	scaffold entry
+_GXDrawDone	src_pso_system_TLanguageFontPalette	in-N-scaffold	psosh_gx.h	2	scaffold entry
+_OSFreeToHeap	src_pso_system_memory	in-N-scaffold	psosh_os.h	2	scaffold entry
+__Z10qst_op_letll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_let(s32 dst, s32 src) {
+__Z10qst_op_modll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_mod(s32 dst, s32 src) {
+__Z11debug_printPKc	src_pso_system_Lzss	game-internal-unresolved	none	2	def:src/pso/quest/TQuestListVM_8007EAF8.cpp :: void debug_print(const char *text) {
+__Z11qst_op_letiii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_leti(int a0, int a1) { qst_registers[(unsigned char)(a0)].i = a1; }
+__Z11qst_op_modilm	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_modi(s32 dst, u32 value) {
+__Z15get_coarse_timev	src_pso_system_Lzss	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_getmtime(int a0) { qst_registers[(unsigned char)(a0)].i = get_coarse_time(); }
+__Z18init_and_load_tlutlllPv	src_pso_system_TLanguageFontPalette	game-internal-unresolved	none	2	def:src/pso/render/GinjaTextureHeader.cpp :: void init_and_load_tlut(s32 tlut_name, s32 format, s32 entry_count, void *entries) {
+__Z18qst_getargs_u16_u8l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u16_u8(s32 op) {
+__Z18qst_getargs_u8_u16l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u8_u16(s32 op) {
+__Z19qst_getargs_cstringl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_cstring(s32 op) {
+__Z20qst_op_sync_registerv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_sync_register(void) {
+__Z24qst_getargs_u16_u8_u8ptrl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_u16_u8_u8ptr(s32 op) {
+__Z25qst_getargs_s32_u8_s16ptrl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	2	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_getargs_s32_u8_s16ptr(s32 op) {
+_alloc_buffer_from_heap	src_pso_unk_text_803DA12C	game-internal-unresolved	none	2	def:src/pso/render/GinjaTextureHeader.cpp :: s32 alloc_buffer_from_heap(GinjaTextureHeader *header) {
+_init_ginja_texture_header	src_pso_unk_text_803DA12C	game-internal-unresolved	none	2	def:src/pso/render/GinjaTextureHeader.cpp :: s32 init_ginja_texture_header(GinjaTextureHeader *header, u32 width, u32 height, u32 format) {
+_DCStoreRange	src_pso_system_TLanguageFontPalette	in-N-scaffold	psosh_os.h	1	scaffold entry
+_OSCreateHeap	src_pso_system_memory	in-N-scaffold	psosh_os.h	1	scaffold entry
+_OSDisableInterrupts	src_pso_system_MiddlewareInterruptLock	in-N-scaffold	psosh_os.h	1	scaffold entry
+_OSRestoreInterrupts	src_pso_system_MiddlewareInterruptLock	in-N-scaffold	psosh_os.h	1	scaffold entry
+__Z10calc_deltall	src_pso_system_Lzss	game-internal-unresolved	none	1	def:src/pso/ui/window/TWindowSubStatusDisp_803DEE6C.cpp :: s32 calc_delta(s32 start, s32 end) {
+__Z10qst_op_addll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_add(s32 dst, s32 src) {
+__Z10qst_op_andll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_and(s32 dst, s32 src) {
+__Z10qst_op_bgmv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_bgm(void) {
+__Z10qst_op_cosv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cos() {
+__Z10qst_op_divll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_div(s32 dst, s32 src) {
+__Z10qst_op_jmpi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp(int a0) { qst_pc = qst_function_table[(u16)a0]; }
+__Z10qst_op_mulll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_mul(s32 dst, s32 src) {
+__Z10qst_op_nopv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop(void) {  }
+__Z10qst_op_orill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ori(s32 dst, s32 value) {
+__Z10qst_op_retv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ret(void) {
+__Z10qst_op_revl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_rev(s32 reg) {
+__Z10qst_op_setl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set(s32 reg) {
+__Z10qst_op_sinv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_sin() {
+__Z10qst_op_subll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_sub(s32 dst, s32 src) {
+__Z10qst_op_tanv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_tan() {
+__Z10qst_op_xorll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_xor(s32 dst, s32 src) {
+__Z11qst_op_addiii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_addi(int a0, int a1) { qst_registers[(unsigned char)(a0)].i += a1; }
+__Z11qst_op_andill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_andi(s32 dst, s32 value) {
+__Z11qst_op_callt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_call(u16 label) {
+__Z11qst_op_divill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_divi(s32 dst, s32 value) {
+__Z11qst_op_exitv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_exit(void) { qst_suspend_reason = QST_SUSPEND_EXIT; }
+__Z11qst_op_faddhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fadd(u8 reg, u8 src) {
+__Z11qst_op_fdivhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fdiv(u8 reg, u8 src) {
+__Z11qst_op_fmulhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fmul(u8 reg, u8 src) {
+__Z11qst_op_fsubhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fsub(u8 reg, u8 src) {
+__Z11qst_op_ggettl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gget(u16 flag, s32 dst) {
+__Z11qst_op_glettl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_glet(u16 flag, s32 reg) {
+__Z11qst_op_grevl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_grev(s32 flag) {
+__Z11qst_op_gsett	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gset(u16 flag) {
+__Z11qst_op_letall	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_leta(s32 dst, s32 src) {
+__Z11qst_op_letbii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_letb(int a0, int a1) { qst_registers[(unsigned char)(a0)].i = (a1 & 0xff); }
+__Z11qst_op_letoll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_leto(s32 dst, s32 label) {
+__Z11qst_op_letwii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_letw(int a0, int a1) { qst_registers[(unsigned char)(a0)].i = (a1 & 0xffff); }
+__Z11qst_op_listv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_list(void) {
+__Z11qst_op_mulill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_muli(s32 dst, s32 value) {
+__Z11qst_op_subill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_subi(s32 dst, s32 value) {
+__Z11qst_op_syncv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_sync(void) { qst_suspend_reason = QST_SUSPEND_SYNC; }
+__Z11qst_op_xorill	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_xori(s32 dst, s32 value) {
+__Z12qst_op_clearl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear(s32 reg) {
+__Z12qst_op_faddihl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_faddi(u8 reg, s32 val) {
+__Z12qst_op_fdivihl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fdivi(u8 reg, s32 val) {
+__Z12qst_op_fmulihl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fmuli(u8 reg, s32 val) {
+__Z12qst_op_fsubihl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fsubi(u8 reg, s32 val) {
+__Z12qst_op_p_colv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_col() { set_hashi_versus2_flag(); }
+__Z12qst_op_qexitv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_qexit() {
+__Z12qst_op_read1v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read1() {
+__Z12qst_op_read2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read2(void) {
+__Z12qst_op_read4v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read4(void) {
+__Z13qst_op_fadeinv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fadein(void) { TLobby::set_fade_params(NULL); qst_suspend_reason = QST_WAIT_FADE; }
+__Z13qst_op_gcleart	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gclear(u16 flag) {
+__Z13qst_op_jmp_eqlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_eq(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_gelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_ge(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_gtlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_gt(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_lelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_le(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_ltlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_lt(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_nelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_ne(s32 reg1, s32 reg2, s32 label) {
+__Z13qst_op_jmp_onlhPh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_on(s32 label, u8 count, u8 *regs) {
+__Z13qst_op_mesendv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_mesend(void) {
+__Z13qst_op_nop_85v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_85(void) {  }
+__Z13qst_op_nop_86v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_86(void) {  }
+__Z13qst_op_nop_BCv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_BC(void) {  }
+__Z13qst_op_p_deadv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_dead(void) {
+__Z13qst_op_p_lookv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_look(void) {
+__Z13qst_op_p_moveh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_move(u8 regs) {
+__Z13qst_op_setevtv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_setevt(void) {
+__Z13qst_op_shrinkl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_shrink(s32 slot_reg) {
+__Z13qst_op_threadt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_thread(u16 label) {
+__Z13qst_op_va_endv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_va_end() {
+__Z13qst_op_winendv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_winend(void) {
+__Z13qst_op_write1v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_write1(void) {
+__Z13qst_op_write2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_write2(void) {
+__Z13qst_op_write4v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_write4(void) {
+__Z14qst_op_add_msgv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_add_msg(void) {
+__Z14qst_op_cam_adjPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cam_adj(void* p) { request_follow_camera_recenter(); }
+__Z14qst_op_cam_panh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cam_pan(u8 reg) {
+__Z14qst_op_fadeoutv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fadeout(void) { TLobby::init_fadeout_state(NULL); qst_suspend_reason = QST_WAIT_FADE; }
+__Z14qst_op_gettimeh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gettime(u8 reg) {
+__Z14qst_op_jmp_offlhPh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmp_off(s32 label, u8 count, u8 *regs) {
+__Z14qst_op_jmpi_eqlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_eq(s32 reg, s32 value, s32 label) {
+__Z14qst_op_jmpi_gelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_ge(s32 reg, s32 value, s32 label) {
+__Z14qst_op_jmpi_gtlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_gt(s32 reg, s32 value, s32 label) {
+__Z14qst_op_jmpi_lelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_le(s32 reg, s32 value, s32 label) {
+__Z14qst_op_jmpi_ltlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_lt(s32 reg, s32 value, s32 label) {
+__Z14qst_op_jmpi_nelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_jmpi_ne(s32 reg, s32 value, s32 label) {
+__Z14qst_op_messagev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_message(void) {
+__Z14qst_op_npc_crph	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crp(u8 first) {
+__Z14qst_op_npc_crtv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crt(void) {
+__Z14qst_op_pl_pkonPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pl_pkon(void *p) { enable_pk_mode_for_all_players(); }
+__Z14qst_op_pl_walkh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pl_walk(u8 regs) {
+__Z14qst_op_set_bgmv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_bgm() {
+__Z14qst_op_ujmp_gelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmp_ge(s32 reg1, s32 reg2, s32 label) {
+__Z14qst_op_ujmp_gtlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmp_gt(s32 reg1, s32 reg2, s32 label) {
+__Z14qst_op_ujmp_lelll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmp_le(s32 reg1, s32 reg2, s32 label) {
+__Z14qst_op_ujmp_ltlll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmp_lt(s32 reg1, s32 reg2, s32 label) {
+__Z14qst_op_va_calll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_va_call(s32 label) {
+__Z14qst_op_warp_onv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_warp_on(void) { TLobby::set_cleanup_flag(); }
+__Z15qst_op_ba_startv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_start(void) {
+__Z15qst_op_ba_teamsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_teams() {
+__Z15qst_op_cam_zminPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cam_zmin(void *p) { begin_conversation_camera(); }
+__Z15qst_op_chat_boxv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chat_box() {
+__Z15qst_op_getmtimei	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_getmtime(int a0) { qst_registers[(unsigned char)(a0)].i = get_coarse_time(); }
+__Z15qst_op_go_floorll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_go_floor(s32 a, s32 b) {
+__Z15qst_op_hud_hidev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_hud_hide(void) { TWindowCtrl::suppress_slot(local_client_id); TRaderMapCore::hide_radar(
+__Z15qst_op_hud_showv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_hud_show(void) { TWindowCtrl::unsuppress_slot(local_client_id); TRaderMapCore::show_rada
+__Z15qst_op_load_pvrv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_load_pvr() { TLobby::free_luker_object(); load_memcard_file(); TLobby::clear_quest_vm_fl
+__Z15qst_op_nop_F821h	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_F821(u8 regs) {
+__Z15qst_op_nop_F822l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_F822(s32 reg) {
+__Z15qst_op_nop_F8EFv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_F8EF(void) {  }
+__Z15qst_op_npc_killv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_kill(void) {
+__Z15qst_op_npc_nontv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_nont(void) { disable_partner_chatter(); }
+__Z15qst_op_npc_playv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_play(void) {
+__Z15qst_op_npc_stopv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_stop(void) {
+__Z15qst_op_npc_talkv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_talk(void) { enable_partner_chatter(); }
+__Z15qst_op_npc_textv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_text() {
+__Z15qst_op_p_hpstatv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_hpstat(void) {
+__Z15qst_op_p_noncolv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_noncol() { clear_hashi_versus2_flag(); }
+__Z15qst_op_p_setposv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_setpos(void) {
+__Z15qst_op_particleh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_particle(u8 regs) {
+__Z15qst_op_pl_pkoffPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pl_pkoff(void *p) { disable_pk_mode_for_all_players(); }
+__Z15qst_op_pos_pipeh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pos_pipe(u8 regs) {
+__Z15qst_op_ujmpi_gelml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmpi_ge(s32 reg, u32 value, s32 label) {
+__Z15qst_op_ujmpi_gtlml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmpi_gt(s32 reg, u32 value, s32 label) {
+__Z15qst_op_ujmpi_lelml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmpi_le(s32 reg, u32 value, s32 label) {
+__Z15qst_op_ujmpi_ltlml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ujmpi_lt(s32 reg, u32 value, s32 label) {
+__Z15qst_op_unshrinkl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unshrink(s32 slot_reg) {
+__Z15qst_op_va_startv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_va_start() { qst_arg_count = 0; qst_op_stack_pushm(1, 7); }
+__Z15qst_op_warp_offv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_warp_off() { disable_quest_warp(); }
+__Z16qst_op_arg_pushah	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pusha(u8 a0) {
+__Z16qst_op_arg_pushbh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pushb(u8 a0) {
+__Z16qst_op_arg_pushli	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pushl(int a0) {
+__Z16qst_op_arg_pushot	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pusho(u16 a0) {
+__Z16qst_op_arg_pushrh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pushr(u8 a0) {
+__Z16qst_op_arg_pushsi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pushs(int a0) { int old = qst_arg_count; qst_arg_count = old + 1; qst_args[old].i = 
+__Z16qst_op_arg_pushwt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_arg_pushw(u16 a0) {
+__Z16qst_op_atan2_intv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_atan2_int(void) {
+__Z16qst_op_cam_quakev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cam_quake(void) { TCameraCtrl::set_shake_preset(2); }
+__Z16qst_op_cam_zmoutPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cam_zmout(void *p) { end_conversation_camera(); }
+__Z16qst_op_dec2floathh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_dec2float(u8 reg, u8 src) {
+__Z16qst_op_float2decll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_float2dec(s32 dst, s32 src) {
+__Z16qst_op_load_midiv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_load_midi() { TLobby::free_luker_object(); load_midi_stub(); TLobby::clear_quest_vm_flag
+__Z16qst_op_npc_crppkh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crppk(u8 regs) {
+__Z16qst_op_npc_crtpkv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crtpk(void) {
+__Z16qst_op_npc_paramv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_param() {
+__Z16qst_op_p_look_atv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_look_at(void) {
+__Z16qst_op_particle2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_particle2() {
+__Z16qst_op_reset_mapv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_reset_map(void) {
+__Z16qst_op_send_mailv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_send_mail(void) {
+__Z16qst_op_stack_popi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_stack_pop(int a0) { qst_registers[(unsigned char)(a0)].i = qst_call_stack_pop(); }
+__Z16qst_op_switch_onv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_switch_on(void) {
+__Z16qst_op_wrap_itemv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_wrap_item() {
+__Z17qst_op_ba_dropwepv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_dropwep() {
+__Z17qst_op_col_npcinrh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_col_npcinr(u8 regs) {
+__Z17qst_op_enable_mapv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_map(void) { TRaderMapCore::set_mode(1); }
+__Z17qst_op_equip_itemh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_equip_item(u8 i) {
+__Z17qst_op_get_genderll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_gender(s32 slot_reg, s32 dst) {
+__Z17qst_op_get_pl_jobl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_pl_job(s32 reg) {
+__Z17qst_op_get_randomll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_random(s32 regs, s32 dst) {
+__Z17qst_op_item_checkmm	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_check(u32 first, u32 destination) {
+__Z17qst_op_npc_crp_idh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crp_id(u8 first) {
+__Z17qst_op_pad_dragonPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pad_dragon(void* p) { TBoss1Dragon::requestActionRefresh(); }
+__Z17qst_op_pcam_paramh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pcam_param(u8 regs) {
+__Z17qst_op_restore_hpl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_restore_hp(s32 reg) {
+__Z17qst_op_restore_tpl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_restore_tp(s32 reg) {
+__Z17qst_op_shift_leftll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_shift_left(s32 dst, s32 src) {
+__Z17qst_op_show_timerPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_show_timer(void *p) { TWindowCtrl::create_alt_timer(); }
+__Z17qst_op_stack_popmll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_stack_popm(s32 regs, s32 count) {
+__Z17qst_op_stack_pushl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_stack_push(s32 reg) {
+__Z17qst_op_switch_jmplhl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_switch_jmp(s32 reg, u8 count, saddr labels) {
+__Z17qst_op_switch_offv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_switch_off(void) {
+__Z17qst_op_thread_stgt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_thread_stg(u16 label) {
+__Z17qst_op_unhide_enel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unhide_ene(s32 regs) {
+__Z17qst_op_unhide_objl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unhide_obj(s32 regs) {
+__Z17qst_op_window_msgv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_window_msg(void) {
+__Z18calc_sphere_boundsP15CollisionSphereP3VecS2_	src_pso_math_BoxSphereContact	game-internal-unresolved	none	1	def:src/pso/render/GinjaDrawUtil.cpp :: void calc_sphere_bounds(CollisionSphere *sphere, Vec *min, Vec *max) {
+__Z18end_primitive_drawv	src_pso_boss_derolle_ProjectedColorDraw	game-internal-unresolved	none	1	def:src/pso/render/ScreenPrimitiveDraw.cpp :: void end_primitive_draw() {
+__Z18qst_op_chat_bubblev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chat_bubble(void) {
+__Z18qst_op_chk_ene_numi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chk_ene_num(int a0) { qst_registers[(unsigned char)(a0)].i = TLobby::count_quest_enemies
+__Z18qst_op_cine_enablev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cine_enable(void) { TCineCtrl::begin_letterbox_show(NULL); }
+__Z18qst_op_clr_qt_exitv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clr_qt_exit(void) { set_quest_exit_callback(-1); }
+__Z18qst_op_cmode_stagev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cmode_stage() {
+__Z18qst_op_create_pipev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_create_pipe(void) {
+__Z18qst_op_disable_mapv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_map(void) { TRaderMapCore::set_mode(0); }
+__Z18qst_op_disp_msg_qbv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disp_msg_qb(void) {
+__Z18qst_op_file_dl_reqv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_file_dl_req(void) {
+__Z18qst_op_get_pl_namel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_pl_name(s32 reg) {
+__Z18qst_op_item_createhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_create(u8 regs, u8 dst) {
+__Z18qst_op_item_deletemm	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_delete(u32 src, u32 dst) {
+__Z18qst_op_kill_playerl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_kill_player(s32 slot_reg) {
+__Z18qst_op_npc_chkwarpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_chkwarp() { send_quest_collision_warp(); }
+__Z18qst_op_npc_crptalkh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crptalk(u8 first) {
+__Z18qst_op_npc_talk_plh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_talk_pl(u8 regs) {
+__Z18qst_op_npc_text_idhhPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_text_id(u8 a0, u8 a1, void *a2) {
+__Z18qst_op_particle_idh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_particle_id(u8 first) {
+__Z18qst_op_playbgm_epiv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_playbgm_epi(void) {
+__Z18qst_op_reset_killsl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_reset_kills(s32 slot_reg) {
+__Z18qst_op_scroll_textv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_scroll_text() {
+__Z18qst_op_set_episodel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_episode(s32 episode) {
+__Z18qst_op_set_qt_exitt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_qt_exit(u16 label) {
+__Z18qst_op_set_ult_mapv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_ult_map() { set_ult_map(); }
+__Z18qst_op_shift_rightll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_shift_right(s32 dst, s32 src) {
+__Z18qst_op_stack_pushmll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_va_start() { qst_arg_count = 0; qst_op_stack_pushm(1, 7); }
+__Z18qst_op_switch_calllhl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_switch_call(s32 reg, u8 count, saddr labels) {
+__Z18qst_op_winend_timePv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_winend_time(void* p) { TWindowCtrl::close_timer_window(); }
+__Z18qst_op_winset_timel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_winset_time(s32 reg) {
+__Z19coarse_time_to_usecm	src_pso_system_Lzss	game-internal-unresolved	none	1	def:src/pso/ui/window/TWindowSubStatusDisp_803DEE6C.cpp :: u32 coarse_time_to_usec(u32 x) {
+__Z19qst_op_ba_get_placehh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_get_place(u8 a0, u8 a1) {
+__Z19qst_op_ba_get_scorehh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_get_score(u8 src, u8 dst) {
+__Z19qst_op_ba_set_livesv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_lives(void) {
+__Z19qst_op_cine_disablev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cine_disable(void) { TCineCtrl::begin_letterbox_hide(NULL); }
+__Z19qst_op_close_msg_qbv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_close_msg_qb(void) {
+__Z19qst_op_enable_techsl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_techs(s32 slot_reg) {
+__Z19qst_op_item_create2hh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_create2(u8 regs, u8 dst) {
+__Z19qst_op_item_delete2mm	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_delete2(u32 src, u32 dst) {
+__Z19qst_op_masterkey_onv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_masterkey_on() { force_switch_doors_closed(); enable_door_masterkey(); }
+__Z19qst_op_nop_A0_debugv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_nop_A0_debug(void) {
+__Z19qst_op_p_enablewarpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_enablewarp(void) {
+__Z19qst_op_p_talk_guildv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_talk_guild(void) {
+__Z19qst_op_read_counterv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read_counter(void) {
+__Z19qst_op_run_to_coordh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_run_to_coord(u8 regs) {
+__Z19qst_op_set_mainwarpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_mainwarp(void) {
+__Z19qst_op_start_setevtv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_start_setevt() {
+__Z19qst_op_unequip_itemv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unequip_item() {
+__Z20qst_op_add_damage_tov	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_add_damage_to(void) {
+__Z20qst_op_award_item_oki	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_award_item_ok(int a0) { qst_item_ok_window = TObjItemOKWindow::create(tl_01); qst_regist
+__Z20qst_op_clr_qt_cancelv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clr_qt_cancel(void) { set_quest_cancel_callback(-1); }
+__Z20qst_op_del_obj_paraml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_del_obj_param(s32 reg) {
+__Z20qst_op_disable_techsl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_techs(s32 slot_reg) {
+__Z20qst_op_end_battlebgmv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_end_battlebgm() {
+__Z20qst_op_get_ba_recordh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_ba_record(u8 i) {
+__Z20qst_op_get_client_idh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_client_id(u8 reg) {
+__Z20qst_op_get_dl_statusl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_dl_status(s32 reg) {
+__Z20qst_op_get_eventflagll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_eventflag(s32 index_reg, s32 dst) {
+__Z20qst_op_get_item_infov	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_item_info() {
+__Z20qst_op_get_leader_idh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_leader_id(u8 reg) {
+__Z20qst_op_get_num_killsll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_num_kills(s32 slot_reg, s32 dst) {
+__Z20qst_op_if_zone_clearll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_if_zone_clear(s32 dst, s32 regs) {
+__Z20qst_op_initial_floorv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_initial_floor(void) {
+__Z20qst_op_map_designatem	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_map_designate(u32 first) {
+__Z20qst_op_masterkey_offv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_masterkey_off() { TLobby::reset_door_state(); TObjDoor::reset_instance(); }
+__Z20qst_op_npc_talk_killv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_talk_kill(void) {
+__Z20qst_op_p_disablewarpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_disablewarp(void) {
+__Z20qst_op_pl_add_mesetav	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pl_add_meseta(void) {
+__Z20qst_op_set_eventflagv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_eventflag(void) {
+__Z20qst_op_set_obj_paramhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_obj_param(u8 regs, u8 reg) {
+__Z20qst_op_set_qt_cancelt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_qt_cancel(u16 label) {
+__Z20qst_op_set_screen_bwv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_screen_bw() { set_screen_bw(); }
+__Z20qst_op_set_slot_slowl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_slow(s32 slot_reg) {
+__Z20qst_op_unset_ult_mapv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unset_ult_map(void) { TLobby::clear_quest_state(); }
+__Z20qst_op_use_animationll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_use_animation(s32 slot_reg, s32 anim_reg) {
+__Z20qst_op_write_counterv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_write_counter() {
+__Z21qst_op_at_coords_callh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_at_coords_call(u8 regs) {
+__Z21qst_op_at_coords_talkh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_at_coords_talk(u8 regs) {
+__Z21qst_op_ba_set_respawnv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_respawn(void) {
+__Z21qst_op_ba_sonar_countv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_sonar_count(void) {
+__Z21qst_op_clear_ba_rulesv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_ba_rules() {
+__Z21qst_op_clear_mainwarpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_mainwarp() {
+__Z21qst_op_clr_qt_failurev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clr_qt_failure(void) { set_quest_failure_callback(-1); }
+__Z21qst_op_clr_qt_successv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clr_qt_success(void) { set_quest_success_callback(-1); }
+__Z21qst_op_control_dragonl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_control_dragon(s32 reg) {
+__Z21qst_op_create_bgmctrlv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_create_bgmctrl() {
+__Z21qst_op_enable_win_pfxv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_win_pfx(void) { battle_ctrl_default_value = 1; }
+__Z21qst_op_find_bank_itemhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_find_bank_item(u8 i, u8 out) {
+__Z21qst_op_get_mag_levelsl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_mag_levels(s32 i) {
+__Z21qst_op_get_section_idv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_section_id() {
+__Z21qst_op_npc_crptalk_idh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_crptalk_id(u8 first) {
+__Z21qst_op_p_return_guildv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_return_guild(void) {
+__Z21qst_op_party_has_namel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_party_has_name(s32 reg) {
+__Z21qst_op_pl_add_meseta2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_pl_add_meseta2() {
+__Z21qst_op_release_dragonPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_release_dragon(void* p) { TBoss1Dragon::clearControlOverride(); }
+__Z21qst_op_send_statisticv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_send_statistic() {
+__Z21qst_op_set_area_titlev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_area_title() {
+__Z21qst_op_set_area_totalv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_area_total() {
+__Z21qst_op_set_eventflag2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_eventflag2(void) {
+__Z21qst_op_set_qt_failuret	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_qt_failure(u16 label) {
+__Z21qst_op_set_qt_successt	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_qt_success(u16 label) {
+__Z21qst_op_set_returncityv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_returncity() {
+__Z21qst_op_set_slot_shockl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_shock(s32 slot_reg) {
+__Z21qst_op_stop_animationl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_stop_animation(s32 reg) {
+__Z21qst_op_turn_on_bgm_p2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_turn_on_bgm_p2() { turn_on_bgm_p2(); }
+__Z22draw_network_wait_iconv	src_pso_system_task_TObject_80019A50	game-internal-unresolved	none	1	def:src/pso/network/NetworkWaitIcon.cpp :: void draw_network_wait_icon(void) {
+__Z22load_gvpl_palette_filePKcP11GvplPalette	src_pso_system_TLanguageFontPalette	game-internal-unresolved	none	1	def:src/pso/unk/text_801A5778.cpp :: void load_gvpl_palette_file(const char *filename, GvplPalette *palette) {
+__Z22qst_op_animation_checkll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_animation_check(s32 slot_reg, s32 dst) {
+__Z22qst_op_award_item_giveh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_award_item_give(u8 reg) {
+__Z22qst_op_award_item_namev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_award_item_name() { qst_item_name_entry = TObjItemNameEntry::create(tl_01); qst_suspend_
+__Z22qst_op_ba_death_lvl_upv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_death_lvl_up(void) {
+__Z22qst_op_ba_enable_sonarv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_enable_sonar() {
+__Z22qst_op_ba_meseta_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_meseta_score(s32 a) {
+__Z22qst_op_ba_set_trapselfv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: int qst_op_ba_set_trapself() { return TOMineTrap::set_trap_count(1); }
+__Z22qst_op_call_image_datav	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_call_image_data() {
+__Z22qst_op_check_rank_timehh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_check_rank_time(u8 src, u8 dst) {
+__Z22qst_op_disable_win_pfxv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_win_pfx(void) { battle_ctrl_default_value = 0; }
+__Z22qst_op_enable_mainmenuv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_mainmenu() { TWindowCtrl::enable_client_main_menu(local_client_id); }
+__Z22qst_op_enable_palettexv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_palettex() {
+__Z22qst_op_get_chara_classll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_chara_class(s32 slot_reg, s32 dst) {
+__Z22qst_op_get_eventflag16hh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_eventflag16(u8 a0, u8 a1) {
+__Z22qst_op_get_eventflag32hh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_eventflag32(u8 a0, u8 a1) {
+__Z22qst_op_get_player_roomv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_player_room(void) {
+__Z22qst_op_get_slot_mesetah	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_slot_meseta(u8 i) {
+__Z22qst_op_get_time_playedl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_time_played(s32 reg) {
+__Z22qst_op_npc_coords_callh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_coords_call(u8 regs) {
+__Z22qst_op_p_action_enablev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_action_enable(void) {
+__Z22qst_op_player_recoveryl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_player_recovery(s32 reg) {
+__Z22qst_op_set_eventflag16v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_eventflag16() {
+__Z22qst_op_set_eventflag32v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_eventflag32() {
+__Z22qst_op_set_motion_blurv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_motion_blur() { set_camera_capture_overlay_alpha(143); }
+__Z22qst_op_set_shrink_cam1h	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_shrink_cam1(u8 regs) {
+__Z22qst_op_set_shrink_cam2h	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_shrink_cam2(u8 regs) {
+__Z22qst_op_set_shrink_sizell	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_shrink_size(s32 player_variable, saddr size_variable) {
+__Z22qst_op_set_slot_debandl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_deband(s32 slot_reg) {
+__Z22qst_op_set_slot_freezel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_freeze(s32 slot_reg) {
+__Z22qst_op_set_slot_jellenl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_jellen(s32 slot_reg) {
+__Z22qst_op_set_slot_poisonl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_poison(s32 slot_reg) {
+__Z22qst_op_set_slot_shiftal	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_shifta(s32 slot_reg) {
+__Z22qst_op_set_slot_zalurel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_zalure(s32 slot_reg) {
+__Z22qst_op_set_trap_damagel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_trap_damage(s32 i) {
+__Z22qst_op_start_battlebgmv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_start_battlebgm() {
+__Z22qst_op_turn_off_bgm_p2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_turn_off_bgm_p2() { turn_off_bgm_p2(); }
+__Z22qst_op_vol_opt_is_deadl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_vol_opt_is_dead(s32 reg) {
+__Z23qst_op_ba_initial_floorv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_initial_floor(void) {
+__Z23qst_op_ba_set_tool_modev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_tool_mode(void) {
+__Z23qst_op_ba_set_trap_modev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_trap_mode(void) {
+__Z23qst_op_delete_bank_itemhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_delete_bank_item(u8 regs, u8 dst) {
+__Z23qst_op_disable_mainmenuv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_mainmenu(void) { TWindowCtrl::disable_client_main_menu(local_client_id); }
+__Z23qst_op_disable_palettexv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_palettex(void) {
+__Z23qst_op_enable_movement1v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_movement1(void) {
+__Z23qst_op_enable_movement2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_movement2() {
+__Z23qst_op_get_game_versionl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_game_version(s32 reg) {
+__Z23qst_op_get_held_buttonshh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_held_buttons(u8 src, u8 dst) {
+__Z23qst_op_get_lang_settingv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_lang_setting(void) {
+__Z23qst_op_get_player_hp_tpv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_player_hp_tp(void) {
+__Z23qst_op_get_player_levelv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_player_level(void) {
+__Z23qst_op_get_player_statell	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_player_state(s32 slot_reg, saddr dst) {
+__Z23qst_op_get_total_deathsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_total_deaths() {
+__Z23qst_op_map_designate_exm	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_map_designate_ex(u32 first) {
+__Z23qst_op_open_pack_selectv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_open_pack_select() {
+__Z23qst_op_p_action_disablev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_action_disable(void) {
+__Z23qst_op_player_effect_nch	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_player_effect_nc(u8 regs) {
+__Z23qst_op_read_switch_flagl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read_switch_flag(s32 reg) {
+__Z23qst_op_restore_palettexv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_restore_palettex(void) {
+__Z23qst_op_set_obj_param_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_obj_param_ex(u8 i, u8 out) {
+__Z23qst_op_set_returnhunterv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_returnhunter() {
+__Z23qst_op_set_slot_confusel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_confuse(s32 slot_reg) {
+__Z23qst_op_take_slot_mesetall	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_take_slot_meseta(s32 regs, s32 dst) {
+__Z23qst_op_unfreeze_enemiesv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unfreeze_enemies() {
+__Z23setup_opaque_color_drawv	src_pso_boss_derolle_ProjectedColorDraw	game-internal-unresolved	none	1	def:src/pso/render/ScreenPrimitiveDraw.cpp :: void setup_opaque_color_draw() {
+__Z24load_screen_space_matrixv	src_pso_boss_derolle_ProjectedColorDraw	game-internal-unresolved	none	1	def:src/pso/render/ScreenSpaceMatrix.cpp :: void load_screen_space_matrix() {
+__Z24qst_op_activate_palettexv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_activate_palettex() {
+__Z24qst_op_add_color_overlayv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_add_color_overlay() {
+__Z24qst_op_at_coords_call_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_at_coords_call_ex(u8 i, u8 out) {
+__Z24qst_op_at_coords_talk_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_at_coords_talk_ex(u8 i, u8 out) {
+__Z24qst_op_award_item_selectv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_award_item_select() { qst_item_name_select = TObjItemNameSelect::create(tl_01); qst_susp
+__Z24qst_op_ba_clear_trapselfv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: int qst_op_ba_clear_trapself(void) { return TOMineTrap::set_trap_count(0); }
+__Z24qst_op_ba_set_char_levelv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_char_level(void) {
+__Z24qst_op_ba_set_time_limitv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_time_limit(void) {
+__Z24qst_op_ba_set_trap_countl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_trap_count(s32 reg) {
+__Z24qst_op_check_for_hackingh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_check_for_hacking(u8 out) {
+__Z24qst_op_check_for_keywordv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_check_for_keyword(void) {
+__Z24qst_op_close_chat_bubblel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_close_chat_bubble(s32 reg) {
+__Z24qst_op_clr_floor_handlerv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clr_floor_handler(void) {
+__Z24qst_op_dark_falz_is_deadl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_dark_falz_is_dead(s32 reg) {
+__Z24qst_op_disable_movement1v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_movement1(void) {
+__Z24qst_op_disable_movement2v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_movement2() {
+__Z24qst_op_enable_npc_visualPv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_npc_visual(void *p) { enable_quest_npc_visual(); }
+__Z24qst_op_get_guildcard_numv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_guildcard_num(void) {
+__Z24qst_op_get_serial_numberh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_serial_number(u8 reg) {
+__Z24qst_op_has_ep3_save_filev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_has_ep3_save_file() {
+__Z24qst_op_item_create_cmodehh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_create_cmode(u8 regs, u8 dst) {
+__Z24qst_op_leti_fixed_camerah	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_leti_fixed_camera(u8 regs) {
+__Z24qst_op_olga_flow_is_deadl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_olga_flow_is_dead(s32 reg) {
+__Z24qst_op_prepare_statisticv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_prepare_statistic(void) {
+__Z24qst_op_set_chat_callbackv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_chat_callback() {
+__Z24qst_op_set_floor_handlerv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_floor_handler(void) {
+__Z24qst_op_set_slot_paralyzel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_paralyze(s32 slot_reg) {
+__Z24setup_blended_color_drawv	src_pso_boss_derolle_ProjectedColorDraw	game-internal-unresolved	none	1	def:src/pso/render/ScreenPrimitiveDraw.cpp :: void setup_blended_color_draw() {
+__Z25advance_network_wait_iconv	src_pso_system_task_TObject_80019A50	game-internal-unresolved	none	1	def:src/pso/network/NetworkWaitIcon.cpp :: void advance_network_wait_icon(void) {
+__Z25qst_op_ba_hide_self_trapsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: int qst_op_ba_hide_self_traps(void) { return TOMineTrap::set_instance(0); }
+__Z25qst_op_ba_set_forbid_magsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_forbid_mags() {
+__Z25qst_op_ba_set_unused_F817v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_unused_F817(void) {
+__Z25qst_op_ba_show_self_trapsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: int qst_op_ba_show_self_traps(void) { return TOMineTrap::set_instance(1); }
+__Z25qst_op_check_npc_straggleh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_check_npc_straggle(u8 i) {
+__Z25qst_op_chl_get_timerecordl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chl_get_timerecord(s32 reg) {
+__Z25qst_op_chl_set_timerecordl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chl_set_timerecord(s32 reg) {
+__Z25qst_op_clear_mainwarp_allv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_mainwarp_all() { clear_enabled_main_warps(); }
+__Z25qst_op_disable_retry_menuv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_retry_menu() {
+__Z25qst_op_enable_weapon_dropii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_weapon_drop(int _w0, int _w1) {
+__Z25qst_op_exp_multiplicationl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_exp_multiplication(s32 a) {
+__Z25qst_op_fleti_fixed_camerav	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fleti_fixed_camera() {
+__Z25qst_op_get_chosen_item_idi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_chosen_item_id(int a0) { qst_registers[(unsigned char)(a0)].i = -1; qst_result_regis
+__Z25qst_op_give_s_rank_weaponv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_give_s_rank_weapon() {
+__Z25qst_op_move_coords_objectll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_move_coords_object(s32 i, s32 k) {
+__Z25qst_op_npc_coords_call_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_coords_call_ex(u8 i, u8 out) {
+__Z25qst_op_npc_text_clear_allv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_npc_text_clear_all() { clear_partner_dialogue_flags(); }
+__Z25qst_op_p_talk_guild_localii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_p_talk_guild_local(int _w0, int _w1) {
+__Z25qst_op_particle_effect_nch	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_particle_effect_nc(u8 regs) {
+__Z25qst_op_prepare_npc_visuall	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_prepare_npc_visual(saddr label) {
+__Z25qst_op_set_score_announcev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_score_announce() {
+__Z25qst_op_someone_has_spokenl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_someone_has_spoken(s32 reg) {
+__Z25qst_op_update_switch_flagl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_update_switch_flag(s32 regs) {
+__Z26qst_op_ba_enemy_kill_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_enemy_kill_score(s32 a) {
+__Z26qst_op_ba_set_replace_charv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_replace_char() {
+__Z26qst_op_default_camera_pos1v	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_default_camera_pos1() {
+__Z26qst_op_default_camera_pos2Pv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_default_camera_pos2(void* p) { reset_camera_to_local_player(); }
+__Z26qst_op_disable_weapon_dropii	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_weapon_drop(int _w0, int _w1) {
+__Z26qst_op_fleti_locked_camerav	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_fleti_locked_camera(void) {
+__Z26qst_op_gba_create_dl_graphv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gba_create_dl_graph(void) { gba_download_create_graph(); }
+__Z26qst_op_gba_update_dl_graphv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gba_update_dl_graph(void) { gba_download_update_graph(); }
+__Z26qst_op_get_coord_of_playerll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_coord_of_player(s32 a, s32 b) {
+__Z26qst_op_get_guildcard_totali	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_guildcard_total(int a0) { qst_registers[(unsigned char)(a0)].i = TWindowSubComCard::
+__Z26qst_op_get_players_presenth	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_players_present(u8 out) {
+__Z26qst_op_get_pressed_buttonshh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_pressed_buttons(u8 a0, u8 a1) {
+__Z26qst_op_prevent_item_selectl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_prevent_item_select(s32 reg) {
+__Z26qst_op_set_cmode_base_timel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_base_time(s32 reg) {
+__Z26qst_op_set_slot_invinciblell	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_slot_invincible(s32 slot_reg, s32 value_reg) {
+__Z26qst_op_thaw_and_show_equipv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_thaw_and_show_equip() {
+__Z26qst_op_unfreeze_everythingv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_unfreeze_everything(void) {
+__Z27qst_op_ba_enemy_death_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_enemy_death_score(s32 a) {
+__Z27qst_op_ba_player_kill_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_player_kill_score(s32 a) {
+__Z27qst_op_ba_set_box_drop_areal	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_box_drop_area(s32 reg) {
+__Z27qst_op_clear_score_announcev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_score_announce() {
+__Z27qst_op_gba_destroy_dl_graphv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gba_destroy_dl_graph(void) { gba_download_destroy_graph(); }
+__Z27qst_op_get_chl_retry_choicel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_chl_retry_choice(s32 reg) {
+__Z27qst_op_get_cmode_prize_rankl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_cmode_prize_rank(s32 reg) {
+__Z27qst_op_get_palettex_enabledv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_palettex_enabled(void) {
+__Z27qst_op_get_player_proximityhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_player_proximity(u8 regs, u8 dst) {
+__Z27qst_op_get_vector_from_pathv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_vector_from_path() {
+__Z27qst_op_item_create_multi_cmh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_create_multi_cm(u8 i) {
+__Z27qst_op_item_delete_noreturnv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_item_delete_noreturn() {
+__Z27qst_op_party_coords_call_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_party_coords_call_ex(u8 i, u8 out) {
+__Z27qst_op_set_allow_item_flagsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_allow_item_flags(void) {
+__Z27qst_op_set_cmode_difficultyv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_difficulty() {
+__Z27qst_op_set_switch_flag_syncv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_switch_flag_sync() {
+__Z27qst_op_wrap_item_with_colorv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_wrap_item_with_color() {
+__Z28qst_op_ba_forbid_scape_dollsv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_forbid_scape_dolls() {
+__Z28qst_op_ba_player_death_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_player_death_score(s32 a) {
+__Z28qst_op_ba_set_max_tech_levelv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_max_tech_level() {
+__Z28qst_op_ba_set_tech_disk_modev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_tech_disk_mode() {
+__Z28qst_op_check_npc_straggle_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_check_npc_straggle_ex(u8 i, u8 slot) {
+__Z28qst_op_chl_create_retry_menuv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chl_create_retry_menu() {
+__Z28qst_op_clear_slot_invinciblel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_slot_invincible(s32 slot_reg) {
+__Z28qst_op_congrats_msg_multi_cmh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_congrats_msg_multi_cm(u8 reg) {
+__Z28qst_op_enable_keyword_detectv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_keyword_detect() { TOChatSensorCapture::create_instance(tl_01); }
+__Z28qst_op_gba_write_identifiersv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_gba_write_identifiers(void) {
+__Z28qst_op_get_item_stackabilityv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_item_stackability() {
+__Z28qst_op_get_number_of_playersi	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_number_of_players(int a0) { qst_registers[(unsigned char)(a0)].i = TLobby::count_mem
+__Z28qst_op_set_cmode_grave_ratesl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_grave_rates(s32 reg) {
+__Z28qst_op_set_cmode_rank_resultv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_rank_result(void) {
+__Z28qst_op_set_enemy_attack_datal	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_enemy_attack_data(s32 label) {
+__Z28qst_op_set_enemy_resist_datal	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_enemy_resist_data(s32 label) {
+__Z28qst_op_set_palettex_callbackv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_palettex_callback(void) {
+__Z28qst_op_toggle_freeze_enemiesv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_toggle_freeze_enemies() {
+__Z29qst_op_ba_death_tech_level_upv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_death_tech_level_up(void) {
+__Z29qst_op_ba_hide_target_reticlev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_hide_target_reticle(void) {
+__Z29qst_op_clear_switch_flag_syncv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_switch_flag_sync() {
+__Z29qst_op_delayed_switch_episodel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_delayed_switch_episode(s32 reg) {
+__Z29qst_op_enable_bosswarp_optionv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_bosswarp_option() {
+__Z29qst_op_find_inventory_item_exhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_find_inventory_item_ex(u8 regs, u8 dst) {
+__Z29qst_op_get_number_of_players2i	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_number_of_players2(int a0) { qst_registers[(unsigned char)(a0)].i = TLobby::get_game
+__Z29qst_op_get_palettex_activatedv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_palettex_activated(void) {
+__Z29qst_op_get_recent_symbol_chatv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_recent_symbol_chat() {
+__Z29qst_op_is_there_grave_messagel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_is_there_grave_message(s32 reg) {
+__Z30qst_op_ba_set_meseta_drop_modev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_meseta_drop_mode(void) {
+__Z30qst_op_chl_set_min_time_onlinel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chl_set_min_time_online(s32 reg) {
+__Z30qst_op_disable_bosswarp_optionv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_bosswarp_option() {
+__Z30qst_op_get_coord_player_detecthh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_coord_player_detect(u8 i, u8 out) {
+__Z30qst_op_get_difficulty_level_v1l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_difficulty_level_v1(s32 reg) {
+__Z30qst_op_get_difficulty_level_v2l	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_difficulty_level_v2(s32 reg) {
+__Z30qst_op_restore_warp_dest_floorv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_restore_warp_dest_floor(void) { TLobby::reset_quest_counter(); }
+__Z30qst_op_set_cmode_char_templatev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_char_template() {
+__Z30qst_op_set_cmode_rank_overridev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_rank_override(void) {
+__Z30qst_op_set_current_area_numberv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_current_area_number(void) {
+__Z30qst_op_set_enemy_movement_datal	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_enemy_movement_data(s32 label) {
+__Z30qst_op_set_enemy_physical_datai	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_enemy_physical_data(int _w0) {
+__Z30qst_op_set_quest_board_handlerv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_quest_board_handler(void) {
+__Z31qst_op_get_stackable_item_countll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_stackable_item_count(s32 i, s32 dst) {
+__Z31qst_op_is_bosswarp_opt_disabledl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_is_bosswarp_opt_disabled(s32 reg) {
+__Z31qst_op_override_warp_dest_floorv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_override_warp_dest_floor() { override_warp_dest_floor(); }
+__Z31qst_op_set_cmode_rank_thresholdhh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_cmode_rank_threshold(u8 regs, u8 dst) {
+__Z31qst_op_toggle_freeze_everythingv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_toggle_freeze_everything(void) {
+__Z32qst_op_chl_show_dead_player_listv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_chl_show_dead_player_list() {
+__Z32qst_op_clear_quest_board_handlerv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_clear_quest_board_handler(void) {
+__Z32qst_op_prepare_gba_rom_from_diskv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_prepare_gba_rom_from_disk(void) {
+__Z32qst_op_read_switch_flag_on_floorl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_read_switch_flag_on_floor(s32 reg) {
+__Z32qst_op_set_symbol_chat_collisionh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_symbol_chat_collision(u8 i) {
+__Z33qst_op_ba_enemy_give_damage_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_enemy_give_damage_score(s32 a) {
+__Z33qst_op_ba_enemy_take_damage_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_enemy_take_damage_score(s32 a) {
+__Z33qst_op_compute_bezier_curve_pointv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_compute_bezier_curve_point() {
+__Z33qst_op_enable_stealth_suit_effectl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_enable_stealth_suit_effect(s32 slot_reg) {
+__Z34qst_op_ba_player_give_damage_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_player_give_damage_score(s32 a) {
+__Z34qst_op_ba_player_take_damage_scorel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_player_take_damage_score(s32 a) {
+__Z34qst_op_cmode_check_any_player_deadl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cmode_check_any_player_dead(s32 reg) {
+__Z34qst_op_disable_stealth_suit_effectl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_disable_stealth_suit_effect(s32 slot_reg) {
+__Z34qst_op_set_chat_callback_no_filterh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_chat_callback_no_filter(u8 i) {
+__Z34qst_op_set_override_enemy_bp_indexv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_set_override_enemy_bp_index() {
+__Z34qst_op_start_or_update_gba_joybootl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_start_or_update_gba_joyboot(s32 idx) {
+__Z35qst_op_ba_set_weapon_and_armor_modev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_ba_set_weapon_and_armor_mode() {
+__Z35qst_op_cmode_check_all_players_deadl	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_cmode_check_all_players_dead(s32 reg) {
+__Z35qst_op_toggle_freeze_and_hide_equipv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_toggle_freeze_and_hide_equip() {
+__Z36qst_op_prepare_gba_rom_from_downloadv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_prepare_gba_rom_from_download() { update_alloc_size__6TLobbyFv((void*)0); gba_joyboot_se
+__Z36qst_op_write_flag_buf_to_event_flagsh	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_write_flag_buf_to_event_flags(u8 reg) {
+__Z37qst_op_load_serial_number_to_flag_bufv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_load_serial_number_to_flag_buf() {
+__Z37qst_op_write_flag_buf_to_event_flags2Pv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: int qst_op_write_flag_buf_to_event_flags2(void* p) { return ((int (*)(void*))qst_op_write_flag_buf_t
+__Z38get_network_config_outside_line_numberPcl	src_pso_unk_text_80145A44	game-internal-unresolved	none	1	def:src/pso/unk/text_803F4D84.cpp :: s32 get_network_config_outside_line_number(char *dst, s32 len) {
+__Z38qst_op_results_window_visible_multi_cml	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_results_window_visible_multi_cm(s32 reg) {
+__Z40qst_op_create_symbol_chat_capture_bufferv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_create_symbol_chat_capture_buffer() { TSymbolChatCapture::create_singleton(tl_01); }
+__Z40qst_op_get_guild_card_file_creation_timel	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_get_guild_card_file_creation_time(s32 reg) {
+__Z53qst_op_load_guild_card_file_creation_time_to_flag_bufv	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_load_guild_card_file_creation_time_to_flag_buf() {
+__Z9move_dataPvPKvl	src_pso_system_memory	game-internal-unresolved	none	1	def:src/pso/unk/TLobby_803DE778.cpp :: void move_data(void *dst, const void *src, s32 n) {
+__Z9qst_op_orll	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_or(s32 dst, s32 src) {
+__Z9qst_op_sev	src_pso_quest_QuestOpcodeTables	game-internal-unresolved	none	1	def:src/pso/quest/QuestOpcodeHandlers.cpp :: void qst_op_se(void) {
+__ZN22TChCrTagInformationStr6createEP7TObjectl	src_pso_unk_text_80309890	game-internal-unresolved	none	1	def:src/pso/ui/charcreate/TChCrTagInformationStr.cpp :: TChCrTagInformationStr *TChCrTagInformationStr::create(TObject *parent, s32 index) {
+__ZN7TObject17queue_destructionEv	src_pso_quest_TQuestThreadBoard	game-internal-unresolved	none	1	def:src/pso/ui/frontend/TAdADXlogo.cpp :: void TObject::queue_destruction() { m_flags |= QUEUE_DESTRUCTION; }
+___upper_map	src_pso_unk_text_803D9FF0	truly-missing	none	1	era-SDK-defined only (host scaffold gap)
+_gcrna_set_loop_flag	src_pso_audio_GcrnaBridgeLoop	game-internal-unresolved	none	1	def:src/pso/audio/GcrnaStreamControl.cpp :: void gcrna_set_loop_flag(GcrnaStream *stream, s32 enabled) {
+_offline_quest_filename_buffer_b	src_pso_unk_text_801F43A8	game-internal-unresolved	none	1	era(game-obj) hit, no C-def line matched
+_random_angle_range	src_pso_boss_derolle_RandomAngle	game-internal-unresolved	none	1	era(game-obj) hit, no C-def line matched
+_random_unit_scale	src_pso_boss_derolle_RandomAngle	game-internal-unresolved	none	1	era(game-obj) hit, no C-def line matched
+_scene_sora_recon_active_flag	src_pso_enemy_recon_TObjEneRecon_80302DB0	game-internal-unresolved	none	1	def:src/pso/render/reflection.cpp :: scene_sora_recon_active_flag = 0;
+_scroll_win_chat_log_heap	src_pso_unk_text_8026A328	game-internal-unresolved	none	1	def:src/pso/unk/text_8026AC50.cpp :: scroll_win_chat_log_heap = NULL;
+_tl_05	src_pso_item_drop_TItemDropSub	game-internal-unresolved	none	1	era(game-obj) hit, no C-def line matched
+__ZN10TItemShootD2Ev	src_pso_weapon_shoot_TItemShootModel_dtor	game-internal-unresolved	none	0	def:src/pso/weapon/shoot/TItemShoot.cpp :: TItemShoot::~TItemShoot() {
