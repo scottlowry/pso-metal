@@ -14,6 +14,7 @@
  * stamp at the same slot location is a loud reject and never overwrites.
  */
 #include "hg1_windows.h"
+#include "hg2_static_tree.h"     /* P2-HG2 W-STATIC-TREE contract (STA1 §3)  */
 #include "pso_bringup.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -190,4 +191,29 @@ u32 pso_handle_stamp_once(u32 *slot_loc, const u8 *host_ptr,
     g_nstamps++;
     *slot_loc = value;                                /* THE one write        */
     return value;
+}
+
+/* ---------- P2-HG2: W-STATIC-TREE staging (docs/p2-static-init-1.md §3) ----------
+ * L-IMAGE owns this whole program in ONE bind call (STA1 §3): stage the
+ * generated blob (era .rodata-equivalent bytes, 82x32 cells) into the RW
+ * arena at anchor[3].arena_off, then bind the window off the SAME crt0 anchor
+ * row — crt0 remains the only base owner, windows never mmap (HP §3.1).
+ * The anchor-vs-contract consistency guard fails loud: a botched STA1-side
+ * edit must be a dead-on-arrival boot, never a silent mis-stage (§4).
+ * Re-stage is idempotent: same bytes, same-triple re-bind is legal (HG1-Bb).
+ * No unbind EVER — the tree is never unloaded (STA1 §3 floor-semantics note). */
+int pso_static_tree_stage(void) {
+    if (!pso_arena_base) return -1;       /* call AFTER pso_bringup_install() */
+    const struct PsoEraWindowAnchor *a = &pso_era_window_anchors[3];
+    if (a->win != PSO_W_IMAGE || a->guest_begin != PSO_ST_GUEST_BEGIN ||
+        a->guest_end != PSO_ST_GUEST_END || a->arena_off != PSO_ST_ARENA_OFF) {
+        fail_loud("static_tree_stage: crt0 anchor[3] drifted from the "
+                  "HG2 contract constants (fix the repo, not the boot)",
+                  a->guest_begin);
+        return -1;
+    }
+    memcpy(pso_arena_base + a->arena_off, pso_st_blob, sizeof pso_st_blob);
+    pso_handle_window_bind(a->win, a->guest_begin, a->guest_end,
+                           pso_arena_base + a->arena_off);
+    return 0;
 }

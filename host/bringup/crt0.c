@@ -43,6 +43,23 @@ const struct PsoEraWindowAnchor pso_era_window_anchors[PSO_ERA_WINDOW_COUNT] = {
       "runtime object/state pools (THeap obj_heap regime; ladder6 L6_POOL)" },
     { PSO_W_ARAM,  0x00000000u, PSO_HANDLE_ARAM_CAP, PSO_MAIN_RAM_SIZE,
       "ARAlloc offset space (TSetManager.cpp:1561/:1529; host = pso_aram_base)" },
+    /* P2-HG2 4th row (docs/p2-static-init-1.md §3): the W-STATIC-TREE string
+     * tree. COLLISION AUDIT at land (STA1 §3 intake + §6 A2 re-audit, host/
+     * bringup same-turn grep): documented arena carves are IMAGE 0x32000-
+     * 0x34000 (HG1-I0), POOL 0x34000-0x38000 (HG1-I0), V-wave cache-heap
+     * regime @0x40000 (docs/p2-v-wave:107), osinit HeapArray+heap @0x400000
+     * (osinit.c:35/:40), CACHEHEAP_START @0x1400000 (hg1_windows.h:27),
+     * crt0 SysRet @0xF0 / PRS window @0x1800 / boot-spine logo src @0x20000
+     * + dst @0x10000 (few bytes each, 9 B decode) — the 0x80000..0x81000 gap
+     * owns NOTHING bound or persistent.
+     * Residual note: ladder3_test.cpp:254 uses arena+0x80000 as PROCESS-
+     * LOCAL qst_code probe scratch (separate binary, fresh arena, binds no
+     * window, never coexists with staging); if a future suite co-links that
+     * probe into a staged process it must move. crt0 stays the ONLY base
+     * owner — windows never mmap (HP §3.1); the bind is L-IMAGE's ONE call
+     * in pso_static_tree_stage() (STA1 §3). */
+    { PSO_W_IMAGE, 0x80080000u, 0x80081000u, 0x00080000u,
+      "W-STATIC-TREE string tree (STA1; texnames + texlist_null_name)" },
 };
 
 u8 *pso_era_window_host_base(u32 i) {

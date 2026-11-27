@@ -421,7 +421,8 @@ all: $(BIN)/ladder7_test
 # AND the era-window anchor table the binds derive from (HG-1.0). No NJS
 # shadow flags, no era bodies: this leg crosses the seam directly. Links only
 # crt0_nomain.o (install + anchors) — no disc/heap/PRS deps.
-$(OUT)/hg1_windows.o: $(BRINGUP)/hg1_windows.cpp $(BRINGUP)/include/hg1_windows.h $(BRINGUP)/pso_bringup.h | $(OUT) $(OUT)/waiver.stamp
+$(OUT)/hg1_windows.o: $(BRINGUP)/hg1_windows.cpp $(BRINGUP)/include/hg1_windows.h \
+                       $(BRINGUP)/include/hg2_static_tree.h $(BRINGUP)/pso_bringup.h | $(OUT) $(OUT)/waiver.stamp
 	clang++ $(CXXFLAGS) -c -o $@ $<
 
 $(OUT)/hg1_test.o: $(BRINGUP)/hg1_test.cpp $(BRINGUP)/include/hg1_windows.h | $(OUT) $(OUT)/waiver.stamp
@@ -431,6 +432,42 @@ $(BIN)/hg1_test: $(OUT)/crt0_nomain.o $(OUT)/hg1_windows.o $(OUT)/hg1_test.o | $
 	clang++ -target $(LINK_TARGET) -o $@ $^
 
 all: $(BIN)/hg1_test
+
+# --- P2-HG2 static-tree GOLDEN (docs/p2-static-init-1.md §5; card t_e554b48a) ---
+# The W-STATIC-TREE anchor row + pso_static_tree_stage() landed in crt0.c /
+# hg1_windows.cpp; the 82x32 payload blob and the golden's expected vectors
+# are EMITTED, never hand-typed: gen_hg2_static_tree.py reads the five era TUs
+# READ-ONLY at DECOMP_ROOT (81/81 census match required, loud guard on drift)
+# and writes $(GEN)/hg2_static_tree_blob.cpp. Links mirror hg1_test: crt0_-
+# nomain.o + registry + blob; no NJS shadow flags, no era bodies.
+ST_CAM_SRC  := $(DECOMP_ROOT)/src/pso/render/CameraCapture.cpp
+ST_VOL_SRC  := $(DECOMP_ROOT)/src/pso/boss/volopt/TBoss3VoloptMonitor.cpp
+ST_MCC_SRC  := $(DECOMP_ROOT)/src/pso/ui/frontend/TAdMcSelectCursorGC.cpp
+ST_MCM_SRC  := $(DECOMP_ROOT)/src/pso/ui/frontend/TAdMcSelectMcGC.cpp
+ST_NIN_SRC  := $(DECOMP_ROOT)/src/pso/render/NinjaUtil.cpp
+
+$(GEN)/hg2_static_tree_blob.cpp: $(BRINGUP)/gen_hg2_static_tree.py $(ST_CAM_SRC) \
+        $(ST_VOL_SRC) $(ST_MCC_SRC) $(ST_MCM_SRC) $(ST_NIN_SRC) \
+        $(BRINGUP)/include/hg2_static_tree.h | $(GEN) $(OUT)/waiver.stamp
+	@python3 $(BRINGUP)/gen_hg2_static_tree.py --decomp $(DECOMP_ROOT) --out $@
+
+$(GEN)/hg2_static_tree_blob.o: $(GEN)/hg2_static_tree_blob.cpp | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+# hg1_windows.o carries pso_static_tree_stage(), which references the blob —
+# the symbol must resolve in EVERY binary that links the registry (deps added
+# to the HG-1 rules above; recipes verbatim).
+$(BIN)/hg1_test: $(GEN)/hg2_static_tree_blob.o
+
+$(OUT)/hg2_test.o: $(BRINGUP)/hg2_test.cpp $(BRINGUP)/include/hg2_static_tree.h \
+                   $(BRINGUP)/include/hg1_windows.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/hg2_test: $(OUT)/crt0_nomain.o $(OUT)/hg1_windows.o \
+                 $(GEN)/hg2_static_tree_blob.o $(OUT)/hg2_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/hg2_test
 
 clean:
 	@rm -rf $(OUT)

@@ -61,7 +61,7 @@ int main(void) {
           "HG1-I0a pso_bringup_install: real host-allocated 26 MB arena bound (dev D1 reloc regime; docs/p2-bringup-1.md)");
     CHECK(pso_aram_base == pso_arena_base + 0x1800000u,
           "HG1-I0b HP §5 HG-1.0 anchor law: pso_aram_base == pso_arena_base + 0x1800000 ([0,24MB) main / [24MB,26MB) ARAM, crt0.c)");
-    CHECK(PSO_ERA_WINDOW_COUNT == 3u
+    CHECK(PSO_ERA_WINDOW_COUNT == 4u
           && pso_era_window_anchors[0].win == PSO_W_IMAGE
           && pso_era_window_anchors[0].guest_begin == 0x80032000u
           && pso_era_window_anchors[0].guest_end == 0x80034000u
@@ -69,11 +69,16 @@ int main(void) {
           && pso_era_window_anchors[1].guest_begin == 0x80034000u
           && pso_era_window_anchors[1].guest_end == 0x80038000u
           && pso_era_window_anchors[2].win == PSO_W_ARAM
-          && pso_era_window_anchors[2].guest_end == 0x200000u,
-          "HG1-I0c crt0 era-window anchor table == HP §2/§5 window table byte-exact (IMAGE g_sinbd +0x32000, POOL THeap +0x34000, ARAM offset cap 0x200000)");
+          && pso_era_window_anchors[2].guest_end == 0x200000u
+          && pso_era_window_anchors[3].win == PSO_W_IMAGE
+          && pso_era_window_anchors[3].guest_begin == 0x80080000u
+          && pso_era_window_anchors[3].guest_end == 0x80081000u
+          && pso_era_window_anchors[3].arena_off == 0x00080000u,
+          "HG1-I0c crt0 era-window anchor table == HP §2/§5 window table byte-exact (IMAGE g_sinbd +0x32000, POOL THeap +0x34000, ARAM offset cap 0x200000) + HG-2 4th row W-STATIC-TREE [0x80080000,0x80081000) @+0x80000 (STA1 §3)");
     CHECK(pso_era_window_host_base(2u) == pso_aram_base
           && pso_era_window_host_base(0u) == pso_arena_base + 0x32000u
           && pso_era_window_host_base(1u) == pso_arena_base + 0x34000u
+          && pso_era_window_host_base(3u) == pso_arena_base + 0x80000u
           && pso_handle_window_records() == 0u,
           "HG1-I0d anchor host bases derive from the two base registers (registry owns nothing); crt0 remains the ONLY base owner (HP §3.1) — registry starts empty");
     u32 rj = pso_handle_reject_count;
@@ -81,7 +86,9 @@ int main(void) {
           "HG1-I0e unbound window FAILS LOUD pre-bind (nothing resolves before a loader materializes it — stamp-at-genesis law, HP §3.2)");
 
     /* ================= HG1-B: bind via the API off the crt0 table ================= */
-    for (u32 i = 0; i < PSO_ERA_WINDOW_COUNT; i++)
+    /* HG-1.0 set = rows 0..2; the 4th row (W-STATIC-TREE) is L-IMAGE's ONE
+       bind inside pso_static_tree_stage() (STA1 §3) — pinned in hg2_test. */
+    for (u32 i = 0; i < 3u; i++)
         pso_handle_window_bind(pso_era_window_anchors[i].win,
                                pso_era_window_anchors[i].guest_begin,
                                pso_era_window_anchors[i].guest_end,

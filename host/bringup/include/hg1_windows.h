@@ -67,7 +67,7 @@ struct PsoEraWindowAnchor {
     u32 arena_off;           /* host base = pso_arena_base + arena_off       */
     const char *era_cite;    /* what carves this span in the era             */
 };
-#define PSO_ERA_WINDOW_COUNT 3u   /* IMAGE, POOL, ARAM (HG-1.0 bind set)     */
+#define PSO_ERA_WINDOW_COUNT 4u   /* IMAGE, POOL, ARAM (HG-1.0) + IMAGE static tree (HG-2) */
 extern const struct PsoEraWindowAnchor pso_era_window_anchors[PSO_ERA_WINDOW_COUNT];
 u8 *pso_era_window_host_base(u32 i); /* crt0.c — derived from the anchors    */
 
