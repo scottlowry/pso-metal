@@ -14,3 +14,17 @@ TBoss6Type1	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/olgaflow/TBoss6Type1.h:
 TContainerAncient01	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/object/container/TContainerAncient01.h:52	HIGH
 DragonAttackParams	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/boss/DragonAttackParams.h:17	HIGH
 TQuestListOnline	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/quest/TQuestListOnline.h:65	HIGH
+TWindowInputNumber	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/ui/window/TWindowInputNumber.h:57	HIGH
+TObjDFHorming	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/darkfalz/TObjDFHorming.h:40	HIGH
+TBoss5Gryphon	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/galgryphon/TBoss5Gryphon.h:244	HIGH
+TBoss7DeRolLeC	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/barbaray/TBoss7DeRolLeC.h:203	HIGH
+TTecSlicer	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/technique/TTecSlicer.h:71	HIGH
+AdxtPlayer	RUNTIME-WAIVE	POINTER-CLASS	include/pso/audio/AdxtInternal.h:75	HIGH
+TBoss4Type1	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/boss/darkfalz/TBoss4Type1.h:121	HIGH
+TObjEneGyaranzo	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/enemy/gyaranzo/TObjEneGyaranzo.h:70	HIGH
+TObjEneBm5Wolf	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/enemy/wolf/TObjEneBm5Wolf.h:148	HIGH
+SetDestroyEventRecord	LOCKED-FORMAT	AK-pre-collision	include/pso/map/TSetEvtDestroy.h:54	HIGH
+TSetEvtDestroy	RUNTIME-WAIVE	FORMAT-TABLE-H	docs/p1-format-net-disc.md:166	HIGH
+TEnding	RUNTIME-WAIVE	VIRTUAL-CLASS	include/pso/system/scene/TEnding.h:34	HIGH
+CreationTextureCacheEntry	RUNTIME-WAIVE	FIELDWISE-RUNTIME	include/pso/ui/charcreate/CharacterCreationTextureCache.h:52	MED
+QuestDownloadCachePage	RUNTIME-WAIVE	POINTER-CLASS	include/pso/quest/QuestDownloadCacheTypes.h:45	HIGH
