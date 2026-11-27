@@ -68,15 +68,22 @@ that is exactly the door the AN pack fits → `bind_texlist_texture`
 Caller shape: `load_sin_board_image` (`src/pso/object/TObjSinBoard.cpp:111-121`):
 `set_texture_name(&name,&surface,0,0x40000000)` (:119) then load.
 
-### 1.4 [AU-FILL] slots (leave exactly these open)
+### 1.4 [AU-FILL] slots — FILLED by integrator 2026-11-27 from AU's committed §6 (`docs/p2-tex-upload.md`, commit 7d076d5)
 
-- **S1** upload entry name/arity + **storage ownership**: does AU hand out a
-  caller-supplied `GinjaTextureHeader*` buffer or an internally-allocated one?
-  Consumer binds BY OFFSET (§1.1), never by type, so either shape is safe.
-- **S2** pixels allocator identity (`locked_cache_heap_handle` port).
-- **S3** `GXGetTexBufferSize` host symbol (SDK-side, same GX lane as `GXInitTexObj*`).
-- **S4** whether AU's returned `pixels` is the arena-guest address (u32) or a
-  host pointer — decides whether §3 adapters wrap it in `pso_njs_h2g` at bind time.
+- **S1** RESOLVED: consumers take `GinjaTextureHeader*` (port mirror; era pixels
+  slot **+0x1C** holds a heap texel buffer of exactly `header->size` bytes,
+  internally allocated). Handoff shape: `reload_texture_slot_pixels(slot,
+  header->pixels)` / `create_texture_state` (text_803DA798.cpp:132-158).
+- **S2** RESOLVED: allocator = era `alloc_buffer_from_heap` → `OSAllocFromHeap`
+  on the port's arena-backed OSAlloc (AU E4a: cell {size 1056, requested 1024,
+  hd_idx} pinned vs 0x80370BEC).
+- **S3** RESOLVED as GX-lane work: `GXGetTexBufferSize` exists verbatim in the
+  bringup slices; consumer-side use is via `GXInitTexObj*` in the AR allow-list
+  stage (touchpoint quoted in AU §6; do NOT widen GXInitTexObj params).
+- **S4** RESOLVED: AU's +0x1C slot currently holds the HOST u64 pointer — the
+  §3 adapter MUST stamp it through the guest-address shim (`pso_njs_h2g`) before
+  GX sees it (AU: "must be stamped ... before GX sees it"); once the texlist
+  binds, `NJS_TEXNAME.texattr` and table pointers travel as u32 handles only.
 
 ## 2. BINDING map — format9 PAL8 → MTLTexture
 
