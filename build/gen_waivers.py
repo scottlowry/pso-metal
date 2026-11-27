@@ -55,7 +55,21 @@ DENY_FORMAT_ROOTS = {
     "GuildCardSaveData", "SystemSaveData", "SymbolChatPreset", "TItemData",
     "NetworkInfoConfig", "GslArchiveEntry", "GvmTextureHeader", "GvrTextureChunk",
     "MfciFileEntry",
+    # P2-AO stitch EDIT 1 (tranche2 LOCKED rows, disk-verified 2026-11-26):
+    "TPlyCharData", "GuildCardEntry", "QuestBinHeader",
+    "G_DropItem_DC_6x5F", "G_DropItem_PC_V3_BB_6x5F", "G_PlaySound_6xB2",
+    # Integrator extension (AJ/resolutions-3 + AD/resolutions-1 positive
+    # loaded-image verdicts; belt+braces vs any future label inversion):
+    "NJS_OBJECT", "NJS_MKEY_F", "NJS_TEXNAME", "NJS_TEXLIST",
+    "EnemySetRecord", "FloorObjectSetRow",
+    "CardFileInfo", "NetworkInfoCardFile", "G_FloorEvent_6x67",
+    "ChallengeClientRecords",
 }
+# X rule-correction carve-out: the NetworkInfoCipher* family stays RUNTIME-WAIVE
+# per net-disc —4 despite the narrow whole-header LOCKED rule; no keeper row for
+# it exists in any tranche/resolution (verified), and only the EXACT name
+# NetworkInfoConfig above is denied. Keepers are collected solely on the
+# "FORMAT-KEEP"/"LOCKED-FORMAT" marker substrings, never on family prefixes.
 
 # LAYOUT_ASSERT(<name>, <cond>)  — direct call sites (not the #define itself)
 SITE_RE = re.compile(
@@ -65,7 +79,7 @@ SIZEOF_RE = re.compile(r"sizeof\s*\(\s*([A-Za-z_][\w:<>~]*)")
 OFFSETOF_RE = re.compile(r"offsetof\s*\(\s*([A-Za-z_][\w:<>~]*)\s*,")
 # helper: #define H(args) LAYOUT_ASSERT(Name##param, offsetof(TYPE,param)==off)
 HELP_RE = re.compile(
-    r"#define\s+(\w+)\s*\(([^)]*)\)\s+LAYOUT_ASSERT\s*\(\s*([A-Za-z_]\w*(?:\s*##\s*\w+)?)"
+    r"#define\s+(\w+)\s*\(([^)]*)\)\s+LAYOUT_ASSERT\s*\(\s*([A-Za-z_]\w*(?:\s*##\s*\w+)*)"
     r"\s*,\s*(?:offsetof|sizeof)\s*\(\s*([A-Za-z_][\w:]*)")
 
 
@@ -100,13 +114,15 @@ def scan_tree(decomp: Path):
             macro, params, name_tmpl, typ = m.groups()
             if "##" not in name_tmpl:
                 continue
-            paste = re.search(r"(\w+)\s*##\s*(\w+)", name_tmpl)
-            if not paste:
-                continue
             plist = [x.strip() for x in params.split(",")]
-            if paste.group(2) not in plist:
+            # P2-AO step-0 fix: multi-## templates with literal segments
+            # (NET_DISPATCH_OFFSET: type##_##member##_offset). The old code
+            # required exactly one paste whose RHS was a param, so this
+            # helper (and any type##_##member##suffix shape) was skipped.
+            segs = [s.strip() for s in name_tmpl.split("##")]
+            if not any(s in plist for s in segs):
                 continue
-            helpers[macro] = (name_tmpl, plist.index(paste.group(2)), typ)
+            helpers[macro] = (segs, plist, typ)
         # direct (non-#define) sites
         for line in text.splitlines():
             s = line.strip()
@@ -121,65 +137,117 @@ def scan_tree(decomp: Path):
 
     unresolved = []
     for path, text in texts.items():
-        for macro, (tmpl, idx, typ) in helpers.items():
+        for macro, (segs, plist, typ) in helpers.items():
             call_re = re.compile(
                 r"\b" + re.escape(macro) + r"\s*\(([^()]*)\)")
             for m in call_re.finditer(text):
+                ls = text.rfind("\n", 0, m.start()) + 1
+                if text[ls:m.start()].lstrip().startswith("#define"):
+                    continue  # the definition line: args are param names
                 args = [a.strip() for a in m.group(1).split(",")]
-                if len(args) <= idx or not re.fullmatch(r"\w+", args[idx]):
+                parts, ok = [], True
+                for s in segs:
+                    if s in plist:
+                        i = plist.index(s)
+                        if i >= len(args) or not re.fullmatch(r"\w+", args[i]):
+                            ok = False
+                            break
+                        parts.append(args[i])
+                    else:
+                        parts.append(s)
+                if not ok:
                     unresolved.append((macro, m.group(0)[:60], str(path)))
                     continue
-                name = tmpl.replace("##", "")
-                # reconstruct: prefix before ## + substituted param
-                prefix = tmpl.split("##")[0].strip()
-                name = prefix + args[idx]
-                names[name] = typ
+                ctype = typ
+                if typ in plist:  # generic helper: concrete type from call arg
+                    i = plist.index(typ)
+                    ctype = (args[i] if i < len(args)
+                             and re.fullmatch(r"\w+", args[i]) else None)
+                names["".join(parts)] = ctype
     return names, unresolved
 
 
-def read_verdicts(tsv: Path):
-    """Return (waived_types, conflicts) or None when the TSV is absent."""
-    if not tsv.is_file():
+def read_verdicts(tsvs):
+    """Multi-source fail-closed verdicts (P2-AO stitch EDIT 2/3).
+
+    Two passes so cross-file precedence is absolute: pass 1 collects KEEPERS
+    on markers {"FORMAT-KEEP", "LOCKED-FORMAT"} across every present file;
+    pass 2 collects RUNTIME-WAIVE; any RW type already in keepers is a
+    CONFLICT and is never waived. Returns (waived, conflicts, per_source)
+    or None only when ALL files are absent. Verdict column: 'verdict' or
+    'new-verdict' (resolutions files).
+    """
+    present = [Path(p) for p in tsvs if Path(p).is_file()]
+    if not present:
         return None
-    waived, keepers, conflicts, rw_seen = set(), set(), set(), set()
-    seen_types = {}
-    with tsv.open(encoding="utf-8") as fh:
-        header = fh.readline().rstrip("\n").split("\t")
-        try:
-            tcol, vcol = header.index("type"), header.index("verdict")
-        except ValueError:
-            print(f"gen_waivers: ERROR: {tsv} lacks type/verdict columns; "
-                  "treating as ABSENT (fail-closed).", file=sys.stderr)
-            return None
-        for ln, raw in enumerate(fh, start=2):
-            cols = raw.rstrip("\n").split("\t")
-            if len(cols) <= max(tcol, vcol):
-                continue
-            typ, verdict = cols[tcol].strip(), cols[vcol].strip().upper()
-            # HARD GUARD: FORMAT-KEEP has absolute precedence and NO waiver path.
-            # Lane I emits verdict labels like "RW (RUNTIME-WAIVE)" /
-            # "L-P (FORMAT-KEEP)"; we match the canonical markers as substrings,
-            # FORMAT-KEEP first. Anything else (UNREVIEWED/CONFLICT/unknown)
-            # stays KEEP.
-            if "FORMAT-KEEP" in verdict:
+
+    def rows(tsv):
+        with tsv.open(encoding="utf-8") as fh:
+            header = fh.readline().rstrip("\n").split("\t")
+            tcol = header.index("type") if "type" in header else None
+            vcol = None
+            for name in ("verdict", "new-verdict"):
+                if name in header:
+                    vcol = header.index(name)
+                    break
+            if tcol is None or vcol is None:
+                print(f"gen_waivers: ERROR: {tsv} lacks type + "
+                      "verdict/new-verdict column; SKIPPING (fail-closed).",
+                      file=sys.stderr)
+                return None
+            out = []
+            for raw in fh:
+                cols = raw.rstrip("\n").split("\t")
+                if len(cols) <= max(tcol, vcol):
+                    continue
+                out.append((cols[tcol].strip(), cols[vcol].strip().upper()))
+        return out
+
+    parsed = []
+    for tsv in present:
+        r = rows(tsv)
+        if r is not None:
+            parsed.append((tsv, r))
+
+    keepers = set()
+    keep_src: dict[str, int] = {}
+    for si, (_, r) in enumerate(parsed):
+        for typ, verdict in r:
+            if "FORMAT-KEEP" in verdict or "LOCKED-FORMAT" in verdict:
                 keepers.add(typ)
-                continue
+                keep_src[typ] = si
+    waived, conflicts, rw_seen = set(), set(), set()
+    override_ok: set[str] = set()
+    overrides: list[str] = []
+    for si, (_, r) in enumerate(parsed):
+        for typ, verdict in r:
             if "RUNTIME-WAIVE" in verdict:
                 rw_seen.add(typ)
-                if typ in keepers or "FORMAT-KEEP" in seen_types.get(typ, verdict):
-                    conflicts.add(typ)
-                seen_types.setdefault(typ, verdict)
-                if seen_types[typ] != verdict:
-                    conflicts.add(typ)
-                else:
-                    waived.add(typ)
-    waived -= keepers | conflicts | DENY_FORMAT_ROOTS
+                # Precedence law (integrator, per resolutions docs + AJ/NJS_POINT3COL
+                # case): RESOLUTIONS files consume LAST and may override an earlier
+                # LOCKED claim -> RW wins iff its source is strictly later than the
+                # last keeper claim for the same type. Same-file and earlier-file
+                # keepers still win (fail-closed). DENY_FORMAT_ROOTS are absolute.
+                if typ in keepers:
+                    if keep_src.get(typ, len(parsed)) >= si or typ in DENY_FORMAT_ROOTS:
+                        conflicts.add(typ)
+                        waived.discard(typ)
+                        continue
+                    override_ok.add(typ)
+                    overrides.append(f"{typ}(keeper@{keep_src[typ]}->rw@{si})")
+                waived.add(typ)
     leaked = rw_seen & DENY_FORMAT_ROOTS
     if leaked:
         print("gen_waivers: WARNING — TSV carried RUNTIME-WAIVE labels on FORMAT "
               f"roots {sorted(leaked)}; deny-list overrode. Fix the labels upstream.",
               file=sys.stderr)
-    return waived, conflicts
+    waived -= (keepers - override_ok) | conflicts | DENY_FORMAT_ROOTS
+    for o in overrides:
+        print(f"gen_waivers: NOTE — resolution-precedence override: {o} "
+              "later RUNTIME-WAIVE beats earlier keeper (deny-roots immune).",
+              file=sys.stderr)
+    per_source = [(p.name, len(r)) for p, r in parsed]
+    return waived, conflicts, per_source
 
 
 NOOP_HEADER = """\
@@ -230,9 +298,7 @@ TEMPLATE = """\
 def main():
     ap = argparse.ArgumentParser(description="P1-L fail-closed waiver generator")
     ap.add_argument("--decomp", type=Path, default=DEFAULT_DECOMP)
-    ap.add_argument("--tsv", type=Path,
-                    default=Path(os.environ.get(
-                        "ASSERT_VERDICTS_TSV", str(DEFAULT_TSV))))
+    ap.add_argument("--tsv", type=Path, nargs="*", default=None)
     ap.add_argument("--out", type=Path, default=BUILD_DIR / "waivers")
     args = ap.parse_args()
 
@@ -244,6 +310,17 @@ def main():
         sys.exit(f"gen_waivers: DECOMP_ROOT {args.decomp} not found — "
                  "cannot enumerate assert names (fail-closed).")
 
+    tsvs = list(args.tsv) if args.tsv else []
+    if not tsvs:
+        env = os.environ.get("ASSERT_VERDICTS_TSV")
+        if env:
+            tsvs.append(Path(env))  # env honored as FIRST entry
+        tsvs += [DEFAULT_TSV,
+                 REPO / "data" / "verdict-tranche1.tsv",
+                 REPO / "data" / "verdict-tranche2.tsv",
+                 REPO / "data" / "verdict-tranche3.tsv"]
+        tsvs += sorted((REPO / "data").glob("verdict-resolutions-*.tsv"))
+        # resolutions LAST = override layer (plan EDIT 3)
     names, unresolved = scan_tree(args.decomp)
     if unresolved:
         for macro, snippet, f in unresolved[:10]:
@@ -251,7 +328,7 @@ def main():
                   f"in {f} — its assert name stays unwarned and fail-closed.",
                   file=sys.stderr)
 
-    verdicts = read_verdicts(args.tsv)
+    verdicts = read_verdicts(tsvs)
     if verdicts is None:
         header.write_text(NOOP_HEADER)
         print("gen_waivers: NO VERDICTS YET — data/assert-verdicts.tsv absent; "
@@ -259,7 +336,8 @@ def main():
         (out / "waiver-status.txt").write_text("ABSENT\n")
         return
 
-    waived_types, conflicts = verdicts
+    waived_types, conflicts, per_source = verdicts
+    src_note = " ".join(f"{n}={c}" for n, c in per_source)
     for typ in sorted(conflicts):
         print(f"gen_waivers: WARN: conflicting verdict rows for {typ} — "
               "kept (fail-closed).", file=sys.stderr)
@@ -282,8 +360,9 @@ def main():
         flags="\n".join(flags)))
     (out / "waiver-status.txt").write_text(
         f"ACTIVE waived={nwaive} types={len(waived_types)}\n")
-    print(f"gen_waivers: ACTIVE — waived {nwaive}/{len(names)} asserts for "
-          f"types {' '.join(sorted(waived_types))}")
+    print("gen_waivers: ACTIVE \u2014 waived "
+          f"{nwaive}/{len(names)} asserts over "
+          f"{len(waived_types)} types; sources: {src_note}")
 
 
 if __name__ == "__main__":
