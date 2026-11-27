@@ -99,8 +99,8 @@ if [ "$SUBJECT" = window ]; then
   log "preflight PASS: window-id capture works in this context (probe window $PROBE_WON)"
 elif [ "$SUBJECT" = dl ] || [ "$SUBJECT" = logo ] || [ "$SUBJECT" = logo-genuine ]; then
   if [ "$SUBJECT" = logo-genuine ]; then
-    GVR="$LOGO_ASSETS/sinbd_tex.gvr"
-    GVP="$LOGO_ASSETS/f256_hyouji_a.gvp"
+    GVR="$LOGO_ASSETS/sinbd.gvr"
+    GVP="$LOGO_ASSETS/hyouji_a.gvp"
     if [ ! -f "$GVR" ]; then
       log "logo-genuine UNAVAILABLE: $GVR not present (subject is conditional on local_assets by design)"
       echo "  Genuine disc-derived art is gitignored (fnv+dims receipts only — host/bringup/local_assets/)." >&2
