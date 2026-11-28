@@ -13,7 +13,9 @@ decoded era-style from disc index record, sinbd-identity calibrated). Receipts +
 per-frame offsets/fnv: docs/p2-logo-e-supply-1.md (lane I4P).
 
 P2-FRMB correction (docs/p2-oracle-1.md §5, owner-verified): the fmt-0xE
-frames are **GX_TF_CMPR (DXT1-in-RGB5A3, TI 8x8)**, not I4 — the manifest
+frames are **GX_TF_CMPR (DXT1-in-BE-u16-RGB565 since CMPRBE card
+t_41325af7 — the earlier "DXT1-in-RGB5A3" gloss was the endpoint defect;
+TI 8x8 law unchanged)**, not I4 — the manifest
 "I4" label is superseded (sizes agree only because both are 4bpp).
 `logo_e.slices.json` (gitignored, lane FRMB) is the runtime-reference
 per-slice fnv sidecar for the `GX_FRAMES_SLICES` gate hook; expected hashes

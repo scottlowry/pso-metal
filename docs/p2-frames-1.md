@@ -30,23 +30,31 @@ Runtime-reference sidecar written to `local_assets/logo_e.slices.json`
 ## 2 — CMPR expand leg (gx_logo_clut.h, DEVIATION FRM-1)
 
 `gxh_cmpr_block_rgba8` + `gxh_cmpr_expand_ti8x8`: GX_TF_CMPR = DXT1 blocks
-with **RGB5A3 endpoints** (shared decoder `gxh_rgb5a3_rgba8`, extracted from
-the fmt==2 TLUT leg — one decoder serves both), TI 8×8 addressing
+with **RGB5A3 endpoints** ~~(shared decoder `gxh_rgb5a3_rgba8`, extracted from
+the fmt==2 TLUT leg — one decoder serves both)~~ **[CMPRBE SUPERSEDED:
+endpoints are BE-u16 plain RGB565 through the dedicated `gxh_rgb565_rgba8`;
+the shared-decoder reading was the defect — §6 below]**, TI 8×8 addressing
 (`off = 32·((x>>3)+(w>>3)·(y>>3)) + 8·(bx&1 + 2·(by&1))`, sub-blocks
-row-major = the surviving rm probe), endpoints u16 **LE** in-block, index
-bits `2·(x&3)` of byte `4+(y&3)`, interpolation `c0>c1 ? [c0,c1,⅔,⅓] :
-[c0,c1,½,transparent]`. Era truth: GX hardware TCMP at DRAW time
+row-major = the surviving rm probe), endpoints u16 ~~**LE**~~ **[BE]**
+in-block, index bits `2·(x&3)` of byte `4+(y&3)`, interpolation
+`c0>c1 ? [c0,c1,⅔,⅓] : [c0,c1,½, ~~transparent~~ **[opaque black — CMPRBE]**]`.
+Era truth: GX hardware TCMP at DRAW time
 (GXTexture.s jumptable idx 14, `GinjaMaterial.cpp:372,390,423`
 `format == GX_TF_CMPR` gate); the era never decodes 0xE on host — the host
 CPU-expand is the display-path deviation class, pinned in-source with the
 oracle witnesses. Planted wrong-decode CANARY `gxh_i4_ti8x8_gray_expand`
 (the superseded manifest "I4" reading), gate-instrument like L7-P4's flat
-canary.
+canary. CMPRBE added two more planted law-canaries:
+`gxh_cmpr_block_rgba8_le5a3_canary` (this section's original law — the
+pre-fix bug verbatim) and `gxh_cmpr_block_rgba8_swapfield_canary`
+(halfword-exchanged BE) — see docs/p2-seq-1.md §5 L9-U2/U3.
 
 Texel anchors vs owner-verified oracle tiles (sega_e01/e02, board
 `/tmp/orcl/grid.png`): python prototype of this EXACT law reproduced the
-oracle coherence values — **sega_e01 0.1588 (oracle 0.159), sega_e02 0.2410
-(oracle 0.241)**, I4-TI canary 0.8352/0.8343 (oracle 0.835/0.834).
+oracle coherence values — ~~**sega_e01 0.1588 (oracle 0.159), sega_e02 0.2410
+(oracle 0.241)**~~ **[CMPRBE re-measure under the fixed endpoint law:
+sega_e01 0.1058, sega_e02 0.1738 — docs/p2-oracle-1.md §6]**, I4-TI canary
+0.8352/0.8343 (oracle 0.835/0.834; layout-only, unchanged 0.8321/0.8332).
 
 ## 3 — Hooks + descriptor + L8 legs (gx_logo_driver.cpp)
 
@@ -73,8 +81,11 @@ Per spec F6, mirroring the GX_LOGO_GVR regime:
 - DEVIATION FRM-4: F6.5's "escape hits == 0" was pinned under the
   superseded I4 (opaque) reading; CMPR mode `c0<=c1` index 3 IS
   genuinely transparent. Escape clause counts are asserted, printed, and
-  honestly non-zero: **adx 2 / sega 61** (python census agrees: 61 a=0
-  texels in sega_e01).
+  honestly non-zero: ~~**adx 2 / sega 61**~~ **[CMPRBE: now adx 0 / sega 0 —
+  the fixed law (RGB565 endpoints, opaque-black index-3) carries NO alpha at
+  all, so F6.5's escape==0 expectation is restored as era truth; the old
+  nonzero escapes were RGB5A3 a=0 endpoint artifacts]** (the old python
+  census agreed 61 a=0 texels in sega_e01 — under the OLD law only).
 
 ## 4 — Gate results (rc=0 on every run; waiver `d4382fcd0659357f`
 re-hashed at both ends of the build session, PRE==POST, never regen;
@@ -85,7 +96,7 @@ re-hashed at both ends of the build session, PRE==POST, never regen;
 | era FIXTURE (no hooks) | **13/13 PASS** | byte-identical leg set to 964272c (L8 silent) |
 | AV-1 stand-in | **10/10 PASS** | fixture regime untouched |
 | era GENUINE (sinbd+hyouji_a, no frames hook) | **13/13 PASS** | coherence TI 0.2763/CANARY 0.7164 (unchanged) |
-| GENUINE FRAMES (sinbd + `GX_FRAMES_GVM` + slices) | **24/24 PASS** = 13 L7 + 11 L8 | L8-S1/S2/W1/W2/X1/D1/P4/P1-P2/P3/P5/H1; drawn readback `gc_adx01` + `sega_logo_e01` ±0 over 65536/65536 cell centers each; readback region fnv adx `0xC85BCC16827B9577`, sega `0x5A3A5AF5154503EC` (runtime-self anchor, not compiled); coherence CMPR **0.1589** vs planted I4-TI CANARY **0.8321** (oracle 0.159/0.835; baseline shuffle differs from python by construction) |
+| GENUINE FRAMES (sinbd + `GX_FRAMES_GVM` + slices) | **24/24 PASS** = 13 L7 + 11 L8 | L8-S1/S2/W1/W2/X1/D1/P4/P1-P2/P3/P5/H1; drawn readback `gc_adx01` + `sega_logo_e01` ±0 over 65536/65536 cell centers each; readback region fnv adx ~~`0xC85BCC16827B9577`~~ **[CMPRBE `0x3C8B9A9DAF0B5757`]**, sega ~~`0x5A3A5AF5154503EC`~~ **[CMPRBE `0x93806A8DC2506C86`]** (runtime-self anchor, not compiled); coherence CMPR ~~**0.1589**~~ **[CMPRBE 0.1058]** vs planted I4-TI CANARY **0.8321** (unchanged — layout-only) (was oracle 0.159/0.835; re-anchored §6; baseline shuffle differs from python by construction) |
 
 L8 leg inventory: S1 supply receipt (size+fnv vs sidecar) · S2 walk
 end==file end · W1 dir/descriptor/GBIX · W2 palette-skipped tlut −1 ×24 ·
@@ -114,6 +125,23 @@ final presented frame is sega_logo_e01 (last render_tick) — the PNG shows
 the genuine SEGA-mark frame at the 256² 1:1 quad. `GX_DL_DEBUG=1`
 with `failures==0` dumps the same backbuffer to `/tmp/logo_dump.ppm`.
 Integrator may add a `frames-genuine` subject later; nothing here blocks it.
+
+## 6 — CMPRBE RE-ANCHOR (card t_41325af7, build seat, 2026-11-27)
+
+Endpoint law fixed per docs/p2-oracle-1.md §6 (owner footage as external
+witness — numeric stats only, image never committed). Every decoded-CMPR
+receipt above moved; was → now (python same-turn re-measures + C runtime
+agreeing to 4 dp):
+
+| receipt | was | now |
+|---|---|---|
+| law prose §2: endpoints | LE u16 RGB5A3, transparent idx-3 | BE u16 RGB565, opaque-black idx-3 |
+| L8-P3 readback fnv gc_adx01 | 0xC85BCC16827B9577 | 0x3C8B9A9DAF0B5757 |
+| L8-P3 readback fnv sega_logo_e01 | 0x5A3A5AF5154503EC | 0x93806A8DC2506C86 |
+| L8-P4 coherence CMPR (sega_e01) | 0.1589 (python 0.1588) | 0.1058 |
+| L8-P4 I4-TI canary | 0.8321 | 0.8321 (layout-only — unchanged) |
+| FRM-4 escapes adx / sega | 2 / 61 | 0 / 0 (no alpha in CMPR by law) |
+| era FIXTURE 13/13 · AV-1 10/10 · GENUINE 13/13 · FRAMES 24/24 | all rc=0 | all rc=0 (counts byte-stable: 24/24 stays 24/24) |
 
 ## Deviations introduced
 FRM-1..FRM-4 above (all era-truth-documented, texel-anchored against the

@@ -401,6 +401,71 @@ static int failures, total;
 #define L6_POOL_OFF   0x00034000u
 #define L6_SURF_OFF   0x00038000u
 
+/* ===== CMPRBE (card t_41325af7): footage-anchored hue instruments ==========
+ * Field/chroma tally over a flat RGBA-word image (same laws as the L9-U1
+ * legs): visible = a != 0; white field = r,g,b >= 240 && a == 255; strict
+ * black field = r,g,b < 40 && a == 255; chroma dominance with a 32-unit
+ * margin (the receipt §2 tally law). Under the fixed CMPR law alpha is
+ * always 255 (RGB565 endpoints carry no alpha bits), so at0 counts the
+ * planted old-law canary's transparent index-3 texels only. */
+struct l9_hue { long n, vis, white, black, rdom, bdom, at0; };
+static struct l9_hue l9_hue_measure(const unsigned *src, long cnt) {
+    struct l9_hue s; memset(&s, 0, sizeof s); s.n = cnt;
+    for (long p = 0; p < cnt; p++) {
+        unsigned w = src[p];
+        int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+            b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+        if (!a) { s.at0++; continue; }
+        s.vis++;
+        if (r >= 240 && g >= 240 && b >= 240 && a == 255) s.white++;
+        if (r < 40 && g < 40 && b < 40 && a == 255) s.black++;
+        if (r > b + 32) s.rdom++; else if (b > r + 32) s.bdom++;
+    }
+    return s;
+}
+
+/* Rebuild the L9-C1 entry mosaic + L9-G1 margin-safe canvas under ANY block
+ * decoder (the planted-law canaries), present it through the REAL pipeline,
+ * and measure the readback with the U1 instruments. Returns 0 / -1 sample
+ * failure; rc_read is the GPU readback tally, rc_nat (optional) the native
+ * 640x480 raster tally. Caller restores the truth canvas afterwards. */
+static int l9_alt_law_present(
+        void (*blockfn)(const unsigned char *, unsigned char [16][4]),
+        const int tiles[8][5], const int seq_xc[256], const int seq_yc[256],
+        const unsigned *xsf, const unsigned *ysf, unsigned char *frgb,
+        struct l9_hue *rc_read, struct l9_hue *rc_nat) {
+    static unsigned alt_raster[640 * 480];
+    static unsigned char alt_bytes[256 * 256 * 4];
+    static unsigned alt_read[256 * 256];
+    memset(alt_raster, 0, sizeof alt_raster);
+    for (int i = 0; i < 8; i++) {
+        int k = 8 + tiles[i][4];
+        gxh_cmpr_expand_ti8x8_fn(l8_px[k], frgb, l8_w[k], l8_h[k], blockfn);
+        for (unsigned ty = 0; ty < l8_h[k]; ty++) {
+            int sy = tiles[i][1] + (int)ty; if (sy >= 480) continue;
+            for (unsigned tx = 0; tx < l8_w[k]; tx++) {
+                int sx = tiles[i][0] + (int)tx; if (sx >= 640) continue;
+                const unsigned char *p = frgb + ((size_t)ty * l8_w[k] + tx) * 4;
+                alt_raster[sy * 640 + sx] = ((unsigned)p[0] << 24) | ((unsigned)p[1] << 16)
+                                           | ((unsigned)p[2] << 8) | p[3];
+            }
+        }
+    }
+    if (rc_nat) *rc_nat = l9_hue_measure(alt_raster, 640L * 480L);
+    for (int j = 0; j < 256; j++) for (int i = 0; i < 256; i++) {
+        unsigned w = alt_raster[seq_yc[j] * 640 + seq_xc[i]];
+        alt_bytes[(j * 256 + i) * 4]     = (unsigned char)(w >> 24);
+        alt_bytes[(j * 256 + i) * 4 + 1] = (unsigned char)(w >> 16);
+        alt_bytes[(j * 256 + i) * 4 + 2] = (unsigned char)(w >> 8);
+        alt_bytes[(j * 256 + i) * 4 + 3] = (unsigned char)w;
+    }
+    gx_dl_set_texture(256, 256, alt_bytes);
+    render_tick(); gxh_dl_flush();
+    if (gxh_dl_sample(xsf, ysf, alt_read, 256 * 256) != 0) return -1;
+    *rc_read = l9_hue_measure(alt_read, 256L * 256L);
+    return 0;
+}
+
 int main(void) {
     setvbuf(stdout, 0, _IOLBF, 0);
     /* V5b: TEXN must match the SUPPLY grid, not the fixture. Genuine GVRT
@@ -821,10 +886,12 @@ int main(void) {
             reg_h[s] = p2an_fnv1a64(got, (size_t)NT2 * 4);
             if (mism) p1_ok = 0;
             /* drawn coverage (F6.5 BB-4 shape): non-black OR matches its
-             * unpacked transparent texel; escape counted and PRINTED (F6.5's
-             * escape==0 assumption was pinned under the superseded I4
-             * reading — CMPR mode c0<=c1 index 3 is genuinely transparent,
-             * this is the documented era-truth deviation class of FRM-1) */
+             * unpacked transparent texel; escape counted and PRINTED. CMPRBE:
+             * F6.5's escape==0 expectation is RESTORED as era truth — the fixed
+             * law (BE RGB565 endpoints, index-3 opaque black at c0<=c1) carries
+             * no alpha in CMPR at all, so no decoded texel can ever be the
+             * transparent 0-word. The old law's nonzero escapes (adx 2 / sega 61
+             * pre-fix) were RGB5A3 a=0 endpoint artifacts — superseded. */
             int nz = 0;
             for (int yy = 0; yy < 256; yy++) for (int xx = 0; xx < 256; xx++) {
                 int kk = yy * 256 + xx;
@@ -844,12 +911,12 @@ int main(void) {
                 double c_cmpr = p2frmb_coherence(got, 256, 256);
                 double c_i4 = p2frmb_coherence(canary_w, 256, 256);
                 printf("  L8-P4 coherence (sega_logo_e01 readback): CMPR = %.4f | planted I4-TI CANARY = %.4f "
-                       "(oracle python: 0.159 / 0.835; threshold 0.500)\n", c_cmpr, c_i4);
+                       "(CMPRBE python re-measure, BE/565 law: 0.1058 / 0.8321; threshold 0.500)\n", c_cmpr, c_i4);
                 CHECK(c_cmpr < 0.5 && c_i4 >= 0.5,
                       "L8-P4 CMPR-vs-I4 coherence gate: genuine sega_logo_e01 readback decodes coherent under the CMPR TI 8x8 law (<0.5) AND the superseded manifest-\"I4\" decode FAILS the same metric (>=0.5) — owner-verified board tiles sega_e01/e02");
             }
         }
-        CHECK(p1_ok, "L8-P1/P2 draw+readback: gc_adx01 + sega_logo_e01 drawn 1:1 on the (256 x 256) BB-4 quad, ALL %d cell centers == CMPR-expanded texels ±0; coverage full (escape-proven transparent texels: adx %d, sega %d — CMPR alpha-0, FRM-1 class)",
+        CHECK(p1_ok, "L8-P1/P2 draw+readback: gc_adx01 + sega_logo_e01 drawn 1:1 on the (256 x 256) BB-4 quad, ALL %d cell centers == CMPR-expanded texels ±0; coverage full (escaped alpha-0 texels: adx %d, sega %d — zero BY LAW since CMPRBE: RGB565 endpoints carry no alpha, index-3 is opaque black)",
               256 * 256, escape_hits[0], escape_hits[1]);
         printf("  L8-P3 drawn region fnv1a64 (runtime readback): gc_adx01 = 0x%016llX | sega_logo_e01 = 0x%016llX "
                "(self-consistency anchor against the runtime-expanded reference; no compiled-in expected hash)\n",
@@ -1057,104 +1124,93 @@ int main(void) {
                     256 * 256 - mism, psz);
               memcpy(full, g1, sizeof g1); }   /* keep composite readback ref   */
 
-            /* L9-U1: ERA-PINNED HUE-BAND gate on the entry present (card SEQ3,
-             * fleet/defect-dig-20261127-sega.md follow-up). The SEQ2 ±0 gate
-             * was CPU-model vs GPU — BOTH sides of the same transform, so a
-             * self-consistent white-keyed-black model could never be caught
-             * here. This leg measures the PRESENTED canvas against a reference
-             * computed AT GATE TIME from the decoded slices themselves (era
-             * CMPR/RGB5A3 expansion — the law pinned by the three-way
-             * byte-exact agreement host C / oracle python / probe on the same
-             * bytes, receipt §1), never from the model under test:
-             *   (a) opaque-white field: white texels (r,g,b >= 240, a == 255)
+            /* L9-U1: FOOTAGE-ANCHORED field+chroma gate on the entry present
+             * (CMPRBE inversion, card t_41325af7 §6 — replaces the era-pinned
+             * hue band). The old R:B [4,16] leg was BUG-MADE-LAW: it pinned
+             * the LE/RGB5A3 decode's "magenta wordmark dominates blue" tally
+             * (receipt 8.5:1) — the very defect under witness, so the
+             * instrument was tuned blind. External witness = owner boot
+             * footage (machine-local reference; numeric stats citable only,
+             * the image is never committed): full-frame tally 101037
+             * B-dominant / 0 R-dominant pixels, 82.8% white pixels, strict
+             * black 0.003%. The fix flips the CHROMA, not the field:
+             * sega_e01 re-measures (python port of this metric) as white
+             * field 94.7% with mark chroma B 2934 / R 0, so the white-field
+             * floor STAYS footage-confirmed — the pre-fix triage belief that
+             * the field becomes "index-3 opaque black" came from the
+             * reproducer row that EXCHANGED color0/color1 in its BE read;
+             * that exchanged law is planted as the L9-U2 canary below. Legs:
+             *   (a) opaque-white field: white (r,g,b >= 240, a == 255)
              *       >= 90% of visible texels on BOTH sides, presented within
-             *       3 pts of the decode reference (receipt §3: 94% of the era
-             *       art is opaque white background; GC-CMPR keying ruled out,
-             *       index-3 <= 0.2%);
-             *   (b) chromatic tally R:B within [4,16] on the presented canvas
-             *       and within 2x of the decode reference (magenta wordmark
-             *       dominates blue; receipt §2 — a channel-inverted model
-             *       lands at ~0.12 and FAILS);
-             *   (c) 'Presented by:' helper-line BLUE PRESENT: >= 150 blue-
-             *       dominant cells measured (native 640x480 tally 1557-1738
-             *       B-dominant rescales to ~340 at the 256x256 canvas). */
-            struct hue_stats { long vis, white, rdom, bdom, at0; };
-            const double WHITENE = 240.0;   /* >= per channel (receipt #3 tally law) */
-            struct hue_stats rfs = {0,0,0,0,0}, pes = {0,0,0,0,0};
-            { const unsigned *pp = seq_raster; const unsigned *qq = full;
-              for (long p = 0; p < 640L * 480L; p++) {
-                  unsigned w = pp[p];
-                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
-                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
-                  if (!a) { rfs.at0++; continue; }
-                  rfs.vis++;
-                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) rfs.white++;
-                  if (r > b + 32) rfs.rdom++; else if (b > r + 32) rfs.bdom++;
-              }
-              for (long p = 0; p < 256L * 256L; p++) {
-                  unsigned w = qq[p];
-                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
-                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
-                  if (!a) { pes.at0++; continue; }
-                  pes.vis++;
-                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) pes.white++;
-                  if (r > b + 32) pes.rdom++; else if (b > r + 32) pes.bdom++;
-              } }
+             *       3 pts of the gate-time decode reference (decoding the
+             *       slices under the fixed law — never the model under test);
+             *   (b) INVERTED chroma: R-dominant cells <= 16 on BOTH sides —
+             *       the owner frame has ZERO R-dominant pixels; the fixed law
+             *       tallies R 0; the old law's ~2900 can never pass (U3);
+             *   (c) mark/helper-line BLUE present: B-dominant >= 150 cells
+             *       on BOTH sides (old law 351/1630 — stays TRUE under the
+             *       fixed law: canvas 3177, native raster ~12k). */
+            const long RDOM_CAP = 16, BDOM_MIN = 150;
+            struct l9_hue rfs = l9_hue_measure(seq_raster, 640L * 480L),
+                          pes = l9_hue_measure(full, 256L * 256L);
             double wf_ref = rfs.vis ? (double)rfs.white / (double)rfs.vis : 0.0,
-                   wf_pre = pes.vis ? (double)pes.white / (double)pes.vis : 0.0,
-                   rb_ref = rfs.bdom ? (double)rfs.rdom / (double)rfs.bdom : 0.0,
-                   rb_pre = pes.bdom ? (double)pes.rdom / (double)pes.bdom : 0.0;
-            printf("  L9-U1 era decode reference: visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld R:B=%.2f\n",
-                   rfs.vis, rfs.white, 100.0 * wf_ref, rfs.rdom, rfs.bdom, rb_ref);
-            printf("  L9-U1 presented canvas   : visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld R:B=%.2f\n",
-                   pes.vis, pes.white, 100.0 * wf_pre, pes.rdom, pes.bdom, rb_pre);
+                   wf_pre = pes.vis ? (double)pes.white / (double)pes.vis : 0.0;
+            printf("  L9-U1 era decode reference: visible=%ld white=%ld (%.2f%%) black=%ld R-dom=%ld B-dom=%ld transparent=%ld\n",
+                   rfs.vis, rfs.white, 100.0 * wf_ref, rfs.black, rfs.rdom, rfs.bdom, rfs.at0);
+            printf("  L9-U1 presented canvas   : visible=%ld white=%ld (%.2f%%) black=%ld R-dom=%ld B-dom=%ld transparent=%ld\n",
+                   pes.vis, pes.white, 100.0 * wf_pre, pes.black, pes.rdom, pes.bdom, pes.at0);
             CHECK(wf_ref >= 0.90 && wf_pre >= 0.90 &&
                   (wf_pre > wf_ref ? wf_pre - wf_ref : wf_ref - wf_pre) <= 0.03 &&
-                  rb_pre >= 4.0 && rb_pre <= 16.0 &&
-                  rb_ref > 0.0 && rb_pre >= rb_ref / 2.0 && rb_pre <= rb_ref * 2.0 &&
-                  pes.bdom >= 150,
-                  "L9-U1 hue-band gate (era-pinned, not model-derived): presented white-field %.2f%% of visible vs decode reference %.2f%% (era floor 90%%, delta cap 3 pts), presented R:B %.2f in band [4,16] and within 2x of decode reference %.2f, helper-line blue present (%ld cells >= 150) — a white-keyed or channel-inverted present CANNOT pass (defect-dig 20261127 #3)",
-                  100.0 * wf_pre, 100.0 * wf_ref, rb_pre, rb_ref, pes.bdom);
+                  rfs.rdom <= RDOM_CAP && pes.rdom <= RDOM_CAP &&
+                  rfs.bdom >= BDOM_MIN && pes.bdom >= BDOM_MIN,
+                  "L9-U1 footage-anchored hue gate (inverted from the bug-made R:B [4,16] band): presented white-field %.2f%% of visible vs decode reference %.2f%% (era floor 90%%, delta cap 3 pts), R-dominant cells presented %ld / reference %ld <= %ld (owner footage: ZERO R-dominant pixels — the old law lands at ~2900), B-dominant %ld / %ld >= %ld — a magenta present CANNOT pass (card t_41325af7)",
+                  100.0 * wf_pre, 100.0 * wf_ref, pes.rdom, rfs.rdom, RDOM_CAP,
+                  pes.bdom, rfs.bdom, BDOM_MIN);
 
-            /* L9-U2 keyed-white CANARY: the forbidden model itself — the same
-             * composite with the opaque white field keyed out over black (the
-             * defect class the SEQ2 gate could not see). Present it through
-             * the REAL pipeline, measure with the SAME U1 legs, and prove the
-             * white-field assertion REJECTS it; then restore the correct
-             * canvas so the ledger/fade legs keep running on era truth. */
-            { static unsigned seq_key[256 * 256];
-              static unsigned char keyb[256 * 256 * 4];
-              for (int p = 0; p < 256 * 256; p++) {
-                  unsigned w = seq_tex[p];
-                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
-                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
-                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255)
-                      w = 0xFF000000u;                    /* keyed out to black */
-                  seq_key[p] = w;
-                  keyb[p * 4] = (unsigned char)(w >> 24); keyb[p * 4 + 1] = (unsigned char)(w >> 16);
-                  keyb[p * 4 + 2] = (unsigned char)(w >> 8); keyb[p * 4 + 3] = (unsigned char)w;
-              }
-              gx_dl_set_texture(256, 256, keyb);
-              render_tick(); gxh_dl_flush();
-              static unsigned kr[256 * 256];
-              if (gxh_dl_sample(xsf, ysf, kr, 256 * 256) != 0) return 4;
-              struct hue_stats ks = {0,0,0,0,0};
-              for (long p = 0; p < 256L * 256L; p++) {
-                  unsigned w = kr[p];
-                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
-                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
-                  if (!a) { ks.at0++; continue; }
-                  ks.vis++;
-                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) ks.white++;
-                  if (r > b + 32) ks.rdom++; else if (b > r + 32) ks.bdom++;
-              }
+            /* L9-U2 BLACK-FIELD MODEL CANARY (CMPRBE inversion of the old
+             * keyed-white leg): the forbidden model now has a concrete law
+             * — the halfword-EXCHANGED BE reading (color0 taken from bytes
+             * 2-3), which renders the era mark on a ~93% opaque-black field
+             * and is exactly what the pre-fix triage prose believed the fix
+             * would produce. Present it through the REAL pipeline, measure
+             * with the same U1 legs, and prove the white-floor leg AND the
+             * chroma cap reject it; then restore. Disclosed: the canary +
+             * restore add TWO instrument presents outside the ledger (SEQ-1
+             * lineage — tick counts of L9-H1/F1 unchanged), U3 adds two more. */
+            { struct l9_hue ks, kn;
+              if (l9_alt_law_present(gxh_cmpr_block_rgba8_swapfield_canary,
+                                     seq_tiles, seq_xc, seq_yc, xsf, ysf, frgb,
+                                     &ks, &kn) != 0) return 4;
               double wf_can = ks.vis ? (double)ks.white / (double)ks.vis : 0.0;
-              printf("  L9-U2 canary (white keyed over black, GPU-presented): visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld — U1 floor verdict = %s\n",
-                     ks.vis, ks.white, 100.0 * wf_can, ks.rdom, ks.bdom,
+              printf("  L9-U2 black-field model canary (halfword-exchanged BE law, GPU-presented): visible=%ld white=%ld (%.2f%%) black=%ld R-dom=%ld B-dom=%ld — U1 white-floor verdict = %s\n",
+                     ks.vis, ks.white, 100.0 * wf_can, ks.black, ks.rdom, ks.bdom,
                      wf_can >= 0.90 ? "WOULD PASS (gate broken)" : "REJECTED");
-              CHECK(wf_can < 0.90,
-                    "L9-U2 keyed-white canary FAILS the U1 leg as required: the black-background model presents only %.2f%% white field vs the era 90%% floor — self-consistent black present can never pass this gate again",
-                    100.0 * wf_can);
+              CHECK(wf_can < 0.90 && ks.rdom > RDOM_CAP,
+                    "L9-U2 black-field model canary FAILS the U1 legs as required: %.2f%% white field vs the era 90%% floor AND R-dominant %ld cells over the cap %ld — a black-field present can never pass this gate again",
+                    100.0 * wf_can, ks.rdom, RDOM_CAP);
+              /* restore the correct canvas + present state for U3 */
+              gx_dl_set_texture(256, 256, seq_texb);
+              render_tick(); gxh_dl_flush(); }
+
+            /* L9-U3 OLD-LAW PLANTED CANARY — teeth proof (card §6): the exact
+             * superseded decode (LE u16 endpoints through the shared RGB5A3
+             * unpacker, transparent index-3) composed and presented on the
+             * same tile table. Structurally it is the fixed art (white field
+             * ~94%, geometry legs all pass) — only the chroma inverts — so it
+             * trips INVERTED leg (b) and nothing else: precisely the model the
+             * old gate was tuned to ADMIT. The new gate must reject it. */
+            { struct l9_hue os, on;
+              if (l9_alt_law_present(gxh_cmpr_block_rgba8_le5a3_canary,
+                                     seq_tiles, seq_xc, seq_yc, xsf, ysf, frgb,
+                                     &os, &on) != 0) return 4;
+              double wf_old = os.vis ? (double)os.white / (double)os.vis : 0.0,
+                     rb_old = os.bdom ? (double)os.rdom / (double)os.bdom : 999.0;
+              printf("  L9-U3 old-law canary (LE u16 + RGB5A3 endpoints + transparent idx3, GPU-presented): visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld R:B=%.2f transparent=%ld — new-gate verdict = %s\n",
+                     os.vis, os.white, 100.0 * wf_old, os.rdom, os.bdom, rb_old, os.at0,
+                     (os.rdom <= RDOM_CAP) ? "WOULD PASS (gate has NO teeth)" : "REJECTED");
+              CHECK(wf_old >= 0.90 && os.rdom > RDOM_CAP && os.bdom >= BDOM_MIN,
+                    "L9-U3 old-law canary FAILS the inverted chroma legs as required: R-dominant %ld cells vs cap %ld (magenta wordmark R:B %.2f vs the footage 0), white floor %.2f%% and blue presence %ld still pass — proof the gate now bites the exact model the old band admitted",
+                    os.rdom, RDOM_CAP, rb_old, 100.0 * wf_old, os.bdom);
               /* restore the correct canvas + present state for L9-H1/F1 */
               gx_dl_set_texture(256, 256, seq_texb);
               render_tick(); gxh_dl_flush(); }

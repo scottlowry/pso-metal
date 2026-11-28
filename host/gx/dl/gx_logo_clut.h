@@ -41,10 +41,13 @@ static inline void gxh_pal8_clut_expand(const unsigned char *idx, unsigned char 
         gxh_pal8_rgba8(idx[i], rgba8 + (size_t)i * 4);
 }
 
-/* RGB5A3 16-bit working value -> RGBA8 (the fmt==2 decode, shared with the
- * P2-FRMB CMPR endpoint leg so ONE decoder serves both). Era semantics per
+/* RGB5A3 16-bit working value -> RGBA8 (TLUT/CI8 fmt==2 decode ONLY since
+ * CMPRBE — the P2-FRMB CMPR endpoint leg moved to gxh_rgb565_rgba8 below:
+ * GC hardware reads CMPR endpoints as plain RGB565 BIG-ENDIAN halfwords,
+ * a DIFFERENT law from the signed TLUT entries. Era semantics per
  * docs/p2-oracle-1.md §1/§3 + endpoint census (0x0 black / 0xFFFF white /
- * 0x100 nettle green / 0xEF08 berry RGBA444). */
+ * 0x100 nettle green / 0xEF08 berry RGBA444). The CI8/TLUT signboard path
+ * is human-verified under THIS law — CMPRBE must not be applied to it. */
 static inline void gxh_rgb5a3_rgba8(unsigned short v, unsigned char rgba[4]) {
     if (v & 0x8000) {
         unsigned a = (v >> 12) & 7;
@@ -58,6 +61,24 @@ static inline void gxh_rgb5a3_rgba8(unsigned short v, unsigned char rgba[4]) {
         rgba[2] = (unsigned char)((v & 0x1F) * 255 / 31);
         rgba[3] = 255;
     }
+}
+
+/* CMPRBE (card t_41325af7): CMPR endpoint RGB565 -> RGBA8. NO alpha bits
+ * exist in RGB565 — a = 255 is forced, the RGB5A3 sign bit NEVER branches
+ * here (that confusion was the bug). GC CMPR law: endpoints are BIG-ENDIAN
+ * u16 (PPC halfword load of the two DXT1 color bytes), plain RGB565.
+ * External witness = owner boot footage (machine-local reference; only
+ * numeric stats cited, and only here/at the receipts — the image is never
+ * committed): sega_e01 re-measured same-turn over the landed bytes —
+ * this law decodes a 94.7% white field with the mark chroma B-dominant
+ * 2934 / R 0 (python port of the gate metric); the old LE/RGB5A3 law gave
+ * the same field but R-dominant magenta 2980 / B 388, which the owner
+ * frame (full-res tally: 101037 B-dominant / 0 R) refutes. */
+static inline void gxh_rgb565_rgba8(unsigned short v, unsigned char rgba[4]) {
+    rgba[0] = (unsigned char)(((v >> 11) & 0x1F) * 255 / 31);
+    rgba[1] = (unsigned char)(((v >> 5) & 0x3F) * 255 / 63);
+    rgba[2] = (unsigned char)((v & 0x1F) * 255 / 31);
+    rgba[3] = 255;
 }
 
 /* P2-BB V5-S1: expand through a LOADED TLUT BANK entry (era supply route:
@@ -123,29 +144,44 @@ static inline void gxh_pal8_clut_expand_ti8x4(const void *lut, unsigned fmt,
 
 /* ---- P2-FRMB: GX_TF_CMPR (fmt 0xE) expand leg ----------------------------
  * DEVIATION FRM-1 (host decode vs era truth): the era resolves fmt 0xE as
- * GX hardware TCMP (DXT1-in-RGB5A3 endpoints) — GXTexture.s jumptable
- * idx 14 -> .L_8038BEB8 class (w*h/2, TI 8x8), SDK name GX_TF_CMPR
- * (GXEnum.h:144-180), gate surface->header.format == GX_TF_CMPR
- * (GinjaMaterial.cpp:372,390,423). The manifest "I4" label is SUPERSEDED
- * (docs/p2-oracle-1.md §2). On this host there is no TCMP hardware, so the
- * display path CPU-expands to RGBA8 exactly like the PAL8 leg does — the
- * era never decodes 0xE on host (F4: the walk copies packed bytes verbatim;
- * texel interpretation is DRAW-time GX). Texel law = owner-verified oracle
- * PICK-2 (board tiles sega_e01/e02, human-confirmed): 8x8 tiles of 32 B,
- * four 4x4 DXT1 blocks row-major within the tile (rm = bx + 2*by, the
- * surviving ordering probe), block bytes {c0 u16 LE, c1 u16 LE, 4 index
- * bytes — texel (x,y) at 2 bits, 2*(x&3) of byte 4+(y&3)}, 4-colour
- * interpolation: c0>c1 -> [c0,c1,(2c0+c1)/3,(c0+2c1)/3]; else 4th colour
- * transparent (0,0,0,0). Endpoints through the shared RGB5A3 decoder.
- * Oracle coherence anchors (this exact law): sega_e01 0.159 / e02 0.241 vs
- * I4-TI canary 0.835 / 0.834 (docs/p2-oracle-1.md §3). */
+ * GX hardware TCMP (DXT1-in-BIG-ENDIAN-RGB565 endpoints since CMPRBE; the
+ * pre-fix "RGB5A3 endpoints + transparent index 3" reading was a bug that
+ * became gate law) — GXTexture.s jumptable idx 14 -> .L_8038BEB8 class
+ * (w*h/2, TI 8x8), SDK name GX_TF_CMPR (GXEnum.h:144-180), gate surface
+ * ->header.format == GX_TF_CMPR (GinjaMaterial.cpp:372,390,423). The
+ * manifest "I4" label is SUPERSEDED (docs/p2-oracle-1.md §2). On this host
+ * there is no TCMP hardware, so the display path CPU-expands to RGBA8
+ * exactly like the PAL8 leg does — the era never decodes 0xE on host (F4:
+ * the walk copies packed bytes verbatim; texel interpretation is DRAW-time
+ * GX). Texel law = owner-verified oracle PICK-2 (board tiles sega_e01/e02,
+ * human-confirmed) + CMPRBE endianness fix (card t_41325af7, owner boot
+ * footage as external witness — numeric stats citable, image never
+ * committed): 8x8 tiles of 32 B, four 4x4 DXT1 blocks row-major within the
+ * tile (rm = bx + 2*by, the surviving ordering probe), block bytes {c0 u16
+ * BE, c1 u16 BE, 4 index bytes — texel (x,y) at 2 bits, 2*(x&3) of byte
+ * 4+(y&3)}, 4-colour interpolation: c0>c1 -> [c0,c1,(2c0+c1)/3,(c0+2c1)/3];
+ * else 3-colour [c0,c1,(c0+c1)/2] + GC index-3 OPAQUE BLACK (0,0,0,255)
+ * (hardware has no CMPR alpha; RGB565 carries none). Endpoints through the
+ * dedicated RGB565 decoder gxh_rgb565_rgba8 — NOT the TLUT RGB5A3 path
+ * (different format, different law: CI8/TLUT RGB5A3 stays human-verified
+ * as-is). Footage numerics (same-turn re-measure, python port of the C
+ * gate metric): the old LE/RGB5A3 law presented the mark R-dominant
+ * (canvas tally R 2895 / B 351, ~8.5:1) where the owner frame is
+ * B-dominant with ZERO R-dominant pixels (full-frame tally 101037 B / 0 R,
+ * 82.8% white field); the fixed law presents R 0 / B 3177 on a 94.4%
+ * white field — glyph structure was already correct under both readings
+ * (index bits unaffected), which is why every self-consistent gate passed
+ * for days. Oracle coherence anchors RE-MEASURED under this law (was
+ * 0.159/0.241 under RGB5A3 endpoints): sega_e01 0.1058 / e02 0.1738 vs
+ * I4-TI canary 0.8321/0.8332 (layout-only, law-independent)
+ * (docs/p2-oracle-1.md §3). */
 static inline void gxh_cmpr_block_rgba8(const unsigned char *blk,
                                         unsigned char out[16][4]) {
-    unsigned short c0 = (unsigned short)(blk[0] | (blk[1] << 8));   /* DXT1 bytes: LE u16 */
-    unsigned short c1 = (unsigned short)(blk[2] | (blk[3] << 8));
+    unsigned short c0 = (unsigned short)(blk[1] | (blk[0] << 8));   /* GC CMPR: BE u16 */
+    unsigned short c1 = (unsigned short)(blk[3] | (blk[2] << 8));
     unsigned char pal[4][4];
-    gxh_rgb5a3_rgba8(c0, pal[0]);
-    gxh_rgb5a3_rgba8(c1, pal[1]);
+    gxh_rgb565_rgba8(c0, pal[0]);
+    gxh_rgb565_rgba8(c1, pal[1]);
     if (c0 > c1) {
         for (int i = 0; i < 4; i++) {
             pal[2][i] = (unsigned char)((2 * pal[0][i] + pal[1][i]) / 3);
@@ -155,7 +191,7 @@ static inline void gxh_cmpr_block_rgba8(const unsigned char *blk,
         for (int i = 0; i < 3; i++)
             pal[2][i] = (unsigned char)((pal[0][i] + pal[1][i]) / 2);
         pal[2][3] = (unsigned char)((pal[0][3] + pal[1][3]) / 2);
-        pal[3][0] = pal[3][1] = pal[3][2] = 0; pal[3][3] = 0;   /* transparent */
+        pal[3][0] = pal[3][1] = pal[3][2] = 0; pal[3][3] = 255;   /* GC: opaque black */
     }
     for (int y = 0; y < 4; y++)
         for (int x = 0; x < 4; x++) {
@@ -177,6 +213,98 @@ static inline void gxh_cmpr_expand_ti8x8(const unsigned char *px,
                 unsigned sbx = s & 1, sby = s >> 1;
                 unsigned char blk16[16][4];
                 gxh_cmpr_block_rgba8(tile + 8 * s, blk16);
+                for (unsigned y = 0; y < 4; y++)
+                    for (unsigned x = 0; x < 4; x++) {
+                        unsigned char *o = rgba8 + ((size_t)(ty + sby * 4 + y) * w + tx + sbx * 4 + x) * 4;
+                        o[0] = blk16[y * 4 + x][0]; o[1] = blk16[y * 4 + x][1];
+                        o[2] = blk16[y * 4 + x][2]; o[3] = blk16[y * 4 + x][3];
+                    }
+            }
+        }
+}
+
+/* PLANTED WRONG-DECODE CANARY (CMPRBE, card t_41325af7 §6 — teeth proof for
+ * the footage-anchored L9-U1 gate): the SUPERSEDED endpoint law verbatim —
+ * endpoints as PC-DXT1 little-endian u16 through the TLUT RGB5A3 unpacker
+ * with transparent index-3. Structure (glyphs, positions, white field) is
+ * identical to the fixed law; only the chroma inverts (R-dominant magenta
+ * ~8.5:1 where the owner footage tallies ZERO R-dominant pixels), so this
+ * canary MUST FAIL the inverted hue legs while passing every structural
+ * leg (docs/p2-seq-1.md §2 L9-U3). */
+static inline void gxh_cmpr_block_rgba8_le5a3_canary(const unsigned char *blk,
+                                                     unsigned char out[16][4]) {
+    unsigned short c0 = (unsigned short)(blk[0] | (blk[1] << 8));
+    unsigned short c1 = (unsigned short)(blk[2] | (blk[3] << 8));
+    unsigned char pal[4][4];
+    gxh_rgb5a3_rgba8(c0, pal[0]);
+    gxh_rgb5a3_rgba8(c1, pal[1]);
+    if (c0 > c1) {
+        for (int i = 0; i < 4; i++) {
+            pal[2][i] = (unsigned char)((2 * pal[0][i] + pal[1][i]) / 3);
+            pal[3][i] = (unsigned char)((pal[0][i] + 2 * pal[1][i]) / 3);
+        }
+    } else {
+        for (int i = 0; i < 3; i++)
+            pal[2][i] = (unsigned char)((pal[0][i] + pal[1][i]) / 2);
+        pal[2][3] = (unsigned char)((pal[0][3] + pal[1][3]) / 2);
+        pal[3][0] = pal[3][1] = pal[3][2] = 0; pal[3][3] = 0;
+    }
+    for (int y = 0; y < 4; y++)
+        for (int x = 0; x < 4; x++) {
+            unsigned idx = (blk[4 + y] >> (2 * x)) & 3;
+            out[y * 4 + x][0] = pal[idx][0]; out[y * 4 + x][1] = pal[idx][1];
+            out[y * 4 + x][2] = pal[idx][2]; out[y * 4 + x][3] = pal[idx][3];
+        }
+}
+
+/* PLANTED BLACK-FIELD MODEL CANARY (CMPRBE L9-U2): the halfword-EXCHANGED
+ * BE reading (color0 taken from bytes 2-3) — the law the pre-fix triage
+ * prose believed ("BE+565 = black 93% field"). It renders the era mark on
+ * a near-black field; the owner footage numerics (82.8% white pixels,
+ * 0.003% strict-black, full-frame) refute it externally. Must FAIL the
+ * white-field floor leg. Kept beside the truth decoder so the gate shows
+ * BOTH wrong-law canaries (swap-field + old LE/5A3) tripping side by side. */
+static inline void gxh_cmpr_block_rgba8_swapfield_canary(const unsigned char *blk,
+                                                         unsigned char out[16][4]) {
+    unsigned short c1 = (unsigned short)(blk[0] | (blk[1] << 8));
+    unsigned short c0 = (unsigned short)(blk[2] | (blk[3] << 8));
+    unsigned char pal[4][4];
+    gxh_rgb565_rgba8(c0, pal[0]);
+    gxh_rgb565_rgba8(c1, pal[1]);
+    if (c0 > c1) {
+        for (int i = 0; i < 4; i++) {
+            pal[2][i] = (unsigned char)((2 * pal[0][i] + pal[1][i]) / 3);
+            pal[3][i] = (unsigned char)((pal[0][i] + 2 * pal[1][i]) / 3);
+        }
+    } else {
+        for (int i = 0; i < 3; i++)
+            pal[2][i] = (unsigned char)((pal[0][i] + pal[1][i]) / 2);
+        pal[2][3] = (unsigned char)((pal[0][3] + pal[1][3]) / 2);
+        pal[3][0] = pal[3][1] = pal[3][2] = 0; pal[3][3] = 255;
+    }
+    for (int y = 0; y < 4; y++)
+        for (int x = 0; x < 4; x++) {
+            unsigned idx = (blk[4 + y] >> (2 * x)) & 3;
+            out[y * 4 + x][0] = pal[idx][0]; out[y * 4 + x][1] = pal[idx][1];
+            out[y * 4 + x][2] = pal[idx][2]; out[y * 4 + x][3] = pal[idx][3];
+        }
+}
+
+/* Generic TI 8x8 expand through a caller-supplied block decoder — the two
+ * planted canaries ride the SAME addressing legs as truth (only the palette
+ * law differs), exactly like gxh_cmpr_expand_ti8x8. */
+static inline void gxh_cmpr_expand_ti8x8_fn(const unsigned char *px,
+                                            unsigned char *rgba8,
+                                            unsigned w, unsigned h,
+                                            void (*blockfn)(const unsigned char *,
+                                                            unsigned char [16][4])) {
+    for (unsigned ty = 0; ty < h; ty += 8)
+        for (unsigned tx = 0; tx < w; tx += 8) {
+            const unsigned char *tile = px + (size_t)32 * ((tx >> 3) + (w >> 3) * (ty >> 3));
+            for (unsigned s = 0; s < 4; s++) {
+                unsigned sbx = s & 1, sby = s >> 1;
+                unsigned char blk16[16][4];
+                blockfn(tile + 8 * s, blk16);
                 for (unsigned y = 0; y < 4; y++)
                     for (unsigned x = 0; x < 4; x++) {
                         unsigned char *o = rgba8 + ((size_t)(ty + sby * 4 + y) * w + tx + sbx * 4 + x) * 4;

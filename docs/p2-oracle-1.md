@@ -55,7 +55,7 @@ series agrees entry-for-entry with those names (0→4, 1→8, 2→8, 3→16, 4�
 |---|---|---|---|
 | 9 | **GX_TF_C8** (CI8/PAL8) | 1 B/px, TI 8×4 | hyouji_a/b/c/actionpallet/duelcount/mainmenu 0x10000 @256², carsol 0x4000 @128² ✓ |
 | 8 | GX_TF_C4 | 4 bpp, TI 8×8 | r256_symobj01..03/symparts 0x8000 @256² ✓ |
-| 0xE | **GX_TF_CMPR** (DXT1, RGB5A3 endpoints) | w·h/2, TI 8×8 | Logo/Logo_e/sega/st/nintendo 0x8000/0x2000 ✓; titlealpha 0x8000, f512_mahoujin 0x20000 @512² ✓ |
+| 0xE | **GX_TF_CMPR** (DXT1, BE-u16 **RGB565** endpoints — ~~RGB5A3 endpoints~~ SUPERSEDED by CMPRBE §6, card t_41325af7) | w·h/2, TI 8×8 | Logo/Logo_e/sega/st/nintendo 0x8000/0x2000 ✓; titlealpha 0x8000, f512_mahoujin 0x20000 @512² ✓ |
 | 5 | GX_TF_RGB5A3 | 2 B/px | f256_ad(_eng)/psotitle 0x20000 @256² ✓ (manifest "RGB565" mislabel — same bpp) |
 
 **VERDICTS** (vs the card's doubts):
@@ -86,11 +86,11 @@ Coherence = mean adjacent RGB distance ÷ row-shuffled baseline (lower=better;
 | sinbd | **C8 TI8×4 tiled + C16 TLUT** | **0.276** | PICK-1 |
 | sinbd | C8 flat raster + TLUT (current driver route) | 0.716 | = owner's "random lines" |
 | sinbd | CI14-packed nibble CANARY (table-dead) | 1.032 | dead ✓ |
-| sega_e01 | **CMPR TI8×8, 4×DXT1 row-major sub-blocks, RGB5A3 endpoints** | **0.159** | PICK-2 |
-| sega_e01 | I4 TI8×8 gray | 0.835 | dead |
+| sega_e01 | **CMPR TI8×8, 4×DXT1 row-major sub-blocks, RGB5A3 endpoints** | **0.159** | PICK-2 — endpoint law SUPERSEDED CMPRBE §6; layout pick STANDS; re-measured 0.1058 |
+| sega_e01 | I4 TI8×8 gray | 0.835 | dead (layout-only; re-measured 0.8321 — unchanged) |
 | sega_e01 | I4 FLAT gray (manifest-label reading) | 0.228 | artifact (see note) |
-| sega_e02 | **CMPR TI8×8** | **0.241** | PICK-2 |
-| sega_e02 | I4 TI8×8 gray | 0.834 | dead |
+| sega_e02 | **CMPR TI8×8** | **0.241** | PICK-2 — re-measured 0.1738 under CMPRBE law |
+| sega_e02 | I4 TI8×8 gray | 0.834 | dead (re-measured 0.8332 — unchanged) |
 | sega_e02 | I4 FLAT gray | 0.189 | artifact |
 
 Sub-block ordering probe (e03/e04, rm=`bx+2·by` vs cm=`by+2·bx`): rm wins
@@ -107,7 +107,8 @@ CMPR candidate shows the corner-locked sting mark (frame 01 of an
 tiles + metrics):** 1) sinbd = fmt 9 **GX_TF_C8**, TI 8×4 tile addressing
 (`off = 32·((x>>3) + (w>>3)·(y>>2)) + 8·(y&3) + (x&7)`), indices through the
 attached GVPL C16 bank (TWindowBase.cpp:866-901 regime). 2) 0xE frames =
-**GX_TF_CMPR** DXT1-in-RGB5A3, TI 8×8
+**GX_TF_CMPR** DXT1-in-RGB5A3 [endpoint gloss SUPERSEDED — BE u16 RGB565,
+see §6], TI 8×8
 (`off = 32·((x>>3) + (w>>3)·(y>>3)) + 8·((x>>2&1) + 2·(y>>2&1))`), tlut -1.
 
 ## 4 — DRIVER IMPLICATIONS (step 4 stays conditional on relay)
@@ -166,6 +167,35 @@ md5 `df99b87c2f79376ef87332a66af9048b`.
 `git archive 6b38b53837` export in scratch (`DECOMP_ROOT` override, zero
 writes to decomp). Other lanes' next builds will hit the same wall; the
 pin story needs an integrator decision.
+
+## 6 — CMPRBE ENDPOINT RE-ANCHOR (card t_41325af7, build seat, 2026-11-27)
+
+Owner boot footage (machine-local reference; numeric stats citable only, the
+image is NEVER committed) exposed the endpoint law in §2/§3 as a BUG-MADE-
+LAW: GC hardware reads CMPR endpoints as BIG-ENDIAN u16 plain **RGB565**
+(no alpha branch ever; index-3 at `c0<=c1` is OPAQUE BLACK, not transparent).
+The layout/structure picks (TI 8×8, rm `bx+2·by`, tlut -1) STAND — index
+bits were never affected; only the endpoint interpretation was wrong, which
+is why every self-consistency gate passed for days. Block census on the
+landed sega_e01 bytes (python, same-turn): `second halfword == 0xFFFF` in
+3837/4096 blocks, `first == 0xFFFF` in 49, field = index-1 (62388/65536 px).
+Fix landed in `host/gx/dl/gx_logo_clut.h` (`gxh_cmpr_block_rgba8` BE halves
++ new `gxh_rgb565_rgba8`; CI8/TLUT `gxh_rgb5a3_rgba8` path UNTOUCHED —
+different format, signboard human-verified).
+
+Coherence anchors RE-MEASURED under the fixed law (python port of the C
+gate metric incl. the xorshift row-shuffle; C runtime agrees to 4 dp):
+
+| record | law | was (RGB5A3 endpoints) | now (BE/RGB565) |
+|---|---|---|---|
+| sega_e01 | CMPR TI8×8 | 0.159 (C 0.1589) | **0.1058** (C 0.1058) |
+| sega_e02 | CMPR TI8×8 | 0.241 (C 0.2410) | **0.1738** |
+| sega_e01/e02 | I4-TI canary | 0.835/0.834 | 0.8321/0.8332 (layout-only, law-independent) |
+
+The fixed law decodes MORE coherent art under the metric than the old law —
+the coherence instrument never had chroma-direction sensitivity (mean
+adjacent RGB distance, channels summed), hence the blind spot. The hue/
+chroma witness is now gate-enforced (docs/p2-seq-1.md §5, L9-U1 inverted).
 
 ## Deviations introduced
 Steps 1–3: none (see below). Step 4: no new gitignored slices; disc
