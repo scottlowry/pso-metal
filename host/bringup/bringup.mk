@@ -508,6 +508,50 @@ $(BIN)/hg3_walk_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o 
 
 all: $(BIN)/hg3_walk_test
 
+# --- P2-HG3 rung-6 "arrival at the trial screen" (card BRINGUP-5, docs/p2-rung6-seams-1.md §3) ---
+# HG3-275..281: phase-10 init/update through to the first interactive
+# store-chain. Generated TU = 23 VERBATIM slices + 2 GENERATED callback tables
+# (23+7 pairs, two-source byte-validated vs the embedded roster — ROSTER §5
+# 62-callee census baked as the generation canary) + 10 verbatim era data
+# lines (L9-1: create_mode_scene unlanded arms -> loud canaries). Era deps
+# shas at generation printed by the generator (8 units, incl. TAdTimeSetGC /
+# TAdTrialAgreementGC / the two TAdSinglePlyChrSelectGC homes / TAdPlayerLoadGC
+# — rung-6 §2 verdict holds: ZERO new anchor rows). Links the BRINGUP-4 walk
+# machine (ladder8 glues + hg3_walk_seam) — dispatcher/table/S18 machinery
+# reused, never re-minted.
+M9_SRC := $(DECOMP_ROOT)/src/pso/ui/frontend/TAdMultiChgGameModeGC_8023E7A8.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdMultiChgGameModeGC.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdTrialAgreementGC.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdTimeSetGC.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdPlayerLoadGC_80076BBC.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdSinglePlyChrSelectGC_801FBF54.cpp \
+          $(DECOMP_ROOT)/src/pso/ui/frontend/TAdSinglePlyChrSelectGC_8001ED80.cpp
+M9_PRELUDES := $(BRINGUP)/include/ladder9_trial_prelude.h $(BRINGUP)/include/ladder7_run_prelude.h
+
+$(GEN)/ladder9_trial_glue.cpp: $(BRINGUP)/gen_ladder9_trial.py $(M9_SRC) \
+        $(DECOMP_ROOT)/src/pso/ui/font/TFontSmallTask.cpp $(M9_PRELUDES) | $(GEN) $(OUT)/waiver.stamp
+	@python3 $(BRINGUP)/gen_ladder9_trial.py $(DECOMP_ROOT) $@
+	@echo "gen: ladder9_trial_glue.cpp (S8-S15 verbatim + 2 GENERATED pair tables + era data lines; receipt above)"
+
+$(GEN)/ladder9_trial_glue.o: $(GEN)/ladder9_trial_glue.cpp | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/hg3_trial_seam.o: $(BRINGUP)/hg3_trial_seam.cpp $(M9_PRELUDES) | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/hg3_trial_test.o: $(BRINGUP)/hg3_trial_test.cpp $(M9_PRELUDES) | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/hg3_trial_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                       $(GEN)/move_data_glue.o \
+                       $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
+                       $(GEN)/ladder8_walk_glue.o $(GEN)/ladder8_s18_glue.o \
+                       $(OUT)/hg3_walk_seam.o \
+                       $(GEN)/ladder9_trial_glue.o $(OUT)/hg3_trial_seam.o $(OUT)/hg3_trial_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/hg3_trial_test
+
 clean:
 	@rm -rf $(OUT)
 	@echo "cleaned $(OUT)"

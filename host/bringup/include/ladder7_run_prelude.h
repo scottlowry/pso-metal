@@ -79,7 +79,13 @@ extern f32 sound_listener_position[4];                      /* SoundRequests.cpp
 /* PLAY-3: carrier gains the render_tick leg-4 static (TObjPlayer/TKeyBoardControl/
  * TParticleCtrl static members verified against era headers this lane:
  * TObjPlayer.h:1105, TKeyBoardControl.h:36, TParticleCtrl.h:56-57, TCameraCtrl.h:151). */
-struct TCameraCtrl { Vec pos; static void restore_full_screen_view(); };
+struct TObject;   /* fwd (HG3-276): the TCameraCtrl carrier ctor takes a parent; full carrier below */
+struct TCameraCtrl { Vec pos; static void restore_full_screen_view();
+                     /* HG3-276 (BRINGUP-5): ctor + mode-select are class-(d) lane-J
+                      * counted shells (defs hg3_trial_seam.cpp; rung-5 lane-J gate
+                      * docs/p2-rung5-seams-1.md:43-44 stands — never re-blocked). */
+                     TCameraCtrl(TObject *parent);
+                     static void select_active_controller(s32 mode); };
 extern TCameraCtrl *camera_ctrl_instance;                   /* era decl TCameraCtrl.h:209         */
 s32 get_sound_voice_state(s32 voice);                       /* SoundControlState.h:86             */
 s32 check_sound_pitch_request_range(s32 slot, s32);         /* SoundRequests.cpp:185              */
@@ -135,7 +141,16 @@ extern const s32 PSO_MAIN_PHASE_TABLE_ROWS; /* = 22, guard-verified vs era block
 extern void (*logo_load_callback_table[18])(void);
 /* S4/S5/S6 walk-side decls (bodies: walk glue REAL slices / seam counted) */
 struct TLobby { static void wait_ready_loop();                      /* LB-2 pump-count seam (R8) */
-                static void call_funcs_reverse(void *table, unsigned int size); };  /* S6 REAL slice, TFontSmallTask.cpp:251 */
+                static void call_funcs_reverse(void *table, unsigned int size);  /* S6 REAL slice, TFontSmallTask.cpp:251 */
+                /* HG3-276/281 (BRINGUP-5) statics the verbatim bodies touch —
+                 * counted shells (defs hg3_trial_seam.cpp): era homes
+                 * TLobby_800F8AA8.cpp:819 (reset_keyboard_state), network/
+                 * TLobby.h:326-327 (clear_callback_and_reset_keyboard,
+                 * invoke_callback), TLobby.h:214 (init_sound_mode, S15 tail). */
+                static void reset_keyboard_state();
+                static void clear_callback_and_reset_keyboard();
+                static void invoke_callback();
+                static int init_sound_mode(); };
 
 /* ---- PLAY-2 (spec docs/p2-ladder7-play23.md §1.2): TMainTask.h:17–38 verbatim
  * macro trio + macros.h:89–90 iterator. NOT `#include "pso/system/task/TMainTask.h"`
@@ -183,8 +198,10 @@ enum { PAUSE_UPDATE = 0x0008, DISALLOW_RENDER = 0x0010 };
  * bodies touch, verified against the era text this lane). */
 struct TObject {
     u32 m_flags; TObject *m_prev, *m_down, *m_next;
+    const char *m_name;                   /* HG3-279: era TObject.h:91 (additive carrier member; no existing ladder7 assert reads layout) */
     void run_tasks();                       /* COUNTED extern (spec §1.3) — era walk :116 */
     void delete_children();                 /* HG3-274 COUNTED allocator seam — era body :105 (thin _delete_children wrapper) */
+    void queue_destruction();               /* HG3-278/S12+trial ctor: COUNTED deferral seam (era TObject chain; destruction walk is allocator-lane, not this rung) */
     void debug_render();                    /* REAL era-empty slice (TObject.cpp:174) */
     void allow_rendering()    { m_flags &= ~DISALLOW_RENDER; }
     void disallow_rendering() { m_flags |=  DISALLOW_RENDER; }
@@ -310,7 +327,12 @@ void update_global_sound_frame(void);           /* SoundPlayback.h:27 / .cpp:232
 void update_music_sequencer(void);              /* MusicControl.cpp — LB-3 fail-loud (era-unreachable: sound_requests_enabled==0, guard :103 REAL) */
 void render_debug_text(u32 enabled);            /* DebugFont.cpp:140 — COUNTED, arg-captured (leg 6) */
 struct TKeyBoardControl { static void run_tasks(); };   /* TKeyBoardControl.h:36 static — body VERBATIM slice SystemBootInit.cpp:100 */
-struct TParticleCtrl { static void begin_effect_render(); static void end_effect_render(); };  /* TParticleCtrl.h:56-57 static — bodies VERBATIM EffectRender.cpp:10/:12 */
+struct TParticleCtrl { static void begin_effect_render(); static void end_effect_render();
+                       /* HG3-276 (BRINGUP-5): init_heap/create_quad_sprites counted
+                        * (allocator/particle-heap seam class (c); era decls
+                        * TParticleCtrl.h:48-49/:59, called verbatim from S10) */
+                       static void init_heap(u32 size);
+                       static void create_quad_sprites(); };
 
 /* ---- counted legs around the promoted five (LOGO-2 shape; the L7-R3 order
  * invariant compares this sequence against TLogo.cpp:95-114 text order).

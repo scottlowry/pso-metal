@@ -59,4 +59,8 @@ echo "== P2-HG3 rung-6 the walk (BRINGUP-4, HG3-271..274): the REAL dispatcher b
 "$R/build/bringup/bin/hg3_walk_test"
 echo "hg3_walk_test: EXIT=0"
 echo
+echo "== P2-HG3 rung-6 arrival at the trial screen (BRINGUP-5, HG3-275..281): phase-10 store-chain END-TO-END through the REAL dispatcher — table[0xA].init = VERBATIM init_trial_agreement_phase composition (S9 :541) runs the 45-line scene-init body (:448-492) over the GENERATED 23+7 pair tables (two-source byte-validated, 62-callee census) with ROSTER-graded counted externs (lane-J camera/font/texture/heap/window) + the S8 forward walker REAL; multi_chg_game_mode_state 29->0x17 with the :547 one-behind law; the frame wrapper (:494-530) walks change-state 1->2->0 re-minting the trial scene EXACTLY ONCE (REAL TAdTrialAgreementGC ctor :84-93, m_name pin, no-card probe branch, scroll window shell NOT built); on_agree == mode-8 store, on_decline -> request_main_phase(0) -> loop-exit -> shutdown LB-3 = the honest-quit canary; apply_settings NULL-branch leg ONLY (O1 era-true: no shim, no SystemSaveData supply); canaries x4 (audio-dark LB-3 un-armed walk, 25 loud create arms, pending==1 walker abort, branch-discipline probe) =="
+"$R/build/bringup/bin/hg3_trial_test"
+echo "hg3_trial_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"
