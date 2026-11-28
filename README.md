@@ -12,7 +12,7 @@ Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube
 from — [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp), consumed as a
 pinned read-only input.
 
-Status: **Phase 3 — the logo draws, verified by human eyes.**
+Status: **Phase 3 — the logo boot scene draws end-to-end, human-verified; the real phase dispatcher walks 1→0xA.**
 Era texture-supply code (`init_and_load_tlut` → GVRT/GVPL chain → CLUT expand) executes
 natively end-to-end in real era call order into a Metal drawable. The genuine
 disc signboard plate renders correctly: the two-era defect (flat-vs-**TI 8×4**
@@ -66,9 +66,9 @@ The first linked LP64 Mach-O boots the era logic with 8/8 receipts.
 | arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
 | true-LP64 parse, official adopted shape | **1,167 / 1,680 (69.5%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
-| logo | era CLUT supply chain **executing and human-verified**: genuine 256×256 signboard plate renders owner-confirmed art (TI 8×4 expand + RGB5A3/BE-carrier fixes per era disassembly witness); gate set now includes L7-P4 coherence with planted wrong-decode canary; pre/post fix hashes recorded honestly in `docs/p2-oracle-1.md` §5 |
+| logo | era CLUT supply chain **executing and human-verified**: genuine 256×256 signboard plate renders owner-confirmed art (TI 8×4 expand + RGB5A3/BE-carrier fixes per era disassembly witness); L7-P4 coherence gate with planted wrong-decode canary; **logo-exit scene landed**: 8-tile family-base mosaic + 32/61/32-tick fade ledger @30 Hz, presented by the evidenced `GX_FRAMES_EXIT` regime — era-pinned hue-band gate L9-U1 (white floor, R:B 8.5:1 band, blue helper line) + keyed-white canary L9-U2; the magenta-on-white presented-by wordmark IS the era art (`docs/p2-seq-1.md` §1 incl. the black-vs-white correction, `docs/p2-oracle-1.md` §5) |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
-| suites | bring-up **200/200** (ladders 1–7 PLAY-2 + HG-1 handle golden) · display-list 210/210 samples · window era 12/12 + AV-1 10/10 (self-consistency gates — see logo row) · VI both branches · link 8/8 — measured `docs/p2-ladder7-play2.md`, `docs/p2-stitch-apply7.md` |
+| suites | bring-up run.sh **GREEN 0 FAIL** (integrator re-run @ecbc11c) · **rung-6 walk hg3_walk 26/26** (HG3-271..274: real dispatcher 1→0xA, exit-table fire-exactly-once, 19-root tree delete, unregistered-index canaries tripped) · HG-1 29/29 · HG-2 270/270 · ladder7 62/62 · display-list 210/210 · window era FIXTURE 13/13 + GENUINE 13/13 + FRAMES 24/24 + frames+exit **32/32** · AV-1 10/10 · VI both branches · link 8/8 — receipts `docs/p2-hg3-1.md`, `docs/p2-seq-1.md`, `docs/p2-frames-1.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
 | residual classes (measured, owned) | apply-8 LP64 FAIL=513, first-error partition: NJS wall 485 · FloorPop 9 · musyx 2 named · named tail 17 (`docs/p2-stitch-apply8.md` §Battery, `docs/p2-tail-2.md` §1); inert supply authored: adapter-queue 169 rows/673 sites batch-1 top-30 (`docs/p2-adapter-queue-1.md` §0-1), runtime-gated handle rows 258 (`docs/p2-apply7-recensus.md` §3) · packets/PppFrame/MWCC-asm/musyx-main all landed |
 
@@ -109,8 +109,10 @@ is a feature; see `docs/p1-buildsystem.md` and `docs/p2-stitch-apply*.md`.
 
 ## Roadmap (honest)
 
-1. **Now**: genuine disc-supplied logo through the era archive-index; rung-5 seam ladder
-   (title-screen main-phase machine); long-tail class census.
+1. **Now**: rung-6 "the walk" LANDED (real main_phase dispatcher 1→0xA, exit-table +
+   logo teardown fire-exactly-once, `docs/p2-hg3-1.md`); in flight: arrival at the trial
+   agreement screen (HG3-275..281) building on it; era human-verified logo exit scene done
+   (`docs/p2-seq-1.md`). Long-tail class census continues.
 2. **Next**: uaddr-handle program (parse-clean → runtime-correct), link scale-up from the
    boot slice toward real game frame states, MusyX host-shim audio.
 3. **Later**: title → char-select → first area. Playable single-player is the milestone;
