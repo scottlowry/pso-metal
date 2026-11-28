@@ -63,4 +63,8 @@ echo "== P2-HG3 rung-6 arrival at the trial screen (BRINGUP-5, HG3-275..281): ph
 "$R/build/bringup/bin/hg3_trial_test"
 echo "hg3_trial_test: EXIT=0"
 echo
+echo "== P2-INPUT R-D/R-E single source (BRINGUP-6 seat, BRINGUP-7 injected[] shadow fix): hg3_input canary suite — injection writes ONLY the raw shadow; PADRead->read_pads->bind->controller_stuff->keyboard pump VERBATIM (one read_pads/frame). C0a era disconnected values on bank+cis x3 pumps, C0b all-14-mask era-zero answers through REAL primitives on bank pad AND cis.keyboard (R-E both sides), C0/HG-287 DEFAULT-DECLINE rider (no injected input reaches agree), C0c planted-A teeth FLIP+restore+disconnect, C1 compaction divergence (bank 1:1 vs cis compacted, same raw two mappings, logical_slot helper), C2 derived-word edge law (scale/flip 86, pressed f1 -> cleared f3, held persists), C3 keyboard mirror pump-only (no-pump-no-press, one-frame drain) =="
+PSO_INPUT_LOG="$R/build/input/run.log" "$R/host/input/run_input.sh"
+echo "hg3_input: EXIT=0 (17/17; suite has live teeth — wrong state cannot pass)"
+echo
 echo "BRINGUP GREEN"

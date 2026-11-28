@@ -32,7 +32,10 @@ s32 lobby_list_next_id;
 THeap *game_heap;
 u8 *async_file_read_texture_buffer;
 
-u8 controller_reset_requested;           /* ControllerInput.cpp:24 */
+/* controller_reset_requested (ControllerInput.cpp:24) — BRINGUP7 step-3: the
+ * counted def MOVED to the single-source seat (host/input/input_state.cpp,
+ * C-linkage era symbol identical `_controller_reset_requested`, zero-init
+ * same as before). Linking both defs was the R-D duplicate this retires. */
 s32 memcard_access_active;               /* SystemBootInit.cpp:87 */
 s32 quest_download_in_progress;          /* TQuestVmDownLoadServer.cpp:50 */
 s32 quest_download_server_ready;         /* TLobby_800F8AA8.cpp:91 */
@@ -118,7 +121,19 @@ int l7_walk_hook_fires;
 void begin_gx_frame(void) { l7_note(LC7_BEGIN_GX); g_begin_gx_calls++; }   /* real slice: gx tree LOGO-1 */
 void activate_camera_mode(s32 mode) { g_cam_mode = mode; l7_note(LC7_ACT_CAM_MODE); }
 void set_active_camera_pose(Vec *a, Vec *b) { g_pose_a = *a; g_pose_b = *b; l7_note(LC7_SET_POSE); }
-void controller_stuff(void) { l7_note(LC7_CTRL_STUFF); g_ctrl_calls++; }
+/* BRINGUP7 step-3 pump flip: seams KEEP names/notes/counters (rung-5/6
+ * vectors byte-identical with the flag OFF). With pso_input_pump_live != 0
+ * (only HG3-286+ probes flip it) the ctrl seam fires the seat's era pump —
+ * read_pads->bind->controller_stuff->update_keyboard_input_frame in EXACT
+ * era order. DEVIATION from §3.4 wording disclosed: the pump fires at THIS
+ * seam ONLY, never at the kbd seam too — the ChunkMaterialState pump
+ * contract is ONE read_pads per frame (docs/p2-rd-input-1.md §3.3: double-
+ * pumping inside a frame loses pressed-edges to prev_pad_status — the exact
+ * bug class step-1 just retired); the era kbd body runs INSIDE the pump,
+ * between the LC7_CTRL_STUFF note and the LC7_KBD_FRAME note, era order
+ * held. */
+void controller_stuff(void) { l7_note(LC7_CTRL_STUFF); g_ctrl_calls++;
+    if (pso_input_pump_live) pso_input_pump_frame(); }
 void update_keyboard_input_frame(void) { l7_note(LC7_KBD_FRAME); g_kbd_calls++; }
 /* PLAY-3: the render_tick counter body LEAVES — the seam is a REAL verbatim
  * slice now (TLobby_801E2F94.cpp:491-505, glue); its legs count/capture below. */

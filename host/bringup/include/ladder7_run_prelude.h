@@ -373,6 +373,18 @@ void activate_camera_mode(s32 mode);
 void set_active_camera_pose(Vec *a, Vec *b);
 void controller_stuff(void);
 void update_keyboard_input_frame(void);
+/* BRINGUP7 step-3 pump flip (R-D consumption, docs/p2-rd-input-1.md §3.4):
+ * the seam bodies above stay COUNTED by default — the host/input seat's era
+ * pump is wired behind pso_input_pump_live (DEFAULT 0), so every existing
+ * 29-event vector, g_ctrl_calls/g_kbd_calls and the L7-I3a order invariant
+ * read byte-identical; HG3-286+ probes flip the flag. Forward decls ONLY:
+ * pso_input.h is deliberately NOT included in this TU set (bringup owns its
+ * own TCameraCtrl carrier — the era header graph collides; the pump arrives
+ * linked via $(INPUT_OBJS), def site host/input/input_state.cpp). */
+extern int pso_input_pump_live;
+void pso_input_pump_frame(void);   /* read_pads->bind->controller_stuff->
+                                    * update_keyboard_input_frame, EXACT era
+                                    * order, one read_pads per frame         */
 void render_tick(void);
 /* promoted-era legs: defined BY THE SLICE in the glue TU; decls match era homes */
 void process_async_file_reads(void);    /* AsyncFileRead.cpp:198  (header also decls) */

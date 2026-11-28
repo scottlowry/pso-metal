@@ -23,6 +23,12 @@ LINK_TARGET ?= arm64-apple-macos12.0
 OUT         := $(BUILD_DIR)/bringup
 GEN         := $(OUT)/gen
 BIN         := $(OUT)/bin
+# BRINGUP7 step-3: the host/input seat objects (pump + single-def data) join
+# the rung-5/6 binaries. Built through host/input/input.mk — its waiver.stamp
+# is the D8 VERIFY-only pattern (sha compared, zero regen).
+INPUT       := $(REPO)/host/input
+INPUT_OUT   := $(BUILD_DIR)/input
+INPUT_OBJS  := $(INPUT_OUT)/input_state.o $(INPUT_OUT)/gen/input_pump_glue.o
 
 # Step 1 flag set: same COMMON as build/Makefile, plus the shadow -I FIRST
 # (assert-policy §4 mechanism), -DPSO_PORT_LAYOUT_WAIVER, and the generated
@@ -403,6 +409,11 @@ $(GEN)/ladder7_runframe_glue.cpp: $(BRINGUP)/gen_ladder7_runframe.py \
 $(GEN)/ladder7_runframe_glue.o: $(GEN)/ladder7_runframe_glue.cpp | $(OUT)
 	clang++ $(CXXFLAGS) -c -o $@ $<
 
+# BRINGUP7 step-3: seat objects (pump face for the flipped seams) — built by
+# host/input/input.mk (D8 verify-only waiver stamp on that side as well).
+$(INPUT_OBJS):
+	@$(MAKE) --no-print-directory -C $(INPUT) -f input.mk $@
+
 $(OUT)/ladder7_seam.o: $(BRINGUP)/ladder7_seam.cpp $(BRINGUP)/include/ladder7_run_prelude.h | $(OUT) $(OUT)/waiver.stamp
 	clang++ $(CXXFLAGS) -c -o $@ $<
 
@@ -413,8 +424,9 @@ $(BIN)/ladder7_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $
                      $(GEN)/move_data_glue.o \
                      $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
                      $(GEN)/ladder8_s18_glue.o \
+                     $(INPUT_OBJS) \
                      $(OUT)/ladder7_test.o | $(BIN)
-	clang++ -target $(LINK_TARGET) -o $@ $^
+	clang++ -target $(LINK_TARGET) -o $@ $^ -lm
 
 all: $(BIN)/ladder7_test
 
@@ -503,8 +515,9 @@ $(BIN)/hg3_walk_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o 
                       $(GEN)/move_data_glue.o \
                       $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
                       $(GEN)/ladder8_walk_glue.o $(GEN)/ladder8_s18_glue.o \
+                      $(INPUT_OBJS) \
                       $(OUT)/hg3_walk_seam.o $(OUT)/hg3_walk_test.o | $(BIN)
-	clang++ -target $(LINK_TARGET) -o $@ $^
+	clang++ -target $(LINK_TARGET) -o $@ $^ -lm
 
 all: $(BIN)/hg3_walk_test
 
@@ -547,8 +560,9 @@ $(BIN)/hg3_trial_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o
                        $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
                        $(GEN)/ladder8_walk_glue.o $(GEN)/ladder8_s18_glue.o \
                        $(OUT)/hg3_walk_seam.o \
+                       $(INPUT_OBJS) \
                        $(GEN)/ladder9_trial_glue.o $(OUT)/hg3_trial_seam.o $(OUT)/hg3_trial_test.o | $(BIN)
-	clang++ -target $(LINK_TARGET) -o $@ $^
+	clang++ -target $(LINK_TARGET) -o $@ $^ -lm
 
 all: $(BIN)/hg3_trial_test
 
