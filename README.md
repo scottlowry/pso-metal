@@ -12,7 +12,7 @@ Native recompiler port of **Phantasy Star Online Episode I & II Plus** (GameCube
 from — [`zeroz41/pso-decomp`](https://github.com/zeroz41/pso-decomp), consumed as a
 pinned read-only input.
 
-Status: **Phase 3 — the logo boot scene draws end-to-end, human-verified; the real phase dispatcher walks 1→0xA.**
+Status: **Phase 3 — the real phase dispatcher walks 1→0xA and the trial scene mints; the CI8 signboard plate is human-verified; CMPR hue defect open (big-endian endpoint fix = card t_41325af7).**
 Era texture-supply code (`init_and_load_tlut` → GVRT/GVPL chain → CLUT expand) executes
 natively end-to-end in real era call order into a Metal drawable. The genuine
 disc signboard plate renders correctly: the two-era defect (flat-vs-**TI 8×4**
@@ -66,7 +66,7 @@ The first linked LP64 Mach-O boots the era logic with 8/8 receipts.
 | arm64_32 parse gate (legacy anchor) | **1,605 / 1,680** — `tools/parse_gate.py` floor 1605 |
 | true-LP64 parse, official adopted shape | **1,167 / 1,680 (69.5%)** — `make -C build parse-lp64`; collateral-vs-control now the **empty set** |
 | true-LP64 parse, full-stack battery stance | **1,258 / 1,680** (measured `docs/p2-stitch-apply4.md`; adoption gated on the handle/adapter programs) |
-| logo | era CLUT supply chain **executing and human-verified**: genuine 256×256 signboard plate renders owner-confirmed art (TI 8×4 expand + RGB5A3/BE-carrier fixes per era disassembly witness); L7-P4 coherence gate with planted wrong-decode canary; **logo-exit scene landed**: 8-tile family-base mosaic + 32/61/32-tick fade ledger @30 Hz, presented by the evidenced `GX_FRAMES_EXIT` regime — era-pinned hue-band gate L9-U1 (white floor, R:B 8.5:1 band, blue helper line) + keyed-white canary L9-U2; the magenta-on-white presented-by wordmark IS the era art (`docs/p2-seq-1.md` §1 incl. the black-vs-white correction, `docs/p2-oracle-1.md` §5) |
+| logo | era CLUT supply chain **executing and human-verified** for the CI8 signboard plate (TI 8×4 expand + RGB5A3/BE-carrier fixes per era disassembly witness); L7-P4 coherence gate with planted wrong-decode canary; **logo-exit scene structure landed**: 8-tile family-base mosaic + 32/61/32-tick fade ledger @30 Hz via the evidenced `GX_FRAMES_EXIT` regime. **CMPR DEFECT OPEN (owner footage as external witness)**: disc CMPR endpoints are big-endian RGB565 with opaque-black index-3 — our LE/RGB5A3-shared decode rendered the presented-by mark magenta-on-white where the real boot shows blue-on-dark; glyph structure was preserved, which is why every self-consistent gate passed. Decode fix + full cmp-receipt re-anchor + footage-anchored hue gate: card `t_41325af7` (`docs/p2-seq-1.md`, `docs/p2-oracle-1.md` carry the pre-fix law and get corrected with the fix) |
 | boot | first linked Mach-O, **8/8 receipts**, era PRS/heap/DVD chain end-to-end |
 | suites | bring-up run.sh **GREEN 0 FAIL** (integrator re-run @e454e85, 567 PASS) · **rung-6 walk hg3_walk 26/26** (real dispatcher 1→0xA, exit-table fire-exactly-once, 19-root tree delete) · **rung-6 arrival hg3_trial 41/41** (trial scene minted through the real chain: generated 23+7 pair tables two-source-validated, one-behind sync law live, honest-quit + audio-dark + un-armed canaries trip as designed) · HG-1 29/29 · HG-2 270/270 · ladder7 62/62 · display-list 210/210 · window era FIXTURE 13/13 + GENUINE 13/13 + FRAMES 24/24 + frames+exit **32/32** · AV-1 10/10 · VI both branches · link 8/8 — receipts `docs/p2-hg3-1.md`, `docs/p2-hg3-2.md`, `docs/p2-seq-1.md`, `docs/p2-frames-1.md` |
 | waiver machine | 2,946 / 3,333 asserts over 1,549 types, sha-pinned (D8) across three verify guards |
@@ -112,7 +112,7 @@ is a feature; see `docs/p1-buildsystem.md` and `docs/p2-stitch-apply*.md`.
 1. **Now**: rung-6 fully landed — "the walk" (HG3-271..274, `docs/p2-hg3-1.md`) **and** arrival at the
    trial agreement screen (HG3-275..281, `docs/p2-hg3-2.md`); in flight: making the trial screen
    INPUT-LIVE (HG3-284..290, `docs/p2-rung7-seams-1.md` + `docs/p2-rd-input-1.md` design). Logo exit
-   scene human-verified (`docs/p2-seq-1.md`). Long-tail class census continues.
+   signboard plate human-verified; CMPR presented-by hue defect under fix (card t_41325af7). Long-tail class census continues.
 2. **Next**: uaddr-handle program (parse-clean → runtime-correct), link scale-up from the
    boot slice toward real game frame states, MusyX host-shim audio.
 3. **Later**: title → char-select → first area. Playable single-player is the milestone;
