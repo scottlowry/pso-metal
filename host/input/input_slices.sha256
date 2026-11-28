@@ -1,0 +1,65 @@
+# P2-RDPREP input slice manifest — pin 6b38b53837 (era shas + slice shas)
+ERA f84360c2afc54813e0f19de37e71a7e6aaa8975588d2472bdf9e9ae21523d789  src/pso/system/ControllerInput.cpp
+ERA dd2671f5c7e9e633754e30cfda775fd3545292feddf677999c30aa1cdc482f3a  src/pso/render/ChunkMaterialState.cpp
+ERA 3313cdb3b077bce1792c0769d62ec3babd169dfba5622fb296bcdec5a1ca6e09  src/pso/ui/keyboard/KeyboardKeyState.cpp
+ERA 9528f5aaf081ba209cb4a39dbba484ae8b87da3f4cf3f393ea076e1aa46a930a  src/pso/object/base/TObjChara.cpp
+SLICE 9335b2dcdf0f4be2f7964ac4929886d1b77a5ed19cc8bedf0d2a2128c6c3ab78  ChunkMaterialState.cpp  s16 scale_axis_value(s16 x) {
+SLICE 0cd8c8980cae945b0e1302c2a68d1db0465aba5a7cdef37d6f124c4e07b9e5a2  ChunkMaterialState.cpp  s32 map_pad_buttons(u16 released) {
+SLICE 97329b73e59525b34e70740ba801d0ffa7e233cce11f7dac841d10ef452ab3fc  ChunkMaterialState.cpp  void clamp_pad_axes(PADStatus *pad) {
+SLICE c97524ca4116a96bce7920a3d04eb3932dd3397d9f5052a883dd3c5a31705aec  ChunkMaterialState.cpp  PadSlot *get_pad_slot(u32 device) {
+SLICE d20b3a11c5c3c06486cb8bc693eb4bdec3135432937ea0a588437aa1ebe540c4  ChunkMaterialState.cpp  void init_pad_slots_and_read(s32, s32, s32) {
+SLICE 20907ec85fd7351a696d8efafe23ccd55b4c5199904ce6ba856036de6b5fc90d  ChunkMaterialState.cpp  void read_pads() {
+SLICE 19e9b40ca372a84cd959a1bfed7a879f8fed6428acf05d6fcdb43e5979b79c4f  ControllerInput.cpp  void clear_controller_reset_request() { controller_reset_requested = 0; 
+SLICE cab1ff417a0b54baaac152164625f2fc2ca002fdba86fc46788b2672e9c7d0b5  ControllerInput.cpp  s32 is_keyboard_key_pressed(u8 key) {
+SLICE e797029f74e04623f59616d88abe9b8040f6d786cf664e48be787eacca16b09f  ControllerInput.cpp  s32 keyboard_read_input(u8 key) {
+SLICE 466ad584e654db60d78d55a99cc49cb39191ced817901611eb5528078aa64dde  ControllerInput.cpp  s32 keyboard_is_key_down(s32 key) {
+SLICE 9daf77ef60f56ffb6da35b517254da71604236ff858be89a515dcb5895e98bc0  ControllerInput.cpp  s32 keyboard_check_and_read(s32 key) {
+SLICE d3dee82b71142b0068d4f327c3fa597a535f81228b6317a39f39a01e1cd494c6  ControllerInput.cpp  s32 is_keyboard_control_held(void) {
+SLICE 51aa74b64ac489c5804fda737aa84807ec34626152548c21b644c3b6d071aedf  ControllerInput.cpp  s32 any_pad_input_active() {
+SLICE 11ca375990459bf0d538022735349833d32edd0408a993fa69dcc55e7a257287  ControllerInput.cpp  void set_stick_button_bits(ControllerInputContext *pad, u32 mask, u32 pr
+SLICE 0e32e8ca9963072bf24a3299902eb92432b8c4a805630cbb0255f3e0ad3d81c0  ControllerInput.cpp  void map_c_stick_to_buttons(ControllerInputContext *pad, s16 x, s16 y, s
+SLICE 3f3bc072b279a38eaf5e1f2895aa437c5601400cf3bf8fc87f1776d96d14b21f  ControllerInput.cpp  void map_main_stick_to_buttons(ControllerInputContext *pad, s16 x, s16 y
+SLICE 326895f520fc418d56a45b529304bda7a5e5068d1e227b7d9e5358cb60d523a6  ControllerInput.cpp  void update_button_hold_counter(ControllerInputContext *pad, s16 *counte
+SLICE 84fb32758f522f902761f9ca40268903773395667c54510bd7300a6fb67f5495  ControllerInput.cpp  void update_button_hold_counters(ControllerInputContext *pad) {
+SLICE 8aab29fc1e24b328527c62378262653c77287c18f58033651bde99d3ca046b1b  ControllerInput.cpp  s32 all_direction_mask(ControllerInputContext *pad, s32 mask) {
+SLICE ab2858d27d06e7cf30636fc4c95cd3036f29e7950755e38ae0126faf4edefd9a  ControllerInput.cpp  s32 cstick_direction_mask(ControllerInputContext *pad, s32 mask) {
+SLICE 35f5882c25d0284223397265ff1afd02c4808e10003504aeb67636602622c36e  ControllerInput.cpp  s32 pack_button_mask(ControllerInputContext *pad, s32 mask) {
+SLICE 173cf554a8c47d8d550aced718e0072eccb2abd6ff6c41854705b27fca9db137  ControllerInput.cpp  s32 test_flags_04_packed(ControllerInputContext *pad, s32 mask) {
+SLICE c2355e56a7ea37f359f62d48107f508e3f7463c2b58a2feda3a1c15ae36da8b8  ControllerInput.cpp  s32 test_controller_flag_4c_color(ControllerInputContext *pad, s32 mask)
+SLICE 7293acf97eeaa4d88ac61cfbf72a20066d877b00ff4a896326b6006ccdab0c61  ControllerInput.cpp  s32 test_pressed_buttons_packed(void *pad, s32 mask) {
+SLICE e5fedaaae4935f6bafcdf01f1f774fe610c63cd988b5de4f278df0c09a6222bb  ControllerInput.cpp  s32 test_previous_buttons_color(ControllerInputContext *pad, s32 mask) {
+SLICE c90f28ff6e6465f8db86f134b5cbef3998ae799257e86adacc6cbcfacf70842b  ControllerInput.cpp  s32 test_previous_buttons_remapped(ControllerInputContext *pad, s32 mask
+SLICE 9c4e7a792d4653ee734f633deff8b7135efe0cba904a8df3a921b3ac94f4caf9  ControllerInput.cpp  s32 test_previous_buttons_packed(void *pad, s32 mask) {
+SLICE 17c9b481e35d2e685c5e2ba29e6485dac7300415ec920dca591200c9c909ddde  ControllerInput.cpp  s32 check_packed_flag_match(ControllerInputContext *pad, u32 mask, s32 d
+SLICE bc8b63ea1dff22e273807198185ef35f6ca74451a1d2f578b11e6541f2117033  ControllerInput.cpp  s32 input_press_or_repeat(ControllerInputContext *pad, u32 mask, s32 del
+SLICE da0fac57ad5380ee0fecd8824f6469dff95733b33623f59c15c7e75c3ec4250a  ControllerInput.cpp  s32 test_buttons_press_or_repeat_color(ControllerInputContext *input, s3
+SLICE 89a2705b0eb4f00e5ba441204eded6aaefe92695d34899fdf17347e2820d76ec  ControllerInput.cpp  s32 test_buttons_repeat_packed(ControllerInputContext *input, s32 button
+SLICE a79cc65d23f929270b25024b716fafaff29febd443e82634aaf9990fdd695bf0  ControllerInput.cpp  s32 test_buttons_press_or_repeat(ControllerInputContext *pad, s32 button
+SLICE d7d1853e74cf0245b0e141818991c07104e36e54e9f6ea6665770ac2eae212be  ControllerInput.cpp  s32 check_reset_button() {
+SLICE 709a1ab7304070f228ac0d35a9479ccb13b88705f74827799ec20cc094b4a7a0  ControllerInput.cpp  void update_pad_recalibration(void) {
+SLICE 5da6f5a7e3c11e973b96cd8a05f14368eeae477fd9cce8de44cbaba26b59b2a6  ControllerInput.cpp  void copy_controller_input(ControllerInputContext *destination, Controll
+SLICE 8f5d0a26c14461edab6a4efa463925bb13703d7a684a73b45e403e356f6431f1  ControllerInput.cpp  void bind_controller_devices(void) {
+SLICE 77f2e56bce77a5295af29e1662f047c1c829f8e5bb3b40381eb12f73ec559bcf  ControllerInput.cpp  void controller_stuff(void) {
+SLICE 187f0c67cf497cd80033dbf653769b91ce4f96498e1d84088790e68a6a44d415  ControllerInput.cpp  void update_keyboard_input_frame() {
+SLICE 01804233913a9d2afca06e2c213ff39633d58e5ee5ac91be5cf3457ef7f89c15  ControllerInput.cpp  void reset_controller_input_state(void) {
+SLICE 6146c7ddb5e9b3b6893ac962569b222204ce1a0f25aaa80f48c162d9c8dd6548  ControllerInput.cpp  void init_pad_state() {
+SLICE b322451398d37b520d79eb2579f991ac9c9c40424657e7c946e4b1db0e15ec50  ControllerInput.cpp  void accumulate_key_bits(s32 key, u32 *buttons) {
+SLICE 62abab66deba7b74d6d7fafdeb94731ef05091f05b7ccca3ffecd59b216bfb12  ControllerInput.cpp  s32 ControllerInputContext::poll_key_state() {
+SLICE ec904b90e1024cb63e13a6c620fdc003f6fbae66fec1d0fc8701e7df4f3d4a9a  TObjChara.cpp  f32 newton_sqrtf(f32 x) {
+SLICE f8ca145b0dd65ca04cb5cefd28382e45c5b530bc8127337d5e8e7e8410c8ac69  TObjChara.cpp  f32 atan2_float(f32 y, f32 x) {
+SLICE 83e3873950607092b25c21882cbc1c48a700e0a2701a4de11769ed939c717a8a  KeyboardKeyState.cpp  void KeyboardKeyState::process_key_reports() {
+SLICE 104cbb35163b54d83d5cf7b91acc6b220414c39fd377358cd4bd2b5272b092f9  KeyboardKeyState.cpp  s32 KeyboardKeyState::check_input_ready() {
+SLICE 793297a04064a1af551d7ed20e041ba78a5b3493bd9961efe24536b6de3d1b77  KeyboardKeyState.cpp  s32 KeyboardKeyState::has_any_key_pressed() {
+SLICE a3c3de2ce08fee9471df77dfa40e1eb3516ab468bb096bbefda42bbd86b5e2c1  KeyboardKeyState.cpp  u8 KeyboardKeyState::get_pending_key(u8 index) {
+SLICE 54defd6f8d24c3a851223501766601de84165ce352dcccc6a735087f397cf2dc  KeyboardKeyState.cpp  u8 KeyboardKeyState::get_pending_count() {
+SLICE 09a050172c49a20c14de729d9795d57eca99646df660670f1c4ba393770859fd  KeyboardKeyState.cpp  s32 KeyboardKeyState::is_key_pressed(u8 key) {
+SLICE 61b2879c5809e67061cd1377293ea825d6c9e76cc6db24c9606b8eeabf680c87  KeyboardKeyState.cpp  s32 KeyboardKeyState::is_control_held() {
+SLICE 6c99539bdc5db1ecd79c8ca0dd78a7e4be36e8aede991da30c9bbe80ace19342  KeyboardKeyState.cpp  s32 KeyboardKeyState::is_alt_held() {
+SLICE 01c709b91965e7fc0e5c5abe339b4dc50a8f8f637c9645e845142c017a5ed1ba  KeyboardKeyState.cpp  s32 KeyboardKeyState::is_shift_held() {
+SLICE ec9ccc16b767fd454ba177336e71943cbdffa3fc9bfd5440cdddd787ec73a520  KeyboardKeyState.cpp  void KeyboardKeyState::push_key_to_buffer(u8 key) {
+SLICE f3cb5aacbea5d576b21a98560c85a9116108326df892b8624ed3172278a44035  KeyboardKeyState.cpp  void KeyboardKeyState::reset_inactive_keys() {
+SLICE f349ea0762b91dc5ecd1b5c143b7c51017abf93fd24279b0470f15497ef30311  KeyboardKeyState.cpp  void KeyboardKeyState::tick_key_repeat_timer(u8 key) {
+SLICE 15b95fffa392788b777c5b0e9b968e8188a763c02123ee440695376a5d3e5b28  KeyboardKeyState.cpp  void KeyboardKeyState::process_raw_key(KeyboardKeyState *kb, u8 key, u32
+SLICE ef9c05996859b85306f8b4e53d7a967f2c505008fca02d5374e9b95a215ff9e8  KeyboardKeyState.cpp  void KeyboardKeyState::reset_keys() {
+SLICE 34636871f3d15d27d3b059c36120929212ed12a5c7558a7940b7cca17e6f0871  KeyboardKeyState.cpp  void KeyboardKeyState::clear_key_state() {
+SLICE 296b032072f0e31577cb020a232170ca39db122bd4df65d06859f5545963a96f  KeyboardKeyState.cpp  u8 KeyboardKeyState::get_key_state() {
