@@ -30,21 +30,22 @@ u32 OSGetProgressiveMode(void);
 void OSSetProgressiveMode(u32 on);
 }
 
-/* ---- era controller surface (branch's second gate) ------------------------ *
- * include/pso/system/ControllerInputState.h:41-56 declares
- * `ControllerInputState controller_physical_port_bank` with
- * `ControllerInputContext controllers[4]` (context size 0x50,
- * LAYOUT_ASSERT ControllerInputContext_size). The slice only takes
- * &controllers[0] as void*; host truth = zero controllers (no PAD lane at
- * logo) — bank is zero-init and the stubbed test_previous_buttons_packed
- * (include/pso/system/ControllerInput.h:52) returns "not pressed", which is
- * the era answer for zero controller input (docs/p2-defer-audit.md A3). */
-struct ControllerInputContext { u8 raw[0x50]; };
-struct ControllerInputState {
-    ControllerInputContext controllers[4];
-    ControllerInputContext keyboard;
-};
-extern ControllerInputState controller_physical_port_bank;
+/* ---- era controller surface (branch's second gate) — R-D RETIRED (BRINGUP7
+ * step-2). The former paraphrase twin here declared `ControllerInputState` as
+ * a 0x190-byte struct with controllers@0x0 — WRONG SHAPE vs the era 0x1B0
+ * (sources/source_status first, contexts @0x20, keyboard @0x160,
+ * LAYOUT_ASSERT ControllerInputState.h:43-49) — and owned a second
+ * definition of controller_physical_port_bank (vi_branch_driver.c). Both are
+ * GONE: the single era-shaped source is the host/input seat
+ * (docs/p2-rd-input-1.md §3) — era headers through the pin-include regime,
+ * sole def in input_state.cpp (zero-init bank = the same no-pad truth at
+ * CORRECT offsets), and the era-idle answer of test_previous_buttons_packed
+ * is now PRODUCED by the verbatim primitive (held_with_sticks==0 -> 0, the
+ * audit-A3 "not pressed" result preserved) instead of stubbed. The generated
+ * slice body is UNCHANGED (same era-name call, era-correct offsets now); the
+ * forwarder lives in vi_branch_driver.c. vi_branch.mk adds the seat's
+ * include regime + links $(INPUT_OBJS). */
+#include "pso_input.h"
 s32 test_previous_buttons_packed(void *pad, s32 mask);
 
 /* ---- era object tree (minimal shapes; ctor bodies count fires) ----------- */

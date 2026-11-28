@@ -25,18 +25,27 @@
 #include <cstring>
 
 /* ================= harness definitions (stub discipline per W2) =============
- * controller_physical_port_bank zero-init = host has no pads at logo (true:
- * PAD lane is not started); test_previous_buttons_packed -> "not pressed" is
- * the era answer for zero input (audit A3). is_*_done -> 0: on frame 1 the
- * logo objects were constructed this very frame (nothing can be done).
- * has_network_adapter -> 1 is moot: state 2 is retail-dead (A4: no writer of
- * TLogo.state=2). None of these stubs sits on the asserted state-0 branch. */
-ControllerInputState controller_physical_port_bank;
+ * BRINGUP7 step-2 (R-D retirement): controller_physical_port_bank is NO
+ * LONGER defined here — the sole era-shaped definition lives in the host/input
+ * seat (host/input/input_state.cpp, ControllerInputState.h LAYOUT_ASSERTs live
+ * through the pin-include regime). test_previous_buttons_packed is NO LONGER
+ * a return-0 stub — it forwards to the VERBATIM era primitive
+ * (pso_era_test_previous_buttons_packed from gen_input_pump.py); on the
+ * zero-init bank it PRODUCES the same era-answer-for-zero-input 0 that the
+ * stub asserted (held_with_sticks==0 masks everything; docs/p2-rd-input-1.md
+ * §1.4). is_*_done -> 0: on frame 1 the logo objects were constructed this
+ * very frame (nothing can be done). has_network_adapter -> 1 is moot: state 2
+ * is retail-dead (A4: no writer of TLogo.state=2). None of these stubs sits
+ * on the asserted state-0 branch. */
 static u32 g_prev_test_calls;
 s32 test_previous_buttons_packed(void *pad, s32 mask) {
-    (void)pad; (void)mask; g_prev_test_calls++;
-    return 0;  /* zero controller input -> Previous not held (era truth) */
+    g_prev_test_calls++;
+    return pso_era_test_previous_buttons_packed(pad, mask);
 }
+/* Deviation IN0-3 (disclosed, same posture as the input seat's own test TU):
+ * camera_ctrl_instance host def = NULL (era pre-camera truth); the reader face
+ * in pso_input.h is derefed ONLY under this NULL check — branch never taken. */
+TCameraCtrl *camera_ctrl_instance;
 
 TObject::TObject(TObject *parent) { (void)parent; m_name = nullptr; }
 
