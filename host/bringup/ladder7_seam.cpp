@@ -113,6 +113,8 @@ int g_drawdone_calls, g_present_calls;
 static int g_tick_zmode, g_tick_cull, g_tick_fog;
 
 /* ---- counted seams around the promoted five (L7-2, LOGO-2 shape) ---- */
+L7WalkHook l7_walk_hook;                 /* HG3-271: set only by hg3_walk_test (NULL => rung-5 byte-green) */
+int l7_walk_hook_fires;
 void begin_gx_frame(void) { l7_note(LC7_BEGIN_GX); g_begin_gx_calls++; }   /* real slice: gx tree LOGO-1 */
 void activate_camera_mode(s32 mode) { g_cam_mode = mode; l7_note(LC7_ACT_CAM_MODE); }
 void set_active_camera_pose(Vec *a, Vec *b) { g_pose_a = *a; g_pose_b = *b; l7_note(LC7_SET_POSE); }
@@ -136,6 +138,10 @@ void TObject::run_tasks() {
     g_walk_cnt[g_walk_root]++;                      /* PLAY-3 I3c per-root tally */
     l7_note(LC7_WALK_MAIN + (g_walk_root - WALK_MAIN));
     if (g_walk_root == WALK_EOR) l7_note(LC7_RT13); /* leg 13 first-inner extern (spec §2.3 note rule) */
+    /* HG3-271: era run_tasks runs each child's run_task HERE (the logo
+     * state-7 fire site). The optional hook fires no l7_note and is NULL in
+     * every ladder7 path, so the existing order vector is byte-identical. */
+    if (g_walk_root == WALK_MAIN && l7_walk_hook) { l7_walk_hook_fires++; l7_walk_hook(); }
 }
 /* ---- counted pixel sub-passes (RS Play 2: the 8 stay counters; pixels keep
  * riding LOGO-3's single present). Each records the LIVE render_pass/
@@ -235,7 +241,9 @@ static void l7_fatal(const char *what) {
 }
 void reset_system(void) { l7_fatal("reset_system"); }
 s32 check_reset_button() { l7_fatal("check_reset_button"); return 0; }    /* unreachable: DVDCheckDisk()==TRUE short-circuits */
-void switch_to_fallback_main_phase(void) { l7_fatal("switch_to_fallback_main_phase"); }
+/* HG3-271/S18: switch_to_fallback_main_phase PROMOTED from the LB-3 stand-in
+ * (:238 here, rung-5) to a REAL verbatim slice — gen_ladder8_walk.py
+ * (SystemBootInit.cpp:173-176). The LB-3 roster shrinks accordingly. */
 void pop_and_close() { l7_fatal("pop_and_close"); }
 void notify_and_close() { l7_fatal("notify_and_close"); }
 void destroy_instance() { l7_fatal("destroy_instance"); }

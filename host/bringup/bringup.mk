@@ -386,6 +386,9 @@ all: $(BIN)/ladder6_test
 # the LB-2 pump seam) — plus the TLogo::run_frame + request_main_phase carrier
 # anchors gen_ladder6_logo.py pins gx-side. NO NJS shadow flags on these TUs
 # (no adapter edits; the era headers' assert names carry applied waivers).
+# HG3 note: since the S18 PROMOTION, run_frame's switch_to_fallback trap leg
+# binds to the REAL slice in ladder8_walk_glue.o (rule below; its hg3_walk_
+# seam.o backings link too — all unreferenced by ladder7, byte-green holds).
 L7RF_SRC := $(TLOGO_SRC) $(SBI_SRC) $(DECOMP_ROOT)/src/pso/system/task/TObject.cpp \
             $(DECOMP_ROOT)/src/pso/system/ControllerInput.cpp \
             $(DECOMP_ROOT)/src/pso/system/AsyncFileRead.cpp \
@@ -408,7 +411,9 @@ $(OUT)/ladder7_test.o: $(BRINGUP)/ladder7_test.cpp $(BRINGUP)/include/ladder7_ru
 
 $(BIN)/ladder7_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
                      $(GEN)/move_data_glue.o \
-                     $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o $(OUT)/ladder7_test.o | $(BIN)
+                     $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
+                     $(GEN)/ladder8_s18_glue.o \
+                     $(OUT)/ladder7_test.o | $(BIN)
 	clang++ -target $(LINK_TARGET) -o $@ $^
 
 all: $(BIN)/ladder7_test
@@ -468,6 +473,40 @@ $(BIN)/hg2_test: $(OUT)/crt0_nomain.o $(OUT)/hg1_windows.o \
 	clang++ -target $(LINK_TARGET) -o $@ $^
 
 all: $(BIN)/hg2_test
+
+# --- P2-HG3 rung-6 "the walk" (card BRINGUP-4, docs/p2-rung6-seams-1.md §3) ---
+# HG3-271..274: the REAL dispatcher body + S18 helper slices + the GENERATED
+# 22-row main_phase_table host copy (era block byte-validated) + the logo
+# exit-table leg (exit_logo_scene / call_funcs_reverse / delete_layer_children
+# VERBATIM, 18-ptr host-copy table). era deps: SystemBootInit.cpp (pin —
+# sha ed382a8ae2f8 this turn), TLogo.cpp (13889e46dcaa), TFontSmallTask.cpp
+# (1e5fb968a167), TObject.cpp (6586bb705b8f — same rung-5 hashes).
+TFST_SRC  := $(DECOMP_ROOT)/src/pso/ui/font/TFontSmallTask.cpp
+TOBJ_SRC  := $(DECOMP_ROOT)/src/pso/system/task/TObject.cpp
+
+$(GEN)/ladder8_walk_glue.cpp $(GEN)/ladder8_s18_glue.cpp: $(BRINGUP)/gen_ladder8_walk.py \
+        $(SBI_SRC) $(TLOGO_SRC) $(TFST_SRC) $(TOBJ_SRC) \
+        $(BRINGUP)/include/ladder7_run_prelude.h | $(GEN) $(OUT)/waiver.stamp
+	@python3 $(BRINGUP)/gen_ladder8_walk.py $(DECOMP_ROOT) $(GEN)/ladder8_walk_glue.cpp $(GEN)/ladder8_s18_glue.cpp
+	@echo "gen: ladder8_walk_glue.cpp (dispatcher + exit-table + 2 GENERATED tables) + ladder8_s18_glue.cpp (7 S18 helper slices) — verbatim, zero edits; receipt above"
+
+$(GEN)/ladder8_walk_glue.o $(GEN)/ladder8_s18_glue.o: $(GEN)/%.o: $(GEN)/%.cpp | $(OUT)
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/hg3_walk_seam.o: $(BRINGUP)/hg3_walk_seam.cpp $(BRINGUP)/include/ladder7_run_prelude.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(OUT)/hg3_walk_test.o: $(BRINGUP)/hg3_walk_test.cpp $(BRINGUP)/include/ladder7_run_prelude.h | $(OUT) $(OUT)/waiver.stamp
+	clang++ $(CXXFLAGS) -c -o $@ $<
+
+$(BIN)/hg3_walk_test: $(OUT)/crt0_nomain.o $(OUT)/osinit.o $(OUT)/osalloc_era.o $(OUT)/dvd_shim.o \
+                      $(GEN)/move_data_glue.o \
+                      $(GEN)/ladder7_runframe_glue.o $(OUT)/ladder7_seam.o \
+                      $(GEN)/ladder8_walk_glue.o $(GEN)/ladder8_s18_glue.o \
+                      $(OUT)/hg3_walk_seam.o $(OUT)/hg3_walk_test.o | $(BIN)
+	clang++ -target $(LINK_TARGET) -o $@ $^
+
+all: $(BIN)/hg3_walk_test
 
 clean:
 	@rm -rf $(OUT)

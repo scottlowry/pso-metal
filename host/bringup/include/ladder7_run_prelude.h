@@ -34,7 +34,7 @@
  * begin_gx_frame slice + era-present render_tick backings live in the gx
  * tree (LOGO-1/LOGO-3) and are not re-minted here.
  * DEVIATION L7-3 (LB-3 roster): reset_system (card-named), check_reset_button,
- * switch_to_fallback_main_phase, pop_and_close, notify_and_close,
+ * pop_and_close, notify_and_close,
  * destroy_instance, tmp_buf_release, move_words, copy_u16_array,
  * load_gvm_texture_archive = fail-loud stand-ins for legs the era-true zero
  * state can never select. ADXF_Open/ReadNw/GetStat, tmp_buf_use_req (LB-2
@@ -96,7 +96,7 @@ s32 load_gvm_texture_archive(void *archive, NJS_TEXLIST *list);  /* GvmTextureAr
 s32 LoadBmlExec(BmlResource *bml, const char *name);        /* network/TLobby.h:43                */
 void reset_system(void);                                    /* pso_date.h:14                      */
 s32 check_reset_button();                                   /* ControllerInput.cpp:57             */
-void switch_to_fallback_main_phase(void);                   /* run_frame trap leg                 */
+/* switch_to_fallback_main_phase: HG3-271/S18 PROMOTED — decl + REAL slice below (era :173-176, s32 return) */
 
 /* era tail callee of process_async_file_reads — DEFINED VERBATIM in the glue
  * below (exact line TGStream.cpp:203, empty era body); declared here because
@@ -115,7 +115,27 @@ extern u8 lobby_wait_ready_flag;          /* TLobby_800F8AA8.cpp:93          */
 
 /* ---- carriers for the sliced members (L7-1) ---- */
 struct TQuestVmDownLoadServer { static s32 is_ready(); };
-struct TLobby { static void wait_ready_loop(); };  /* LB-2 pump-count seam (R8) */
+s32 get_previous_main_phase(void);          /* SystemBootInit.cpp:157 (S18, REAL slice HG3-271) */
+s32 get_main_phase(void);                   /* :161 */
+void set_fallback_main_phase(s32 phase);    /* :165 */
+void set_queued_main_phase(s32 phase);      /* :169 */
+s32 switch_to_fallback_main_phase(void);    /* :173 — HG3-271/S18 PROMOTED from the rung-5 LB-3 stand-in to the REAL verbatim slice (gen_ladder8_walk.py); prelude comment line 37 roster note updated likewise */
+s32 request_queued_main_phase(void);        /* :214 (S18, REAL slice) */
+void reset_main_phase_state(void);          /* :224 (REAL slice) */
+void pso_main_dispatcher(void);             /* era main() @:365 — renamed at EMIT (deviation L8-1), body verbatim */
+s32 pso_walk_stop_requested(void);          /* test-harness dispatcher-exit hook (loop-top AND) — HG3 harness only */
+/* S3 host-side main_phase_table copy (GENERATED data in the walk glue; rows
+ * byte-validated against the era 22-row block, slots land REAL / witness /
+ * fail-loud per spec §1 rows S2/S3) */
+typedef void (*MainPhaseCallback)();        /* era MainPhaseTable.h:4 */
+struct MainPhaseEntry { MainPhaseCallback init, update, exit; };  /* field order = era header */
+extern MainPhaseEntry main_phase_table[];
+extern const s32 PSO_MAIN_PHASE_TABLE_ROWS; /* = 22, guard-verified vs era block */
+/* S7 host copy (GENERATED data; 18 pointers = 9 pairs, era TLogo.cpp:39-49) */
+extern void (*logo_load_callback_table[18])(void);
+/* S4/S5/S6 walk-side decls (bodies: walk glue REAL slices / seam counted) */
+struct TLobby { static void wait_ready_loop();                      /* LB-2 pump-count seam (R8) */
+                static void call_funcs_reverse(void *table, unsigned int size); };  /* S6 REAL slice, TFontSmallTask.cpp:251 */
 
 /* ---- PLAY-2 (spec docs/p2-ladder7-play23.md §1.2): TMainTask.h:17–38 verbatim
  * macro trio + macros.h:89–90 iterator. NOT `#include "pso/system/task/TMainTask.h"`
@@ -164,6 +184,7 @@ enum { PAUSE_UPDATE = 0x0008, DISALLOW_RENDER = 0x0010 };
 struct TObject {
     u32 m_flags; TObject *m_prev, *m_down, *m_next;
     void run_tasks();                       /* COUNTED extern (spec §1.3) — era walk :116 */
+    void delete_children();                 /* HG3-274 COUNTED allocator seam — era body :105 (thin _delete_children wrapper) */
     void debug_render();                    /* REAL era-empty slice (TObject.cpp:174) */
     void allow_rendering()    { m_flags &= ~DISALLOW_RENDER; }
     void disallow_rendering() { m_flags |=  DISALLOW_RENDER; }
@@ -178,19 +199,87 @@ struct TMainTask : TObject {
     void render_objects();  void render_ui();      void render_clipout_and_fade();
                                             /* COUNTED externs (spec §1.3) — homes below */
     void render_after_scene(); void debug_render_overlay();        /* REAL era-empty  */
+    void delete_layer_children();                                  /* HG3-274 REAL slice (TObject.cpp:575-594, 19 roots) */
 };
 extern TMainTask main_task;                 /* era global (TObject.cpp home)     */
+
+/* HG3-271 (rung-6 walk): ONE optional task hook executed by the counted
+ * TObject::run_tasks seam on the WALK_MAIN root (era grammar: run_tasks walks
+ * the child chain and runs each child's run_task — the logo state-7
+ * request_main_phase(0xA) fire site, TLogo.cpp:193-195, rides this hook; the
+ * rung-3 ladder3 suite already proves the full state machine, it is NOT
+ * re-minted here). NULL during every ladder7 run => the existing 62-assert
+ * order vector is untouched (byte-green). */
+typedef void (*L7WalkHook)(void);
+extern L7WalkHook l7_walk_hook;
+extern int l7_walk_hook_fires;
 extern TObject end_of_render_root, keyboard_task_object;  /* PLAY-3 roots, defs spec §1.3 */
 void render_info_icon_overlay(void);        /* COUNTED — free fn, TLobby_803382E4.cpp:145 */
 extern u32 render_pass, update_flags, old_update_flags, render_flags, old_render_flags;
-struct TLogo { void run_frame(); };         /* bare carrier — gx precedent       */
+/* HG3-271/273: carrier methods become STATIC (era TLogo.h:22-27 declares all
+ * four static — rung-5 only sliced run_frame as an instance method; C++
+ * permits `logo.run_frame()` on a static member, so the existing ladder7_test
+ * call shape is untouched and the table slots take plain function pointers). */
+struct TLogo { static void run_frame(); static void init_logo_scene();
+               static void exit_logo_scene(); static void free_held_object(); };
 
 /* request_main_phase: REAL verbatim slice (SystemBootInit.cpp:219, .s C6/C7
  * pins — same anchor gen_ladder6_logo.py uses). Trap leg can never fire with
  * is_ready()==0 (rung4 §5 invariant); storage is the era zero global. */
 void request_main_phase(s32 phase);
-struct MainPhaseState { s32 cur, prev, next, result; };
+/* HG3-271: field set/order = era include/pso/system/MainPhaseState.h:6-13
+ * EXACTLY {cur,next,queued_main_phase,fallback,result,prev} (deviation L8-2:
+ * the rung-5 4-field sketch is superseded — the S18 helper slices read/write
+ * fallback/queued_main_phase; no existing ladder7 assert depends on layout). */
+struct MainPhaseState { s32 cur, next, queued_main_phase, fallback, result, prev; };
 extern MainPhaseState main_phase_state;
+extern s32 actor_frame_tick;                /* era TLobby_800FD78C.h:8 (dispatcher :379 ++) */
+void init_game_systems(void);               /* dispatcher pre-loop — seam (L8-3) */
+void shutdown_and_reset_system(void);       /* era SystemBootInit.cpp:124 — LB-3 fail-loud (brief line 4) */
+
+/* ---- HG3-272..274 walk-side decls ---- */
+/* era TFontSmallTask.h:33-41 verbatim (LAYOUT L8-4: era ILP32 entry=8B, host
+ * LP64 entry=16B — the pair {load→id-slot, release→fn-slot} semantics are
+ * stride-parity-invariant, so call_funcs_reverse's verbatim walk fires the
+ * SAME 9 release halves; size-based n keeps n=9 both sides). */
+struct LobbyFrameEntry { u32 id; void (*fn)(void); };
+struct LoadFrameEntry  { void (*fn)(void); u32 id; };
+/* S5 roots: era TObject.cpp:49 (`#define o(var,name) TObject *var;` over the
+ * 22-layer address-order macro; the 19 the verbatim delete_layer_children
+ * body touches) — host zero-def carriers, defs hg3_walk_seam.cpp */
+extern TObject *tl_00, *tl_camera, *tl_01, *tl_02, *tl_03, *tl_item_equip,
+               *tl_loc_start, *tl_04, *tl_05, *tl_06, *tl_07, *tl_loc_end,
+               *tl_window, *tl_particle, *tl_particlemodel, *tl_radermap,
+               *tl_clipout, *tl_fade, *tl_fadeafter;
+/* HG3-273/274 witness log + counters (defs hg3_walk_seam.cpp; the existing
+ * LC7_* order vector is NOT extended — the walk rides its own log). */
+s32 pso_walk_stop_requested(void);          /* PROVIDED BY THE TEST (hg3_walk_test.cpp): arms a clean dispatcher return at the loop-top; 0 outside the HG3 harness so the verbatim walk matches era */
+void p8_snapshot_loop_top(void);            /* PROVIDED BY THE TEST: records {cur,prev,result,next} at the dispatcher loop-top (HG3 only) */
+void p8_fail_loud_main_phase(void);         /* unregistered-slot LB-3; prints p8_fail_slot_name (test-set before each dispatch), exit(9) */
+extern const char *p8_fail_slot_name;
+extern const char *g8_log[128]; extern int g8_log_n;
+void g8_note(const char *tag);           /* witness-log push (harness may also note) */
+extern int g8_logo_init_calls;           /* row-1 init witness entries */
+extern int g8_logo_exit_calls, g8_delkids_calls, g8_init10_calls;
+extern int g8_trial_init_calls, g8_trial_exit_calls, g8_fires;   /* g8_fires = fail-loud slot launches */
+extern int g8_callfn_calls;              /* call_funcs_reverse ENTERS (verdict: 1 per exit fire) */
+extern const void *g8_delkids_roots[32]; /* delete_children callers, era body order */
+extern int g8_delkids_n;
+extern int g_init_game_systems_calls, g_shutdown_loud_fires;
+extern int g8_init_skip_reset;           /* L8-3 harness arm */
+extern void (*g8_flush_hook)(void);      /* test-armed: persist counters pre-loud-exit (forked canaries) */
+/* S3 witness stand-ins + S7 logo-table slot backings (defs hg3_walk_seam.cpp;
+ * the GENERATED walk glue references these by name): */
+void p8_enter_logo_init(void);  void p8_enter_trial_init(void);  void p8_counting_exit_trial(void);
+void p8_cam_reset_view_state(void);      void p8_cam_reset(void);
+void p8_cam_init_default_view(void);     void p8_cam_reset_default_view(void);
+void p8_lobby_update_keyboard_menu(void);void p8_lobby_free_keyboard_soft(void);
+void p8_tex_register_f256_ad_pic_2(void);void p8_chrsel_free_global(void);
+void p8_tex_register_f256_backtext(void);void p8_chrsel_free_singleton(void);
+void p8_tex_register_logo_e(void);       void p8_tex_free_held_object(void);
+void p8_tex_load_sonic(void);            void p8_tex_free_sonic(void);
+void p8_win_reset_windows(void);         void p8_win_free_all_windows(void);
+void p8_tex_load_adx(void);              void p8_tex_free_adx(void);
 
 /* ---- PLAY-3 (spec docs/p2-ladder7-play23.md §2.3): render_tick decomposition
  * zero-defs, GX capture seams, counted legs. ---- */

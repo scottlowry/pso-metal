@@ -55,4 +55,8 @@ echo "== P2-HG2 static-tree golden: crt0 4th anchor row W-STATIC-TREE [0x8008000
 "$R/build/bringup/bin/hg2_test"
 echo "hg2_test: EXIT=0"
 echo
+echo "== P2-HG3 rung-6 the walk (BRINGUP-4, HG3-271..274): the REAL dispatcher body (SystemBootInit.cpp main — L8-1 renamed) walks cur 1->0xA->2 through era :389-390; GENERATED 22-row main_phase_table host copy (era block byte-validated; rows {0,1,2,5,10} + NULL sentinels slot-mapped, unregistered slots = LB-3 loud canaries); S18 switch_to_fallback_promoted from the rung-5 fail-loud stand-in (forced result==3 walk) + request_queued (result==2) + 3 helpers; TLogo::exit_logo_scene VERBATIM fires EXACTLY ONCE per logo departure (19-root delete_layer_children REAL + call_funcs_reverse REAL over the 18-ptr host-copy logo table — 9 release halves back-to-front witness log, load halves provably never called); shutdown_and_reset_system stays LB-3; texture pair legs cite the gx seat (gx_logo_driver.cpp:233-238/:867-877), counter-backed here (L8-5) =="
+"$R/build/bringup/bin/hg3_walk_test"
+echo "hg3_walk_test: EXIT=0"
+echo
 echo "BRINGUP GREEN"
