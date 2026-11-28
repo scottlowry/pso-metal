@@ -1057,6 +1057,108 @@ int main(void) {
                     256 * 256 - mism, psz);
               memcpy(full, g1, sizeof g1); }   /* keep composite readback ref   */
 
+            /* L9-U1: ERA-PINNED HUE-BAND gate on the entry present (card SEQ3,
+             * fleet/defect-dig-20261127-sega.md follow-up). The SEQ2 ±0 gate
+             * was CPU-model vs GPU — BOTH sides of the same transform, so a
+             * self-consistent white-keyed-black model could never be caught
+             * here. This leg measures the PRESENTED canvas against a reference
+             * computed AT GATE TIME from the decoded slices themselves (era
+             * CMPR/RGB5A3 expansion — the law pinned by the three-way
+             * byte-exact agreement host C / oracle python / probe on the same
+             * bytes, receipt §1), never from the model under test:
+             *   (a) opaque-white field: white texels (r,g,b >= 240, a == 255)
+             *       >= 90% of visible texels on BOTH sides, presented within
+             *       3 pts of the decode reference (receipt §3: 94% of the era
+             *       art is opaque white background; GC-CMPR keying ruled out,
+             *       index-3 <= 0.2%);
+             *   (b) chromatic tally R:B within [4,16] on the presented canvas
+             *       and within 2x of the decode reference (magenta wordmark
+             *       dominates blue; receipt §2 — a channel-inverted model
+             *       lands at ~0.12 and FAILS);
+             *   (c) 'Presented by:' helper-line BLUE PRESENT: >= 150 blue-
+             *       dominant cells measured (native 640x480 tally 1557-1738
+             *       B-dominant rescales to ~340 at the 256x256 canvas). */
+            struct hue_stats { long vis, white, rdom, bdom, at0; };
+            const double WHITENE = 240.0;   /* >= per channel (receipt #3 tally law) */
+            struct hue_stats rfs = {0,0,0,0,0}, pes = {0,0,0,0,0};
+            { const unsigned *pp = seq_raster; const unsigned *qq = full;
+              for (long p = 0; p < 640L * 480L; p++) {
+                  unsigned w = pp[p];
+                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+                  if (!a) { rfs.at0++; continue; }
+                  rfs.vis++;
+                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) rfs.white++;
+                  if (r > b + 32) rfs.rdom++; else if (b > r + 32) rfs.bdom++;
+              }
+              for (long p = 0; p < 256L * 256L; p++) {
+                  unsigned w = qq[p];
+                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+                  if (!a) { pes.at0++; continue; }
+                  pes.vis++;
+                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) pes.white++;
+                  if (r > b + 32) pes.rdom++; else if (b > r + 32) pes.bdom++;
+              } }
+            double wf_ref = rfs.vis ? (double)rfs.white / (double)rfs.vis : 0.0,
+                   wf_pre = pes.vis ? (double)pes.white / (double)pes.vis : 0.0,
+                   rb_ref = rfs.bdom ? (double)rfs.rdom / (double)rfs.bdom : 0.0,
+                   rb_pre = pes.bdom ? (double)pes.rdom / (double)pes.bdom : 0.0;
+            printf("  L9-U1 era decode reference: visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld R:B=%.2f\n",
+                   rfs.vis, rfs.white, 100.0 * wf_ref, rfs.rdom, rfs.bdom, rb_ref);
+            printf("  L9-U1 presented canvas   : visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld R:B=%.2f\n",
+                   pes.vis, pes.white, 100.0 * wf_pre, pes.rdom, pes.bdom, rb_pre);
+            CHECK(wf_ref >= 0.90 && wf_pre >= 0.90 &&
+                  (wf_pre > wf_ref ? wf_pre - wf_ref : wf_ref - wf_pre) <= 0.03 &&
+                  rb_pre >= 4.0 && rb_pre <= 16.0 &&
+                  rb_ref > 0.0 && rb_pre >= rb_ref / 2.0 && rb_pre <= rb_ref * 2.0 &&
+                  pes.bdom >= 150,
+                  "L9-U1 hue-band gate (era-pinned, not model-derived): presented white-field %.2f%% of visible vs decode reference %.2f%% (era floor 90%%, delta cap 3 pts), presented R:B %.2f in band [4,16] and within 2x of decode reference %.2f, helper-line blue present (%ld cells >= 150) — a white-keyed or channel-inverted present CANNOT pass (defect-dig 20261127 #3)",
+                  100.0 * wf_pre, 100.0 * wf_ref, rb_pre, rb_ref, pes.bdom);
+
+            /* L9-U2 keyed-white CANARY: the forbidden model itself — the same
+             * composite with the opaque white field keyed out over black (the
+             * defect class the SEQ2 gate could not see). Present it through
+             * the REAL pipeline, measure with the SAME U1 legs, and prove the
+             * white-field assertion REJECTS it; then restore the correct
+             * canvas so the ledger/fade legs keep running on era truth. */
+            { static unsigned seq_key[256 * 256];
+              static unsigned char keyb[256 * 256 * 4];
+              for (int p = 0; p < 256 * 256; p++) {
+                  unsigned w = seq_tex[p];
+                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255)
+                      w = 0xFF000000u;                    /* keyed out to black */
+                  seq_key[p] = w;
+                  keyb[p * 4] = (unsigned char)(w >> 24); keyb[p * 4 + 1] = (unsigned char)(w >> 16);
+                  keyb[p * 4 + 2] = (unsigned char)(w >> 8); keyb[p * 4 + 3] = (unsigned char)w;
+              }
+              gx_dl_set_texture(256, 256, keyb);
+              render_tick(); gxh_dl_flush();
+              static unsigned kr[256 * 256];
+              if (gxh_dl_sample(xsf, ysf, kr, 256 * 256) != 0) return 4;
+              struct hue_stats ks = {0,0,0,0,0};
+              for (long p = 0; p < 256L * 256L; p++) {
+                  unsigned w = kr[p];
+                  int r = (int)((w >> 24) & 0xFF), g = (int)((w >> 16) & 0xFF),
+                      b = (int)((w >> 8) & 0xFF), a = (int)(w & 0xFF);
+                  if (!a) { ks.at0++; continue; }
+                  ks.vis++;
+                  if (r >= WHITENE && g >= WHITENE && b >= WHITENE && a == 255) ks.white++;
+                  if (r > b + 32) ks.rdom++; else if (b > r + 32) ks.bdom++;
+              }
+              double wf_can = ks.vis ? (double)ks.white / (double)ks.vis : 0.0;
+              printf("  L9-U2 canary (white keyed over black, GPU-presented): visible=%ld white=%ld (%.2f%%) R-dom=%ld B-dom=%ld — U1 floor verdict = %s\n",
+                     ks.vis, ks.white, 100.0 * wf_can, ks.rdom, ks.bdom,
+                     wf_can >= 0.90 ? "WOULD PASS (gate broken)" : "REJECTED");
+              CHECK(wf_can < 0.90,
+                    "L9-U2 keyed-white canary FAILS the U1 leg as required: the black-background model presents only %.2f%% white field vs the era 90%% floor — self-consistent black present can never pass this gate again",
+                    100.0 * wf_can);
+              /* restore the correct canvas + present state for L9-H1/F1 */
+              gx_dl_set_texture(256, 256, seq_texb);
+              render_tick(); gxh_dl_flush(); }
+
             /* L9-H1: era tick ledger + 61-tick hold, scene-static proof. */
             f32 af = 255.0f; int tin = 0;
             for (;;) { af = af - 8.0f; tin++; if (af <= 0.0f) break; }        /* 32 */
