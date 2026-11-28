@@ -50,6 +50,16 @@ extern const f64 newton_sqrt_three;
 const f64 newton_sqrt_half = 0.5;
 const f64 newton_sqrt_three = 3.0;
 
+/* ---- BRINGUP7 harness fix (37c6f4f spec): injected[] shadow is THE PADRead
+ * source. The injection API writes injected[], NOT pad_status in place; the
+ * shim copies injected->out. Before: PADRead copied pad_status->pad_status,
+ * so read_pads' memmove(prev<-cur) saw the ALREADY-INJECTED word, diff==0
+ * killed every button-edge (C0c/C1-press checks) while sticks (never diffed)
+ * stayed green. Now pad_status is written ONLY by the PADRead shim — exactly
+ * like real hardware — so the old^cur edge is real. Test-API surface only:
+ * zero era-slice change (docs/p2-rd-input-1.md §3.2 legs stay verbatim). */
+PADStatus pso_input_injected[4];
+
 /* ---- dolphin OS shims: the injection face for the verbatim sampler ---- */
 u32 pso_shim_pad_reset_mask;      /* PADReset channel mask, recorded */
 u32 pso_shim_pad_recal_mask;      /* PADRecalibrate mask, recorded   */
@@ -58,7 +68,7 @@ u32 pso_shim_os_reset_btn_state;  /* OSGetResetButtonState answer (era-hw absent
 extern "C" {
 s32 PADRead(PADStatus *status) {
     pso_shim_pad_read_calls++;
-    memcpy(status, pad_status, sizeof(pad_status));
+    memcpy(status, pso_input_injected, sizeof(pso_input_injected));
     return 4;
 }
 s32 PADReset(u32 mask) { pso_shim_pad_reset_mask |= mask; return 1; }
@@ -73,6 +83,7 @@ void pso_input_init(void) {
     memset(keyboard_control_pad_slots, 0, sizeof(keyboard_control_pad_slots));
     memset(pad_status, 0, sizeof(pad_status));
     memset(prev_pad_status, 0, sizeof(prev_pad_status));
+    memset(pso_input_injected, 0, sizeof(pso_input_injected));
     memset(pad_slot_state_buffer, 0, sizeof(pad_slot_state_buffer));
     memset(&hardware_keyboard_state, 0, sizeof(hardware_keyboard_state));
     pso_split_screen_witness = 0;
@@ -82,7 +93,7 @@ void pso_input_init(void) {
     /* era-idle posture: every slot reports an error => read_pads takes the
      * *conn=0 + PADReset branch through the REAL chain (ControllerInput's
      * disconnected default-fill answers at the contexts). */
-    for (int i = 0; i < 4; i++) { pad_status[i].err = 1; pad_status[i].button = 0; }
+    for (int i = 0; i < 4; i++) { pso_input_injected[i].err = 1; pso_input_injected[i].button = 0; }
     hardware_keyboard_state.clear_key_state();
     hardware_keyboard_state.reset_keys();
     pso_era_init_pad_slots_and_read(0, 0, 0);  /* wires conn ptrs + era first read */
@@ -91,30 +102,30 @@ void pso_input_init(void) {
 
 void pso_input_pad_connect(s32 port0_3, int present) {
     if ((u32)port0_3 >= 4) return;
-    pad_status[port0_3].err = present ? 0 : 1;
-    if (!present) { pad_status[port0_3].button = 0;
-        pad_status[port0_3].stickX = pad_status[port0_3].stickY = 0;
-        pad_status[port0_3].substickX = pad_status[port0_3].substickY = 0;
-        pad_status[port0_3].triggerLeft = pad_status[port0_3].triggerRight = 0; }
+    pso_input_injected[port0_3].err = present ? 0 : 1;
+    if (!present) { pso_input_injected[port0_3].button = 0;
+        pso_input_injected[port0_3].stickX = pso_input_injected[port0_3].stickY = 0;
+        pso_input_injected[port0_3].substickX = pso_input_injected[port0_3].substickY = 0;
+        pso_input_injected[port0_3].triggerLeft = pso_input_injected[port0_3].triggerRight = 0; }
 }
 
 void pso_input_pad_press(s32 port0_3, u16 pad_bits) {
     if ((u32)port0_3 >= 4) return;
-    pad_status[port0_3].button = pad_bits;   /* PADStatus-native; map_pad_buttons runs era-verbatim */
+    pso_input_injected[port0_3].button = pad_bits;   /* PADStatus-native; map_pad_buttons runs era-verbatim */
 }
 
 void pso_input_pad_axes(s32 port0_3, s16 sx, s16 sy, s16 cx, s16 cy) {
     if ((u32)port0_3 >= 4) return;
-    pad_status[port0_3].stickX = (s8)sx;     /* raw PADStatus units (+-89 clamp era-side) */
-    pad_status[port0_3].stickY = (s8)sy;
-    pad_status[port0_3].substickX = (s8)cx;
-    pad_status[port0_3].substickY = (s8)cy;  /* era flips cstick_y = -substickY downstream */
+    pso_input_injected[port0_3].stickX = (s8)sx;     /* raw PADStatus units (+-89 clamp era-side) */
+    pso_input_injected[port0_3].stickY = (s8)sy;
+    pso_input_injected[port0_3].substickX = (s8)cx;
+    pso_input_injected[port0_3].substickY = (s8)cy;  /* era flips cstick_y = -substickY downstream */
 }
 
 void pso_input_pad_triggers(s32 port0_3, u8 l, u8 r) {
     if ((u32)port0_3 >= 4) return;
-    pad_status[port0_3].triggerLeft = l;
-    pad_status[port0_3].triggerRight = r;
+    pso_input_injected[port0_3].triggerLeft = l;
+    pso_input_injected[port0_3].triggerRight = r;
 }
 
 void pso_input_key_report(const u8 *raw, u32 n) {
